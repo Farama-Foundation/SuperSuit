@@ -29,4 +29,4 @@ env = frame_stacking(color_reduction(env, 'full'))
 
 `normalize_obs(env, env_min=0, env_max=1)` linearly scales observations to be 0 to 1, given known minimum and maximum observation values. <Ben this used to be called range_scale.>
 
-`reshape(env, shape)` reshapes observations into given shape. <Ben I slightly changed what this function should be.?
+`reshape(env, shape)` reshapes observations into given shape. <Ben I slightly changed what this function should be.>
