@@ -15,7 +15,7 @@ env = frame_stacking(color_reduction(env, 'full'))
 
 ## Full list of functions:
 
-`color_reduction(env, mode='full')` simplifies color information in graphical ((x,y,3) shaped) environments. `mode='full'` fully greyscales of the observation. This can be computationally intensive. Arguments of 'R','G' or'B' just take the corresponding R, G or B color channel from observation. This is much faster and is generally sufficient.
+`color_reduction(env, mode='full')` simplifies color information in graphical ((x,y,3) shaped) environments. `mode='full'` fully greyscales of the observation. This can be computationally intensive. Arguments of 'R', 'G' or 'B' just take the corresponding R, G or B color channel from observation. This is much faster and is generally sufficient.
 
 `continuous_actions(env)` discrete action spaces are converted to a 1d Box action space of size *n*. This space is treated as a vector of logits, and the softmax distribution of the inputs is sampled to get a discrete value. Currently supports both Discrete and MultiDiscrete action spaces. <Ben fix this one please>
 
