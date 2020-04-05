@@ -6,9 +6,11 @@ from gym import spaces
 COLOR_RED_LIST = ["full", 'R', 'G', 'B']
 GRAYSCALE_WEIGHTS = [0.299, 0.587, 0.114]
 
-def check_param(color_reduction):
+def check_param(observation_spaces,color_reduction):
     assert isinstance(color_reduction, str), "color_reduction must be str. It is {}".format(color_reduction)
     assert color_reduction in COLOR_RED_LIST, "color_reduction must be in {}".format(COLOR_RED_LIST)
+    for space in observation_spaces.values():
+        assert len(space.low.shape) == 3 and space.low.shape[2] == 3, "To apply color_reduction, shape must be a 3d image with last dimention of size 3. Shape is {}".format((space.low.shape))
     if color_reduction == "full":
         warnings.warn("You have chosen true grayscaling. It might be too slow. Choose a specific channel for better performance")
 

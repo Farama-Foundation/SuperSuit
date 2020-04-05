@@ -4,12 +4,15 @@ import numpy as np
 import pytest
 
 test_obs_space = {"agent":Box(low=np.float32(0.),high=np.float32(1.),shape=(4,4,3))}
+bad_test_obs_space = {"agent":Box(low=np.float32(0.),high=np.float32(1.),shape=(4,4,4))}
 test_obs = np.zeros([4,4,3])+np.arange(3)
 
 def test_param_check():
     with pytest.raises(AssertionError):
-        check_param("bob")
-    check_param("G")
+        check_param(test_obs_space,"bob")
+    with pytest.raises(AssertionError):
+        check_param(bad_test_obs_space,"R")
+    check_param(test_obs_space,"G")
 
 def test_change_space():
     new_space = change_space(test_obs_space, "R")

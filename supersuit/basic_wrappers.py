@@ -9,7 +9,7 @@ class BasicObservationWrapper(BaseWrapper):
     def _check_wrapper_params(self):
         assert all([isinstance(obs_space, Box) for obs_space in self.observation_spaces.values()]), \
             "All agents' observation spaces are not Box: {}, and as such the observation spaces are not modified.".format(self.observation_spaces)
-        self.module.check_param(self.param)
+        self.module.check_param(self.observation_spaces, self.param)
 
     def _modify_spaces(self):
         self.observation_spaces = self.module.change_space(self.observation_spaces,self.param)
