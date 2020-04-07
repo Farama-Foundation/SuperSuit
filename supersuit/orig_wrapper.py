@@ -4,7 +4,7 @@ from gym.spaces import Box
 from gym import spaces
 import warnings
 from skimage import measure
-from .env import AECEnv
+from pettingzoo.env import AECEnv
 
 from .frame_stack import stack_obs_space, stack_obs
 
