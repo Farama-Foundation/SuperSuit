@@ -13,23 +13,6 @@ def check_param(space,color_reduction):
     if color_reduction == "full":
         warnings.warn("You have chosen true grayscaling. It might be too slow. Choose a specific channel for better performance")
 
-def change_space(obs_space, color_reduction):
-    dtype = obs_space.dtype
-    if color_reduction == 'R':
-        low = obs_space.low[:, :, 0]
-        high = obs_space.high[:, :, 0]
-    if color_reduction == 'G':
-        low = obs_space.low[:, :, 1]
-        high = obs_space.high[:, :, 1]
-    if color_reduction == 'B':
-        low = obs_space.low[:, :, 2]
-        high = obs_space.high[:, :, 2]
-    if color_reduction == 'full':
-        low = np.average(obs_space.low, weights=GRAYSCALE_WEIGHTS, axis=2).astype(obs_space.dtype)
-        high = np.average(obs_space.high, weights=GRAYSCALE_WEIGHTS, axis=2).astype(obs_space.dtype)
-    new_obs_space = Box(low=low, high=high, dtype=dtype)
-    return new_obs_space
-
 def change_observation(obs, color_reduction):
     if color_reduction == 'R':
         obs = obs[:, :, 0]
