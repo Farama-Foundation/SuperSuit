@@ -1,4 +1,4 @@
-from supersuit.basic_transforms.down_scale import check_param,change_space,change_observation
+from supersuit.basic_transforms.down_scale import check_param,change_observation
 from gym.spaces import Box
 import numpy as np
 import pytest
@@ -16,12 +16,6 @@ def test_param_check():
         check_param(test_obs_space, 2)
     with pytest.raises(AssertionError):
         check_param(test_obs_space, ("B","C","D"))
-
-def test_change_space():
-    new_space = change_space(test_obs_space, (3,2,2))
-    #assert new_space.shape == (2,2,1)
-    #print(new_space.high)
-    #assert False
 
 def test_change_observation():
     new_obs = change_observation(test_val,(3,2,2))
