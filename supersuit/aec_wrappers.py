@@ -1,6 +1,7 @@
-from wrapper import BaseWrapper
+from .base_aec_wrapper import BaseWrapper
 from gym.spaces import Box
 from .basic_transforms import color_reduction,down_scale,dtype,flatten,reshape
+from .frame_stack import stack_obs_space,stack_init,stack_obs
 
 class lambda_wrapper(BaseWrapper):
     '''
@@ -36,7 +37,7 @@ class lambda_wrapper(BaseWrapper):
         return action
 
     def _modify_observation(self, agent, observation):
-        return= self.module.change_observation_fn(observation)
+        return self.module.change_observation_fn(observation)
 
     def _update_step(self, agent, observation, action):
         pass
@@ -79,27 +80,29 @@ class reshape(BasicObservationWrapper):
     def __init__(self,env,shape):
         super().__init__(reshape,shape)
 
-class frame_stack(BasicObservationWrapper):
+class frame_stack(BaseWrapper):
     def __init__(self,env,stack_size):
-        super().__init__(env,shape)
         self.stack_size = stack_size
+        super().__init__(env)
 
     def _check_wrapper_params(self):
-        if self.check_observation_fn is not None:
-            for space in self.env.observation_spaces.values():
-                self.check_observation_fn(space)
+        assert isinstance(self.stack_size, int), "stack size of frame_stack must be an int"
+        for space in self.observation_spaces.values():
+            assert 1 <= len(space.shape) <= 3, "frame_stack only works for 1,2 or 3 dimentional observations"
+
+    def reset(self, observe=True):
+        self.stacks = {agent: stack_init(space, self.stack_size) for agent,space in self.env.observation_spaces.items()}
+        return super().reset(observe)
 
     def _modify_spaces(self):
-        new_spaces = {}
-        for agent,space in self.observation_spaces.items():
-            new_spaces[agent] = stack_obs_space(space,self.stack_size)
-        return new_spaces
+        self.observation_spaces = {agent: stack_obs_space(space, self.stack_size)  for agent,space in self.observation_spaces.items()}
 
     def _modify_action(self, agent, action):
         return action
 
     def _modify_observation(self, agent, observation):
-        return self.module.change_observation_fn(observation)
+        stack_obs(self.stacks[agent], observation, self.stack_size)
+        return self.stacks[agent]
 
     def _update_step(self, agent, observation, action):
         pass

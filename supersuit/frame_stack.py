@@ -55,8 +55,6 @@ def stack_obs(frame_stack, obs, stack_size):
         Throws away the oldest observation.
     stack_size : needed for stacking reset observations
     '''
-    if frame_stack is None:
-        frame_stack = stack_init(obs, stack_size)
     obs_shape = obs.shape
     agent_fs = frame_stack
 
@@ -71,4 +69,3 @@ def stack_obs(frame_stack, obs, stack_size):
         nchannels = obs_shape[-1]
         agent_fs[:, :, :-nchannels] = agent_fs[:, :, nchannels:]
         agent_fs[:, :, -nchannels:] = obs
-    return agent_fs

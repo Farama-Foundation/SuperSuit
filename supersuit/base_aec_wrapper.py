@@ -4,7 +4,7 @@ from gym.spaces import Box
 from gym import spaces
 import warnings
 from skimage import measure
-from .env import AECEnv
+from pettingzoo import AECEnv
 
 from .frame_stack import stack_obs_space, stack_obs
 
@@ -59,13 +59,11 @@ class BaseWrapper(AECEnv):
         self.env.render(mode)
 
     def reset(self, observe=True):
+        self.env.reset(observe=False)
         if observe:
-            obs = self.env.reset(observe=True)
             agent = self.env.agent_selection
-            observation = self._modify_observation(agent, obs)
+            observation = self.observe(agent)
             return observation
-        else:
-            self.env.reset(observe=False)
 
     def observe(self, agent):
         obs = self.env.observe(agent)
@@ -75,12 +73,12 @@ class BaseWrapper(AECEnv):
     def step(self, action, observe=True):
         agent = self.env.agent_selection
         action = self._modify_action(agent, action)
-        if observe:
-            next_obs = self.env.step(action, observe=observe)
 
-            observation = self._modify_observation(agent, next_obs)
+        next_obs = self.env.step(action, observe=False)
+
+        if observe:
+            observation = self.observe(agent)
         else:
-            self.env.step(action, observe=False)
             observation = None
 
         self._update_step(agent,observation,action)

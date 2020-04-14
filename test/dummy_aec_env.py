@@ -1,15 +1,16 @@
-from pettingzoo.env import AECEnv
+from pettingzoo import AECEnv
+import copy
 
 class DummyEnv(AECEnv):
-    def __init__(self,observations,observation_spaces):
+    def __init__(self,observations,observation_spaces,action_spaces):
+        super().__init__()
         self._observations = observations
         self.observation_spaces = observation_spaces
 
         self.agents = [x for x in observation_spaces.keys()]
         self.agent_order = list(self.agents)
         self.agent_selection = self.agents[0]
-        self.action_spaces = copy.copy(self.env.action_spaces)
-        self.orig_action_spaces = self.env.action_spaces
+        self.action_spaces = action_spaces
 
         self.rewards = {a:0 for a in self.agents}
         self.dones = {a:False for a in self.agents}
@@ -17,8 +18,8 @@ class DummyEnv(AECEnv):
 
         self.agent_order = self.agents
 
-    def observe(self):
-        return self._observations
+    def observe(self, agent):
+        return self._observations[agent]
 
     def step(self, action, observe=True):
         old_sel = self.agent_selection
