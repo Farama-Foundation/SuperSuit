@@ -1,6 +1,6 @@
 from .base_aec_wrapper import BaseWrapper
 from gym.spaces import Box
-from .basic_transforms import color_reduction,down_scale,dtype,flatten,reshape
+from . import basic_transforms
 from .frame_stack import stack_obs_space,stack_init,stack_obs
 
 class lambda_wrapper(BaseWrapper):
@@ -21,9 +21,9 @@ class lambda_wrapper(BaseWrapper):
         super().__init__(env)
 
     def _check_wrapper_params(self):
-        if self.check_observation_fn is not None:
+        if self.check_space_fn is not None:
             for space in self.env.observation_spaces.values():
-                self.check_observation_fn(space)
+                self.check_space_fn(space)
 
     def _modify_spaces(self):
         new_spaces = {}
@@ -37,48 +37,62 @@ class lambda_wrapper(BaseWrapper):
         return action
 
     def _modify_observation(self, agent, observation):
-        return self.module.change_observation_fn(observation)
+        return self.change_observation_fn(observation)
 
     def _update_step(self, agent, observation, action):
         pass
 
-class BasicObservationWrapper(lambda_wrapper):
+class BasicObservationWrapper(BaseWrapper):
     '''
     For internal use only
     '''
     def __init__(self,env,module,param):
-        def change_obs_fn(obs):
-            return module.change_observation(obs,self.param)
-        def check_obs_fn(obs_space):
-            return module.check_param(obs_space,self.param)
-        super().__init__(env, change_obs_fn, check_obs_fn)
         self.module = module
         self.param = param
+        super().__init__(env)
 
     def _check_wrapper_params(self):
         assert all([isinstance(obs_space, Box) for obs_space in self.observation_spaces.values()]), \
             "All agents' observation spaces are not Box: {}, and as such the observation spaces are not modified.".format(self.observation_spaces)
-        super()._check_wrapper_params()
+        for obs_space in self.env.observation_spaces.values():
+            self.module.check_param(obs_space,self.param)
+
+    def _modify_spaces(self):
+        new_spaces = {}
+        for agent,space in self.observation_spaces.items():
+            new_low = self.module.change_observation(space.low, self.param)
+            new_high = self.module.change_observation(space.high, self.param)
+            new_spaces[agent] = Box(low=new_low, high=new_high, dtype=new_low.dtype)
+        return new_spaces
+
+    def _modify_action(self, agent, action):
+        return action
+
+    def _modify_observation(self, agent, observation):
+        return self.module.change_observation(observation, self.param)
+
+    def _update_step(self, agent, observation, action):
+        pass
 
 class color_reduction(BasicObservationWrapper):
     def __init__(self,env,mode='full'):
-        super().__init__(env,color_reduction,mode)
+        super().__init__(env,basic_transforms.color_reduction,mode)
 
 class down_scale(BasicObservationWrapper):
     def __init__(self,env,scale_tuple):
-        super().__init__(env,down_scale,scale_tuple)
+        super().__init__(env,basic_transforms.down_scale,scale_tuple)
 
 class dtype(BasicObservationWrapper):
     def __init__(self,env,dtype):
-        super().__init__(dtype,new_dtype)
+        super().__init__(env,basic_transforms.dtype,new_dtype)
 
 class flatten(BasicObservationWrapper):
     def __init__(self,env):
-        super().__init__(flatten,True)
+        super().__init__(env,basic_transforms.flatten,True)
 
 class reshape(BasicObservationWrapper):
     def __init__(self,env,shape):
-        super().__init__(reshape,shape)
+        super().__init__(env,basic_transforms.reshape,shape)
 
 class frame_stack(BaseWrapper):
     def __init__(self,env,stack_size):
