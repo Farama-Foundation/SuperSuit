@@ -49,6 +49,9 @@ class BaseWrapper(AECEnv):
     def _modify_observation(self, agent, observation):
         raise NotImplementedError()
 
+    def _update_step(self, agent, observation, action):
+        raise NotImplementedError()
+
     def close(self):
         self.env.close()
 
@@ -73,12 +76,14 @@ class BaseWrapper(AECEnv):
         agent = self.env.agent_selection
         action = self._modify_action(agent, action)
         if observe:
-            next_obs = self.env.step(action, observe=True)
+            next_obs = self.env.step(action, observe=observe)
 
             observation = self._modify_observation(agent, next_obs)
         else:
             self.env.step(action, observe=False)
             observation = None
+
+        self._update_step(agent,observation,action)
 
         self.agent_selection = self.env.agent_selection
         self.rewards = self.env.rewards

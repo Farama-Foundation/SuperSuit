@@ -32,6 +32,10 @@ You can install it via `pip install supersuit`
 
 `reshape(env, shape)` reshapes observations into given shape. *Ben I slightly changed what this function should be.*
 
+`homogenize_observations(env)` observations will be of same shape and will belong to the same observation_space
+
+`homogenize_actions(env)` actions will be of same shape and will belong to the same action_space
+
 
 Future wrapper work:
 "action_cropping and obs_padding implement the techniques described in *Parameter Sharing is Surprisingly Useful for Deep Reinforcement Learning* to standardized heterogeneous action spaces."

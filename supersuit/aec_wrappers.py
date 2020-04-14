@@ -38,17 +38,19 @@ class lambda_wrapper(BaseWrapper):
     def _modify_observation(self, agent, observation):
         return= self.module.change_observation_fn(observation)
 
+    def _update_step(self, agent, observation, action):
+        pass
 
 class BasicObservationWrapper(lambda_wrapper):
     '''
     For internal use only
     '''
     def __init__(self,env,module,param):
-        super().__init__(env)
         def change_obs_fn(obs):
-            return module.change_observation(obs,param)
+            return module.change_observation(obs,self.param)
         def check_obs_fn(obs_space):
-            return module.check_param(obs_space,param)
+            return module.check_param(obs_space,self.param)
+        super().__init__(env, change_obs_fn, check_obs_fn)
         self.module = module
         self.param = param
 
@@ -76,3 +78,28 @@ class flatten(BasicObservationWrapper):
 class reshape(BasicObservationWrapper):
     def __init__(self,env,shape):
         super().__init__(reshape,shape)
+
+class frame_stack(BasicObservationWrapper):
+    def __init__(self,env,stack_size):
+        super().__init__(env,shape)
+        self.stack_size = stack_size
+
+    def _check_wrapper_params(self):
+        if self.check_observation_fn is not None:
+            for space in self.env.observation_spaces.values():
+                self.check_observation_fn(space)
+
+    def _modify_spaces(self):
+        new_spaces = {}
+        for agent,space in self.observation_spaces.items():
+            new_spaces[agent] = stack_obs_space(space,self.stack_size)
+        return new_spaces
+
+    def _modify_action(self, agent, action):
+        return action
+
+    def _modify_observation(self, agent, observation):
+        return self.module.change_observation_fn(observation)
+
+    def _update_step(self, agent, observation, action):
+        pass
