@@ -1,7 +1,7 @@
 from gym.spaces import Box, Discrete
 from .dummy_aec_env import DummyEnv
 import numpy as np
-from supersuit.aec_wrappers import frame_stack,reshape,observation_lambda_wrapper,action_lambda_wrapper
+from supersuit.aec_wrappers import frame_stack,reshape,observation_lambda_wrapper,action_lambda_wrapper,homogenize_actions
 from supersuit import aec_wrappers
 
 base_obs = {"a{}".format(idx): np.zeros([8,8,3]) + np.arange(3) + idx for idx in range(2)}
@@ -68,4 +68,13 @@ def test_action_lambda():
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
     env = action_lambda_wrapper(base_env, inc1, change_space_fn, check_space)
     env.reset()
+    env.step(5)
+
+def test_dehomogenize():
+    base_act_spaces = {"a{}".format(idx): Discrete(5+idx) for idx in range(2)}
+
+    base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
+    env = homogenize_actions(base_env)
+    env.reset()
+    assert all([s.n == 6 for s in env.action_spaces.values()])
     env.step(5)

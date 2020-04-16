@@ -2,6 +2,7 @@ from .base_aec_wrapper import BaseWrapper
 from gym.spaces import Box
 from . import basic_transforms
 from .frame_stack import stack_obs_space,stack_init,stack_obs
+from .action_transforms.dehomogenize_ops import check_dehomogenize_actions,homogenize_action_spaces,dehomogenize_actions
 
 class observation_lambda_wrapper(BaseWrapper):
     def __init__(self, env, change_observation_fn, check_space_fn=None):
@@ -23,7 +24,7 @@ class observation_lambda_wrapper(BaseWrapper):
             new_low = self.change_observation_fn(space.low)
             new_high = self.change_observation_fn(space.high)
             new_spaces[agent] = Box(low=new_low, high=new_high, dtype=new_low.dtype)
-        return new_spaces
+        self.observation_spaces = new_spaces
 
     def _modify_action(self, agent, action):
         return action
@@ -54,7 +55,8 @@ class BasicObservationWrapper(BaseWrapper):
         new_spaces = {}
         for agent,space in self.observation_spaces.items():
             new_spaces[agent] = self.module.change_obs_space(space, self.param)
-        return new_spaces
+        self.observation_spaces = new_spaces
+
 
     def _modify_action(self, agent, action):
         return action
@@ -123,8 +125,17 @@ class frame_stack(BaseWrapper):
     def _update_step(self, agent, observation, action):
         pass
 
+class ActionWrapper(BaseWrapper):
+    def __init__(self, env):
+        super().__init__(env)
 
-class action_lambda_wrapper(BaseWrapper):
+    def _modify_observation(self, agent, observation):
+        return observation
+
+    def _update_step(self, agent, observation, action):
+        pass
+
+class action_lambda_wrapper(ActionWrapper):
     def __init__(self, env, change_action_fn, change_space_fn, check_space_fn=None):
         assert callable(change_action_fn), "change_action_fn needs to be a function. It is {}".format(change_action_fn)
         assert callable(change_space_fn), "change_space_fn needs to be a function. It is {}".format(change_space_fn)
@@ -144,13 +155,20 @@ class action_lambda_wrapper(BaseWrapper):
         new_spaces = {}
         for agent,space in self.action_spaces.items():
             new_spaces[agent] = self.change_space_fn(space)
-        return new_spaces
+        self.action_spaces = new_spaces
 
     def _modify_action(self, agent, action):
         return self.change_action_fn(action, self.action_spaces[agent])
 
-    def _modify_observation(self, agent, observation):
-        return observation
+class homogenize_actions(ActionWrapper):
+    def _check_wrapper_params(self):
+        check_dehomogenize_actions(list(self.env.action_spaces.values()))
 
-    def _update_step(self, agent, observation, action):
-        pass
+    def _modify_spaces(self):
+        space = homogenize_action_spaces(list(self.env.action_spaces.values()))
+
+        self.action_spaces = {agent:space for agent in self.action_spaces}
+
+    def _modify_action(self, agent, action):
+        new_action = dehomogenize_actions(self.env.action_spaces[agent], action)
+        return new_action
