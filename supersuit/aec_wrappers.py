@@ -3,15 +3,7 @@ from gym.spaces import Box
 from . import basic_transforms
 from .frame_stack import stack_obs_space,stack_init,stack_obs
 
-class lambda_wrapper(BaseWrapper):
-    '''
-    Parameters
-    ----------
-    env : AECEnv
-        PettingZoo compatable environment.
-    change_observation_fn : callable
-        callable function which takes in an observation, outputs a
-    '''
+class observation_lambda_wrapper(BaseWrapper):
     def __init__(self, env, change_observation_fn, check_space_fn=None):
         assert callable(change_observation_fn), "change_observation_fn needs to be a function. It is {}".format(change_observation_fn)
         assert check_space_fn is None or callable(check_space_fn), "change_observation_fn needs to be a function. It is {}".format(check_space_fn)
@@ -41,6 +33,7 @@ class lambda_wrapper(BaseWrapper):
 
     def _update_step(self, agent, observation, action):
         pass
+
 
 class BasicObservationWrapper(BaseWrapper):
     '''
@@ -126,6 +119,38 @@ class frame_stack(BaseWrapper):
     def _modify_observation(self, agent, observation):
         stack_obs(self.stacks[agent], observation, self.stack_size)
         return self.stacks[agent]
+
+    def _update_step(self, agent, observation, action):
+        pass
+
+
+class action_lambda_wrapper(BaseWrapper):
+    def __init__(self, env, change_action_fn, change_space_fn, check_space_fn=None):
+        assert callable(change_action_fn), "change_action_fn needs to be a function. It is {}".format(change_action_fn)
+        assert callable(change_space_fn), "change_space_fn needs to be a function. It is {}".format(change_space_fn)
+        assert check_space_fn is None or callable(check_space_fn), "change_observation_fn needs to be a function. It is {}".format(check_space_fn)
+        self.change_action_fn = change_action_fn
+        self.change_space_fn = change_space_fn
+        self.check_space_fn = check_space_fn
+
+        super().__init__(env)
+
+    def _check_wrapper_params(self):
+        if self.check_space_fn is not None:
+            for space in self.env.action_spaces.values():
+                self.check_space_fn(space)
+
+    def _modify_spaces(self):
+        new_spaces = {}
+        for agent,space in self.action_spaces.items():
+            new_spaces[agent] = self.change_space_fn(space)
+        return new_spaces
+
+    def _modify_action(self, agent, action):
+        return self.change_action_fn(action, self.action_spaces[agent])
+
+    def _modify_observation(self, agent, observation):
+        return observation
 
     def _update_step(self, agent, observation, action):
         pass
