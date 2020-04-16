@@ -15,6 +15,6 @@ def test_param_check():
     check_param(test_obs_space,"G")
 
 def test_change_observation():
-    new_obs = change_observation(test_obs,"B")
+    new_obs = change_observation(test_obs,test_obs_space,"B")
     print(new_obs)
     assert np.all(np.equal(new_obs,2*np.ones([4,4])))

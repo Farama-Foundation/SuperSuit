@@ -2,6 +2,7 @@ from gym.spaces import Box, Discrete
 from .dummy_aec_env import DummyEnv
 import numpy as np
 from supersuit.aec_wrappers import frame_stack,reshape,lambda_wrapper
+from supersuit import aec_wrappers
 
 base_obs = {"a{}".format(idx): np.zeros([8,8,3]) + np.arange(3) + idx for idx in range(2)}
 base_obs_space = {"a{}".format(idx): Box(low=np.float32(0.),high=np.float32(10.),shape=[8,8,3]) for idx in range(2)}
@@ -25,6 +26,24 @@ def test_reshape():
     first_obs = env.observe("a1")
     assert np.all(np.equal(first_obs,base_obs["a1"].reshape([64,3])))
 
+def new_dummy():
+    return  DummyEnv(base_obs, base_obs_space, base_act_spaces)
+
+def test_basic_wrappers():
+    wrappers = [
+        aec_wrappers.color_reduction(new_dummy(),"R"),
+        aec_wrappers.down_scale(new_dummy(),x_scale=5,y_scale=10),
+        aec_wrappers.dtype(new_dummy(),np.int32),
+        aec_wrappers.flatten(new_dummy()),
+        aec_wrappers.reshape(new_dummy(),(64,3)),
+        aec_wrappers.normalize_obs(new_dummy(),env_min=-1,env_max=5.),
+        aec_wrappers.frame_stack(new_dummy(),8),
+    ]
+    for env in wrappers:
+        obs = env.reset()
+        first_obs = env.observe("a1")
+
+
 def test_lambda():
     def add1(obs):
         return obs+1
@@ -32,4 +51,3 @@ def test_lambda():
     env = lambda_wrapper(base_env, add1)
     obs0 = env.reset()
     assert int(obs0[0][0][0]) == 1
-    

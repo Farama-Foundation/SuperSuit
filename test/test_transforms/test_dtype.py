@@ -14,5 +14,5 @@ def test_param_check():
         check_param(test_obs_space, 6)
 
 def test_change_observation():
-    new_obs = change_observation(test_obs,np.float32)
+    new_obs = change_observation(test_obs,test_obs_space,np.float32)
     assert new_obs.dtype == np.float32

@@ -60,16 +60,15 @@ class BasicObservationWrapper(BaseWrapper):
     def _modify_spaces(self):
         new_spaces = {}
         for agent,space in self.observation_spaces.items():
-            new_low = self.module.change_observation(space.low, self.param)
-            new_high = self.module.change_observation(space.high, self.param)
-            new_spaces[agent] = Box(low=new_low, high=new_high, dtype=new_low.dtype)
+            new_spaces[agent] = self.module.change_obs_space(space, self.param)
         return new_spaces
 
     def _modify_action(self, agent, action):
         return action
 
     def _modify_observation(self, agent, observation):
-        return self.module.change_observation(observation, self.param)
+        obs_space = self.observation_spaces[agent]
+        return self.module.change_observation(observation, obs_space, self.param)
 
     def _update_step(self, agent, observation, action):
         pass
@@ -79,12 +78,17 @@ class color_reduction(BasicObservationWrapper):
         super().__init__(env,basic_transforms.color_reduction,mode)
 
 class down_scale(BasicObservationWrapper):
-    def __init__(self,env,scale_tuple):
+    def __init__(self,env,x_scale=1,y_scale=1):
+        old_obs_shape = list(env.observation_spaces.values())[0].shape
+        scale_list = [1]*len(old_obs_shape)
+        scale_list[0] = y_scale
+        scale_list[0] = x_scale
+        scale_tuple = tuple(scale_list)
         super().__init__(env,basic_transforms.down_scale,scale_tuple)
 
 class dtype(BasicObservationWrapper):
     def __init__(self,env,dtype):
-        super().__init__(env,basic_transforms.dtype,new_dtype)
+        super().__init__(env,basic_transforms.dtype,dtype)
 
 class flatten(BasicObservationWrapper):
     def __init__(self,env):
@@ -94,9 +98,14 @@ class reshape(BasicObservationWrapper):
     def __init__(self,env,shape):
         super().__init__(env,basic_transforms.reshape,shape)
 
+class normalize_obs(BasicObservationWrapper):
+    def __init__(self,env,env_min=0.,env_max=1.):
+        shape = (env_min, env_max)
+        super().__init__(env,basic_transforms.normalize_obs,shape)
+
 class frame_stack(BaseWrapper):
-    def __init__(self,env,stack_size):
-        self.stack_size = stack_size
+    def __init__(self,env,num_frames=4):
+        self.stack_size = num_frames
         super().__init__(env)
 
     def _check_wrapper_params(self):

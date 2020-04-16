@@ -2,6 +2,7 @@ import warnings
 import numpy as np
 from gym.spaces import Box
 from gym import spaces
+from . import convert_box
 
 COLOR_RED_LIST = ["full", 'R', 'G', 'B']
 GRAYSCALE_WEIGHTS = [0.299, 0.587, 0.114]
@@ -13,7 +14,10 @@ def check_param(space,color_reduction):
     if color_reduction == "full":
         warnings.warn("You have chosen true grayscaling. It might be too slow. Choose a specific channel for better performance")
 
-def change_observation(obs, color_reduction):
+def change_obs_space(obs_space, param):
+    return convert_box(lambda obs:change_observation(obs, obs_space, param), obs_space)
+
+def change_observation(obs,  obs_space,color_reduction):
     if color_reduction == 'R':
         obs = obs[:, :, 0]
     if color_reduction == 'G':
