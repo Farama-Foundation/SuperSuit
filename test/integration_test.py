@@ -1,7 +1,7 @@
 from gym.spaces import Box, Discrete
 from .dummy_aec_env import DummyEnv
 import numpy as np
-from supersuit.aec_wrappers import frame_stack,reshape,observation_lambda_wrapper,action_lambda_wrapper,homogenize_actions,continuous_actions
+from supersuit.aec_wrappers import frame_stack,reshape,observation_lambda_wrapper,action_lambda_wrapper,homogenize_actions,continuous_actions,homogenize_obs
 from supersuit import aec_wrappers
 
 base_obs = {"a{}".format(idx): np.zeros([8,8,3]) + np.arange(3) + idx for idx in range(2)}
@@ -41,6 +41,7 @@ def test_basic_wrappers():
         aec_wrappers.reshape(new_dummy(),(64,3)),
         aec_wrappers.normalize_obs(new_dummy(),env_min=-1,env_max=5.),
         aec_wrappers.frame_stack(new_dummy(),8),
+        aec_wrappers.homogenize_obs(new_dummy()),
     ]
     for env in wrappers:
         obs = env.reset()

@@ -2,10 +2,17 @@ from .base_aec_wrapper import BaseWrapper
 from gym.spaces import Box
 from . import basic_transforms
 from .frame_stack import stack_obs_space,stack_init,stack_obs
-from .action_transforms import dehomogenize_ops
+from .action_transforms import homogenize_ops
 from .action_transforms import continuous_action_ops
 
-class observation_lambda_wrapper(BaseWrapper):
+class ObservationWrapper(BaseWrapper):
+    def _modify_action(self, agent, action):
+        return action
+
+    def _update_step(self, agent, observation):
+        pass
+
+class observation_lambda_wrapper(ObservationWrapper):
     def __init__(self, env, change_observation_fn, check_space_fn=None):
         assert callable(change_observation_fn), "change_observation_fn needs to be a function. It is {}".format(change_observation_fn)
         assert check_space_fn is None or callable(check_space_fn), "change_observation_fn needs to be a function. It is {}".format(check_space_fn)
@@ -27,17 +34,11 @@ class observation_lambda_wrapper(BaseWrapper):
             new_spaces[agent] = Box(low=new_low, high=new_high, dtype=new_low.dtype)
         self.observation_spaces = new_spaces
 
-    def _modify_action(self, agent, action):
-        return action
-
     def _modify_observation(self, agent, observation):
         return self.change_observation_fn(observation)
 
-    def _update_step(self, agent, observation):
-        pass
 
-
-class BasicObservationWrapper(BaseWrapper):
+class BasicObservationWrapper(ObservationWrapper):
     '''
     For internal use only
     '''
@@ -58,16 +59,10 @@ class BasicObservationWrapper(BaseWrapper):
             new_spaces[agent] = self.module.change_obs_space(space, self.param)
         self.observation_spaces = new_spaces
 
-
-    def _modify_action(self, agent, action):
-        return action
-
     def _modify_observation(self, agent, observation):
         obs_space = self.observation_spaces[agent]
         return self.module.change_observation(observation, obs_space, self.param)
 
-    def _update_step(self, agent, observation):
-        pass
 
 class color_reduction(BasicObservationWrapper):
     def __init__(self,env,mode='full'):
@@ -98,6 +93,21 @@ class normalize_obs(BasicObservationWrapper):
     def __init__(self,env,env_min=0.,env_max=1.):
         shape = (env_min, env_max)
         super().__init__(env,basic_transforms.normalize_obs,shape)
+
+class homogenize_obs(ObservationWrapper):
+    def _check_wrapper_params(self):
+        spaces = list(self.observation_spaces.values())
+        homogenize_ops.check_homogenize_spaces(spaces)
+
+    def _modify_spaces(self):
+        spaces = list(self.observation_spaces.values())
+
+        self._obs_space = homogenize_ops.homogenize_spaces(spaces)
+        self.observation_spaces = {agent:self._obs_space for agent in self.observation_spaces}
+
+    def _modify_observation(self, agent, observation):
+        new_obs = homogenize_ops.homogenize_observations(self._obs_space,observation)
+        return new_obs
 
 class frame_stack(BaseWrapper):
     def __init__(self,env,num_frames=4):
@@ -164,15 +174,15 @@ class action_lambda_wrapper(ActionWrapper):
 
 class homogenize_actions(ActionWrapper):
     def _check_wrapper_params(self):
-        dehomogenize_ops.check_dehomogenize_actions(list(self.env.action_spaces.values()))
+        homogenize_ops.check_homogenize_spaces(list(self.env.action_spaces.values()))
 
     def _modify_spaces(self):
-        space = dehomogenize_ops.homogenize_action_spaces(list(self.env.action_spaces.values()))
+        space = homogenize_ops.homogenize_spaces(list(self.env.action_spaces.values()))
 
         self.action_spaces = {agent:space for agent in self.action_spaces}
 
     def _modify_action(self, agent, action):
-        new_action = dehomogenize_ops.dehomogenize_actions(self.env.action_spaces[agent], action)
+        new_action = homogenize_ops.dehomogenize_actions(self.env.action_spaces[agent], action)
         return new_action
 
 class continuous_actions(ActionWrapper):
