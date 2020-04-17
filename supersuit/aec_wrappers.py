@@ -2,7 +2,8 @@ from .base_aec_wrapper import BaseWrapper
 from gym.spaces import Box
 from . import basic_transforms
 from .frame_stack import stack_obs_space,stack_init,stack_obs
-from .action_transforms.dehomogenize_ops import check_dehomogenize_actions,homogenize_action_spaces,dehomogenize_actions
+from .action_transforms import dehomogenize_ops
+from .action_transforms import continuous_action_ops
 
 class observation_lambda_wrapper(BaseWrapper):
     def __init__(self, env, change_observation_fn, check_space_fn=None):
@@ -162,13 +163,28 @@ class action_lambda_wrapper(ActionWrapper):
 
 class homogenize_actions(ActionWrapper):
     def _check_wrapper_params(self):
-        check_dehomogenize_actions(list(self.env.action_spaces.values()))
+        dehomogenize_ops.check_dehomogenize_actions(list(self.env.action_spaces.values()))
 
     def _modify_spaces(self):
-        space = homogenize_action_spaces(list(self.env.action_spaces.values()))
+        space = dehomogenize_ops.homogenize_action_spaces(list(self.env.action_spaces.values()))
 
         self.action_spaces = {agent:space for agent in self.action_spaces}
 
     def _modify_action(self, agent, action):
-        new_action = dehomogenize_actions(self.env.action_spaces[agent], action)
+        new_action = dehomogenize_ops.dehomogenize_actions(self.env.action_spaces[agent], action)
+        return new_action
+
+class continuous_actions(ActionWrapper):
+    def _check_wrapper_params(self):
+        for space in self.action_spaces.values():
+            continuous_action_ops.check_action_space(space)
+
+    def _modify_spaces(self):
+        spaces = {agent: continuous_action_ops.change_action_space(act_space) for agent,act_space in self.env.action_spaces.items()}
+
+        self.action_spaces = spaces
+
+    def _modify_action(self, agent, action):
+        act_space = self.env.action_spaces[agent]
+        new_action = continuous_action_ops.modify_action(act_space, action)
         return new_action

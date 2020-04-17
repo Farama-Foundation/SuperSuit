@@ -1,7 +1,7 @@
 from gym.spaces import Box,Discrete
 import numpy as np
 import pytest
-from supersuit.action_transforms.continuous_actions import check_action_space,change_action_space,modify_action
+from supersuit.action_transforms.continuous_action_ops import check_action_space,change_action_space,modify_action
 from collections import Counter
 
 box_spaces = Box(low=np.float32(0),high=np.float32(1),shape=(5,4))

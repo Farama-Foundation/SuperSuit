@@ -8,13 +8,13 @@ def check_action_space(act_space):
 
 def change_action_space(act_space):
     if isinstance(act_space, spaces.Discrete):
-        new_act_space = spaces.Box(low=-np.inf, high=np.inf, shape=(act_space.n,))
+        new_act_space = spaces.Box(low=-np.float32(np.inf), high=np.float32(np.inf), shape=(act_space.n,))
     elif isinstance(act_space, spaces.Box):
         new_act_space = act_space
 
     return new_act_space
 
-def modify_action(act_space, action, temperature):
+def modify_action(act_space, action):
     new_action = action
 
     def softmax(x):
