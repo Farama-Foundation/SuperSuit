@@ -4,6 +4,8 @@ from . import basic_transforms
 from .frame_stack import stack_obs_space,stack_init,stack_obs
 from .action_transforms import homogenize_ops
 from .action_transforms import continuous_action_ops
+from gym.utils import seeding
+
 
 class ObservationWrapper(BaseWrapper):
     def _modify_action(self, agent, action):
@@ -186,7 +188,13 @@ class homogenize_actions(ActionWrapper):
         return new_action
 
 class continuous_actions(ActionWrapper):
+    def __init__(self, env, seed=None):
+        self.np_random,_ = seeding.np_random(seed)
+        super().__init__(env)
+
     def _check_wrapper_params(self):
+        if 'legal_moves' in self.infos:
+            warnings.warn("Using the continuous_actions wrapper on an environment with a legal moves list. This list will be removed from the environment.")
         for space in self.action_spaces.values():
             continuous_action_ops.check_action_space(space)
 
@@ -197,5 +205,19 @@ class continuous_actions(ActionWrapper):
 
     def _modify_action(self, agent, action):
         act_space = self.env.action_spaces[agent]
-        new_action = continuous_action_ops.modify_action(act_space, action)
+        new_action = continuous_action_ops.modify_action(act_space, action, self.np_random)
         return new_action
+
+    def _remove_infos(self):
+        self.infos = {agent: {key:value for key,value in info_dict.items() if key != "legal_moves"}
+            for agent,info_dict in self.infos.items()}
+
+    def reset(self, observe=True):
+        res = super().reset(observe)
+        self._remove_infos()
+        return res
+
+    def step(self, action, observe=True):
+        res = super().step(action, observe)
+        self._remove_infos()
+        return res

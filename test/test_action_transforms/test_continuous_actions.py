@@ -22,9 +22,11 @@ def one_hot(size):
     x[1] = 10.
     return x
 
-def test_dehomogenize_actions():
+def test_discritize_actions():
     action = np.ones([5,4])
-    assert modify_action(box_spaces,action).shape == (5,4)
-    acts = [modify_action(discrete_spaces,one_hot(5)) for _ in range(10)]
+    assert modify_action(box_spaces,action,np.random.RandomState()).shape == (5,4)
+    acts = [modify_action(discrete_spaces,one_hot(5),np.random.RandomState()) for _ in range(10)]
     res = sorted(list(Counter(acts).items()),key=lambda x:x[1])
     assert res[0][0] == 1
+
+    assert np.isnan(modify_action(discrete_spaces,np.ones(5)*np.nan,np.random.RandomState()))

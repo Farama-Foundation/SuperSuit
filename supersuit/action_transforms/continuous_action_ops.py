@@ -14,7 +14,7 @@ def change_action_space(act_space):
 
     return new_act_space
 
-def modify_action(act_space, action):
+def modify_action(act_space, action, np_random):
     new_action = action
 
     def softmax(x):
@@ -23,10 +23,13 @@ def modify_action(act_space, action):
 
     def sample_softmax(vec):
         vec = vec.astype(np.float64)
-        return np.argmax(np.random.multinomial(1, softmax(vec)))
+        return np.argmax(np_random.multinomial(1, softmax(vec)))
 
     if isinstance(act_space, spaces.Discrete):
-        new_action = sample_softmax(action)
+        if np.any(np.isnan(action)):
+            new_action = np.nan
+        else:
+            new_action = sample_softmax(action)
     elif isinstance(act_space, spaces.Box):
         new_action = action
 

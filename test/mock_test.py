@@ -84,10 +84,11 @@ def test_dehomogenize():
     env.step(5)
 
 def test_continuous_actions():
-    base_act_spaces = {"a{}".format(idx): Discrete(5) for idx in range(1)}
+    base_act_spaces = {"a{}".format(idx): Discrete(5) for idx in range(2)}
 
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
     env = continuous_actions(base_env)
     env.reset()
     assert all([s.shape == (5,) for s in env.action_spaces.values()])
     env.step(np.ones(5))
+    res = env.step(np.nan*np.ones(5))
