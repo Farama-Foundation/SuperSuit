@@ -11,6 +11,7 @@ def check_param(obs_space, min_max_pair):
     except ValueError:
         assert False, "normalize_obs inputs must be numbers. They are {}".format(min_max_pair)
     assert max_res > min_res, "maximum must be greater than minimum value in normalize_obs"
+    assert np.all(np.isfinite(obs_space.low)) and np.all(np.isfinite(obs_space.high))
 
 def change_obs_space(obs_space, min_max_pair):
     min = np.float64(min_max_pair[0]).astype(obs_space.dtype)
