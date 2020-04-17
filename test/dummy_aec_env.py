@@ -8,6 +8,7 @@ class DummyEnv(AECEnv):
         self.observation_spaces = observation_spaces
 
         self.agents = [x for x in observation_spaces.keys()]
+        self.num_agents = len(self.agents)
         self.agent_order = list(self.agents)
         self.agent_selection = self.agents[0]
         self.action_spaces = action_spaces

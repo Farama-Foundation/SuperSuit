@@ -13,6 +13,9 @@ OBS_RESHAPE_LIST = ["expand", "flatten"]
 
 
 class BaseWrapper(AECEnv):
+
+    metadata = {'render.modes': ['human']}
+
     def __init__(self, env):
         '''
         Creates a wrapper around `env`. Extend this class to create changes to the space.
@@ -20,6 +23,7 @@ class BaseWrapper(AECEnv):
         super().__init__()
         self.env = env
 
+        self.num_agents = self.env.num_agents
         self.agents = self.env.agents
         self.agent_selection = self.env.agent_selection
         self.observation_spaces = self.env.observation_spaces
