@@ -1,0 +1,30 @@
+from gym.spaces import Box,Discrete
+import numpy as np
+import pytest
+from supersuit.action_transforms.continuous_actions import check_action_space,change_action_space,modify_action
+from collections import Counter
+
+box_spaces = Box(low=np.float32(0),high=np.float32(1),shape=(5,4))
+discrete_spaces = Discrete(5)
+
+def test_param_check():
+    check_action_space(box_spaces)
+    check_action_space(discrete_spaces)
+
+def test_continuous_space_transform():
+    old_box = change_action_space(box_spaces)
+    new_box = change_action_space(discrete_spaces)
+    assert old_box.shape == (5,4)
+    assert new_box.shape == (5,)
+
+def one_hot(size):
+    x = np.zeros(size)
+    x[1] = 10.
+    return x
+
+def test_dehomogenize_actions():
+    action = np.ones([5,4])
+    assert modify_action(box_spaces,action).shape == (5,4)
+    acts = [modify_action(discrete_spaces,one_hot(5)) for _ in range(10)]
+    res = sorted(list(Counter(acts).items()),key=lambda x:x[1])
+    assert res[0][0] == 1

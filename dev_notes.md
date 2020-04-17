@@ -1,2 +1,1 @@
-1. when should frame_stack append to the stack? When observe() is called (current implementation)? When the environment steps? When the agents step?
-2. I don't see any use for continuous_actions, it just seems bad to me
+1. when should the frame_stack wrapper append the observation to the stack? When observe() is called (current implementation)? When the environment steps? When the agents step? Not really sure what the right thing is here.
