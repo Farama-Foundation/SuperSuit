@@ -25,13 +25,13 @@ class DummyEnv(AECEnv):
         old_sel = self.agent_selection
         self.agent_selection = self.agents[(self.agents.index(old_sel)+1)%len(self.agents)]
         if observe:
-            return self._observations[old_sel]
+            return self._observations[self.agent_selection]
         else:
             return None
 
     def reset(self, observe=True):
         self.agent_selection = self.agents[0]
-        return self._observations
+        return self._observations[self.agent_selection]
 
     def close(self):
         pass

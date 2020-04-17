@@ -33,7 +33,7 @@ class observation_lambda_wrapper(BaseWrapper):
     def _modify_observation(self, agent, observation):
         return self.change_observation_fn(observation)
 
-    def _update_step(self, agent, observation, action):
+    def _update_step(self, agent, observation):
         pass
 
 
@@ -66,7 +66,7 @@ class BasicObservationWrapper(BaseWrapper):
         obs_space = self.observation_spaces[agent]
         return self.module.change_observation(observation, obs_space, self.param)
 
-    def _update_step(self, agent, observation, action):
+    def _update_step(self, agent, observation):
         pass
 
 class color_reduction(BasicObservationWrapper):
@@ -120,11 +120,12 @@ class frame_stack(BaseWrapper):
         return action
 
     def _modify_observation(self, agent, observation):
-        stack_obs(self.stacks[agent], observation, self.stack_size)
         return self.stacks[agent]
 
-    def _update_step(self, agent, observation, action):
-        pass
+    def _update_step(self, agent, observation):
+        if observation is None:
+            observation = self.observe(agent)
+        stack_obs(self.stacks[agent], observation, self.stack_size)
 
 class ActionWrapper(BaseWrapper):
     def __init__(self, env):
@@ -133,7 +134,7 @@ class ActionWrapper(BaseWrapper):
     def _modify_observation(self, agent, observation):
         return observation
 
-    def _update_step(self, agent, observation, action):
+    def _update_step(self, agent, observation):
         pass
 
 class action_lambda_wrapper(ActionWrapper):

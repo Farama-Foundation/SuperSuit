@@ -9,13 +9,16 @@ base_obs_space = {"a{}".format(idx): Box(low=np.float32(0.),high=np.float32(10.)
 base_act_spaces = {"a{}".format(idx): Discrete(5) for idx in range(2)}
 
 def test_frame_stack():
+    base_obs_space = {"a{}".format(idx): Box(low=np.float32(0.),high=np.float32(10.),shape=[2,3]) for idx in range(2)}
+    base_obs = {"a{}".format(idx): np.zeros([2,3]) + np.arange(3) + idx for idx in range(2)}
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
-    env = frame_stack(base_env, 10)
+    env = frame_stack(base_env, 4)
     obs = env.reset()
-    assert obs.shape == (8,8,30)
-    first_obs = env.observe("a1")
-    assert np.all(np.equal(first_obs[:,:,-3:],base_obs["a1"]))
-    assert np.all(np.equal(first_obs[:,:,:-3],0))
+    assert obs.shape == (2,3,4)
+    first_obs = env.step(2)
+    print(first_obs)
+    assert np.all(np.equal(first_obs[:,:,-1],base_obs["a1"]))
+    assert np.all(np.equal(first_obs[:,:,:-1],0))
 
 
 def test_reshape():
@@ -23,7 +26,7 @@ def test_reshape():
     env = reshape(base_env, (64, 3))
     obs = env.reset()
     assert obs.shape == (64,3)
-    first_obs = env.observe("a1")
+    first_obs = env.step(5)
     assert np.all(np.equal(first_obs,base_obs["a1"].reshape([64,3])))
 
 def new_dummy():
