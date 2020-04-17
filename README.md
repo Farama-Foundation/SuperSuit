@@ -39,4 +39,18 @@ You can install it via `pip install supersuit`
 Future wrapper work:
 "action_cropping and obs_padding implement the techniques described in *Parameter Sharing is Surprisingly Useful for Deep Reinforcement Learning* to standardized heterogeneous action spaces."
 
-We hope to support Gym in all wrappers that are not explicitly multiplayer. 
+We hope to support Gym in all wrappers that are not explicitly multiplayer.
+
+### Testing
+
+You can run all unit tests with:
+
+```
+pytest test
+```
+
+And assuming pettingzoo is installed, you can run pettingzoo integration tests with:
+
+```
+python pettingzoo_api_test.py
+```
