@@ -71,9 +71,12 @@ class BaseWrapper(AECEnv):
         self.dones = self.env.dones
         self.infos = self.env.infos
 
-        observation = self._modify_observation(agent,observation)
         self._update_step(agent,observation)
-        return observation
+        if observe:
+            observation = self._modify_observation(agent,observation)
+            return observation
+        else:
+            return None
 
     def observe(self, agent):
         obs = self.env.observe(agent)
@@ -85,15 +88,17 @@ class BaseWrapper(AECEnv):
         cur_act_space = self.action_spaces[agent]
         assert not isinstance(cur_act_space,Box) or cur_act_space.shape == action.shape, "the shape of the action {} is not equal to the shape of the action space {}".format(action.shape,cur_act_space.shape)
         action = self._modify_action(agent, action)
-
         next_obs = self.env.step(action, observe=observe)
         new_agent = self.env.agent_selection
         self._update_step(new_agent,next_obs)
-        next_obs = self._modify_observation(new_agent,next_obs)
 
         self.agent_selection = self.env.agent_selection
         self.rewards = self.env.rewards
         self.dones = self.env.dones
         self.infos = self.env.infos
 
-        return next_obs
+        if observe:
+            next_obs = self._modify_observation(new_agent,next_obs)
+            return next_obs
+        else:
+            return None
