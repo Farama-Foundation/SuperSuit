@@ -55,22 +55,33 @@ def test_lambda():
     env = observation_lambda_wrapper(base_env, add1)
     obs0 = env.reset()
     assert int(obs0[0][0][0]) == 1
-    def check_fn(space):
-        assert True
-    env = observation_lambda_wrapper(env, add1, check_fn)
+    env = observation_lambda_wrapper(env, add1)
     obs0 = env.reset()
     assert int(obs0[0][0][0]) == 2
 
+    def tile_obs(obs):
+        shape_size = len(obs.shape)
+        tile_shape = [1]*shape_size
+        tile_shape[0] *= 2
+        return np.tile(obs,tile_shape)
+
+    env = observation_lambda_wrapper(env, tile_obs)
+    obs0 = env.reset()
+    assert env.observation_spaces[env.agent_selection].shape == (16,8,3)
+    def change_shape_fn(obs_space):
+        return Box(low=0,high=1,shape=(32,8,3))
+    env = observation_lambda_wrapper(env, tile_obs)
+    obs0 = env.reset()
+    assert env.observation_spaces[env.agent_selection].shape == (32,8,3)
+    assert obs0.shape == (32,8,3)
 
 def test_action_lambda():
     def inc1(x,space):
         return (x + 1)
     def change_space_fn(space):
         return Discrete(space.n+1)
-    def check_space(space):
-        return isinstance(space,Discrete)
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
-    env = action_lambda_wrapper(base_env, inc1, change_space_fn, check_space)
+    env = action_lambda_wrapper(base_env, inc1, change_space_fn)
     env.reset()
     env.step(5)
 

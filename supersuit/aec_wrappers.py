@@ -1,5 +1,5 @@
 from .base_aec_wrapper import BaseWrapper
-from gym.spaces import Box
+from gym.spaces import Box,Space
 from . import basic_transforms
 from .frame_stack import stack_obs_space,stack_init,stack_obs
 from .action_transforms import homogenize_ops
@@ -15,25 +15,31 @@ class ObservationWrapper(BaseWrapper):
         pass
 
 class observation_lambda_wrapper(ObservationWrapper):
-    def __init__(self, env, change_observation_fn, check_space_fn=None):
+    def __init__(self, env, change_observation_fn, change_obs_space_fn=None):
         assert callable(change_observation_fn), "change_observation_fn needs to be a function. It is {}".format(change_observation_fn)
-        assert check_space_fn is None or callable(check_space_fn), "change_observation_fn needs to be a function. It is {}".format(check_space_fn)
+        assert change_obs_space_fn is None or callable(change_obs_space_fn), "change_obs_space_fn needs to be a function. It is {}".format(change_obs_space_fn)
         self.change_observation_fn = change_observation_fn
-        self.check_space_fn = check_space_fn
+        self.change_obs_space_fn = change_obs_space_fn
 
         super().__init__(env)
 
     def _check_wrapper_params(self):
-        if self.check_space_fn is not None:
-            for space in self.env.observation_spaces.values():
-                self.check_space_fn(space)
+        if self.change_obs_space_fn is None:
+            spaces = self.observation_spaces.values()
+            for space in spaces:
+                assert isinstance(space, Box), "the observation_lambda_wrapper only allows the change_obs_space_fn argument to be optional for Box observation spaces"
 
     def _modify_spaces(self):
         new_spaces = {}
         for agent,space in self.observation_spaces.items():
-            new_low = self.change_observation_fn(space.low)
-            new_high = self.change_observation_fn(space.high)
-            new_spaces[agent] = Box(low=new_low, high=new_high, dtype=new_low.dtype)
+            if self.change_obs_space_fn is None:
+                new_low = self.change_observation_fn(space.low)
+                new_high = self.change_observation_fn(space.high)
+                new_spaces[agent] = Box(low=new_low, high=new_high, dtype=new_low.dtype)
+            else:
+                new_space = self.change_obs_space_fn(space)
+                assert isinstance(new_space, Space), "output of change_obs_space_fn to observation_lambda_wrapper must be a gym space"
+                new_spaces[agent] = new_space
         self.observation_spaces = new_spaces
 
     def _modify_observation(self, agent, observation):
@@ -150,25 +156,23 @@ class ActionWrapper(BaseWrapper):
         pass
 
 class action_lambda_wrapper(ActionWrapper):
-    def __init__(self, env, change_action_fn, change_space_fn, check_space_fn=None):
+    def __init__(self, env, change_action_fn, change_space_fn):
         assert callable(change_action_fn), "change_action_fn needs to be a function. It is {}".format(change_action_fn)
         assert callable(change_space_fn), "change_space_fn needs to be a function. It is {}".format(change_space_fn)
-        assert check_space_fn is None or callable(check_space_fn), "change_observation_fn needs to be a function. It is {}".format(check_space_fn)
         self.change_action_fn = change_action_fn
         self.change_space_fn = change_space_fn
-        self.check_space_fn = check_space_fn
 
         super().__init__(env)
 
     def _check_wrapper_params(self):
-        if self.check_space_fn is not None:
-            for space in self.env.action_spaces.values():
-                self.check_space_fn(space)
+        pass
 
     def _modify_spaces(self):
         new_spaces = {}
         for agent,space in self.action_spaces.items():
             new_spaces[agent] = self.change_space_fn(space)
+            assert isinstance(new_spaces[agent], Space), "output of change_space_fn argument to action_lambda_wrapper must be a gym space"
+
         self.action_spaces = new_spaces
 
     def _modify_action(self, agent, action):
