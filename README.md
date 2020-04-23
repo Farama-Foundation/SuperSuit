@@ -9,7 +9,7 @@ from supersuit import color_reduction, frame_stacking
 
 env = gym.make('SpaceInvaders-v0')
 
-env = frame_stacking(color_reduction(env, 'full'))
+env = frame_stacking(color_reduction(env, 'full'), 4)
 ```
 
 You can install it via `pip install supersuit`
@@ -32,7 +32,7 @@ You can install it via `pip install supersuit`
 
 `reshape(env, shape)` reshapes observations into given shape.
 
-`homogenize_observations(env)` Changes observations to be of same shape and belong to the same observation_space, zero padding as necessary. Works on Discrete and Box observation spaces.
+`homogenize_observations(env)` pads observations to be of the shape of the largest observaion of any agent, per the algorithm posed in *Parameter Sharing is Surprisingly Useful for Deep Reinforcement Learning*. This enables MARL methods that require the observations of all agents to work in environments with heterogenous agents. This currently supports on Discrete and Box observation spaces.
 
 `homogenize_actions(env)` actions will be of same shape and belong to the same action_space. Discrete actions will be set to zero if they overshoot their original action space, and Box action spaces will be cropped.
 
@@ -42,21 +42,4 @@ allows you to define arbitrary changes to the observations by specifying the obs
 `action_lambda_wrapper(change_action_fn, change_space_fn)` Allows you to define arbitrary changes to the actions with the function parameter `change_action_fn(action) : action` and to the action spaces with `change_space_fn(action_space) : action_space`
 
 
-Future wrapper work:
-"action_cropping and obs_padding implement the techniques described in *Parameter Sharing is Surprisingly Useful for Deep Reinforcement Learning* to standardized heterogeneous action spaces."
-
 We hope to support Gym in all wrappers that are not explicitly multiplayer.
-
-### Testing
-
-You can run all unit tests with:
-
-```
-pytest test
-```
-
-And assuming pettingzoo is installed, you can run pettingzoo integration tests with:
-
-```
-python pettingzoo_api_test.py
-```
