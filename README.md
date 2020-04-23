@@ -9,7 +9,7 @@ from supersuit import color_reduction, frame_stacking
 
 env = gym.make('SpaceInvaders-v0')
 
-env = frame_stacking(color_reduction(env, 'full'))
+env = frame_stacking(color_reduction(env, 'full'), 4)
 ```
 
 You can install it via `pip install supersuit`
