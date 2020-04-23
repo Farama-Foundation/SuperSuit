@@ -1,5 +1,5 @@
 import numpy as np
-from gym.spaces import Box
+from gym.spaces import Box, Discrete
 
 
 def get_tile_shape(shape, stack_size):
@@ -27,25 +27,29 @@ def stack_obs_space(obs_space, stack_size):
     Returns:
         New obs_space_dict
     '''
-    assert isinstance(obs_space, Box), "Stacking is currently only allowed for Box obs space. The given obs space is {}".format(obs_space)
-    dtype = obs_space.dtype
-    obs_dim = obs_space.low.ndim
-    # stack 1-D frames and 3-D frames
-    tile_shape, new_shape = get_tile_shape(obs_space.low.shape, stack_size)
+    if isinstance(obs_space, Box):
+        dtype = obs_space.dtype
+        obs_dim = obs_space.low.ndim
+        # stack 1-D frames and 3-D frames
+        tile_shape, new_shape = get_tile_shape(obs_space.low.shape, stack_size)
 
-    low = np.tile(obs_space.low.reshape(new_shape), tile_shape)
-    high = np.tile(obs_space.high.reshape(new_shape), tile_shape)
-    new_obs_space = Box(low=low, high=high, dtype=dtype)
-    return new_obs_space
-
+        low = np.tile(obs_space.low.reshape(new_shape), tile_shape)
+        high = np.tile(obs_space.high.reshape(new_shape), tile_shape)
+        new_obs_space = Box(low=low, high=high, dtype=dtype)
+        return new_obs_space
+    elif isinstance(obs_space, Discrete):
+        return Discrete(obs_space.n ** stack_size)
+    else:
+         assert False, "Stacking is currently only allowed for Box and Discrete observation spaces. The given observation space is {}".format(obs_space)
 
 def stack_init(obs_space, stack_size):
-    tile_shape, new_shape = get_tile_shape(obs_space.low.shape, stack_size)
+    if isinstance(obs_space, Box):
+        tile_shape, new_shape = get_tile_shape(obs_space.low.shape, stack_size)
+        return np.tile(np.zeros(new_shape),tile_shape)
+    else:
+        return 0
 
-    return np.tile(np.zeros(new_shape),tile_shape)
-
-
-def stack_obs(frame_stack, obs, stack_size):
+def stack_obs(frame_stack, obs, obs_space, stack_size):
     '''
     Parameters
     ----------
@@ -55,17 +59,21 @@ def stack_obs(frame_stack, obs, stack_size):
         Throws away the oldest observation.
     stack_size : needed for stacking reset observations
     '''
-    obs_shape = obs.shape
-    agent_fs = frame_stack
+    if isinstance(obs_space, Box):
+        obs_shape = obs.shape
+        agent_fs = frame_stack
 
-    if len(obs_shape) == 1:
-        size = obs_shape[0]
-        agent_fs[:-size] = agent_fs[size:]
-        agent_fs[-size:] = obs
-    elif len(obs_shape) == 2:
-        agent_fs[:,:,:-1] = agent_fs[:,:,1:]
-        agent_fs[:,:,-1] = obs
-    elif len(obs_shape) == 3:
-        nchannels = obs_shape[-1]
-        agent_fs[:, :, :-nchannels] = agent_fs[:, :, nchannels:]
-        agent_fs[:, :, -nchannels:] = obs
+        if len(obs_shape) == 1:
+            size = obs_shape[0]
+            agent_fs[:-size] = agent_fs[size:]
+            agent_fs[-size:] = obs
+        elif len(obs_shape) == 2:
+            agent_fs[:,:,:-1] = agent_fs[:,:,1:]
+            agent_fs[:,:,-1] = obs
+        elif len(obs_shape) == 3:
+            nchannels = obs_shape[-1]
+            agent_fs[:, :, :-nchannels] = agent_fs[:, :, nchannels:]
+            agent_fs[:, :, -nchannels:] = obs
+        return agent_fs
+    elif isinstance(obs_space, Discrete):
+        return (frame_stack * obs_space.n + obs) % (obs_space.n**stack_size)

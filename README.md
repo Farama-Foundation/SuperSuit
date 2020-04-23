@@ -34,7 +34,7 @@ You can install it via `pip install supersuit`
 
 `homogenize_observations(env)` Changes observations to be of same shape and belong to the same observation_space, zero padding as necessary. Works on Discrete and Box observation spaces.
 
-`homogenize_actions(env)` actions will be expanded to be of same shape and belong to the same action_space. Discrete actions will be set to zero if they overshoot their original action space, and Box action spaces will be cropped.
+`homogenize_actions(env)` actions will be of same shape and belong to the same action_space. Discrete actions will be set to zero if they overshoot their original action space, and Box action spaces will be cropped.
 
 `observation_lambda_wrapper(change_observation_fn, change_obs_space_fn=None)`
 allows you to define arbitrary changes to the observations by specifying the observation transformation function  `change_observation_fn(observation) : observation`, and the observation space transformation `change_obs_space_fn(obs_space) : obs_space`. For Box-Box transformations the space transformation will be inferred from `change_observation_fn` if `change_obs_space_fn=None`.

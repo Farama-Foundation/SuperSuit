@@ -143,7 +143,7 @@ class frame_stack(BaseWrapper):
     def _update_step(self, agent, observation):
         if observation is None:
             observation = self.observe(agent)
-        stack_obs(self.stacks[agent], observation, self.stack_size)
+        self.stacks[agent] = stack_obs(self.stacks[agent], observation, self.env.observation_spaces[agent], self.stack_size)
 
 class ActionWrapper(BaseWrapper):
     def __init__(self, env):
