@@ -1,5 +1,5 @@
 from .base_aec_wrapper import BaseWrapper
-from gym.spaces import Box,Space
+from gym.spaces import Box,Space,Discrete
 from . import basic_transforms
 from .frame_stack import stack_obs_space,stack_init,stack_obs
 from .action_transforms import homogenize_ops
@@ -125,7 +125,12 @@ class frame_stack(BaseWrapper):
     def _check_wrapper_params(self):
         assert isinstance(self.stack_size, int), "stack size of frame_stack must be an int"
         for space in self.observation_spaces.values():
-            assert 1 <= len(space.shape) <= 3, "frame_stack only works for 1,2 or 3 dimentional observations"
+            if isinstance(space, Box):
+                assert 1 <= len(space.shape) <= 3, "frame_stack only works for 1,2 or 3 dimentional observations"
+            elif isinstance(space, Discrete):
+                pass
+            else:
+                assert False, "Stacking is currently only allowed for Box and Discrete observation spaces. The given observation space is {}".format(obs_space)
 
     def reset(self, observe=True):
         self.stacks = {agent: stack_init(space, self.stack_size) for agent,space in self.env.observation_spaces.items()}

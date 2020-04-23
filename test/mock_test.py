@@ -16,9 +16,22 @@ def test_frame_stack():
     obs = env.reset()
     assert obs.shape == (2,3,4)
     first_obs = env.step(2)
-    print(first_obs)
     assert np.all(np.equal(first_obs[:,:,-1],base_obs["a1"]))
     assert np.all(np.equal(first_obs[:,:,:-1],0))
+
+    base_obs = {"a{}".format(idx): idx+3 for idx in range(2)}
+    base_env = DummyEnv(base_obs, base_act_spaces, base_act_spaces)
+    env = frame_stack(base_env, 4)
+    obs = env.reset()
+    assert env.observation_spaces[env.agent_selection].n == 5**4
+    first_obs = env.step(2)
+    assert first_obs == 4
+    second_obs = env.step(2)
+    assert second_obs == 3+3*5
+    for x in range(100):
+        nth_obs = env.step(2)
+    assert nth_obs == ((3*5+3)*5+3)*5+3
+
 
 
 def test_reshape():
