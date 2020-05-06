@@ -4,7 +4,7 @@ from . import basic_transforms
 from .frame_stack import stack_obs_space,stack_init,stack_obs
 from .action_transforms import homogenize_ops
 from .action_transforms import continuous_action_ops
-from gym.utils import seeding
+import numpy as np
 
 
 class ObservationWrapper(BaseWrapper):
@@ -197,8 +197,9 @@ class homogenize_actions(ActionWrapper):
         return new_action
 
 class continuous_actions(ActionWrapper):
-    def __init__(self, env, seed=None):
-        self.np_random,_ = seeding.np_random(seed)
+    def __init__(self, env):
+        SEED = 0x601326ad
+        self.np_random = np.random.RandomState(SEED)
         super().__init__(env)
 
     def _check_wrapper_params(self):

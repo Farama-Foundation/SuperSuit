@@ -20,21 +20,11 @@ class BaseWrapper(AECEnv):
 
         self.num_agents = self.env.num_agents
         self.agents = self.env.agents
-        self.agent_selection = self.env.agent_selection
-        self.observation_spaces = self.env.observation_spaces
+        self.observation_spaces = copy.copy(self.env.observation_spaces)
         self.action_spaces = copy.copy(self.env.action_spaces)
-        self.orig_action_spaces = self.env.action_spaces
-
-        self.rewards = self.env.rewards
-        self.dones = self.env.dones
-        self.infos = self.env.infos
-
         self.agent_order = self.env.agent_order
 
-        self._check_wrapper_params()
-
-        self._modify_spaces()
-
+        self._has_reset = False
 
     def _check_wrapper_params(self):
         raise NotImplementedError()
@@ -62,9 +52,17 @@ class BaseWrapper(AECEnv):
         agent = self.env.agent_selection
 
         self.agent_selection = self.env.agent_selection
+        self.agent_order = self.env.agent_order
         self.rewards = self.env.rewards
         self.dones = self.env.dones
         self.infos = self.env.infos
+
+        if not self._has_reset:
+            self._check_wrapper_params()
+
+            self._modify_spaces()
+
+            self._has_reset = True
 
         self._update_step(agent,observation)
         if observe:
@@ -88,6 +86,7 @@ class BaseWrapper(AECEnv):
         self._update_step(new_agent,next_obs)
 
         self.agent_selection = self.env.agent_selection
+        self.agent_order = self.env.agent_order
         self.rewards = self.env.rewards
         self.dones = self.env.dones
         self.infos = self.env.infos
