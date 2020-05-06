@@ -1,2 +1,5 @@
 __pycache__
 pettingzoo
+dist/*
+build/*
+SuperSuit.egg-info/*

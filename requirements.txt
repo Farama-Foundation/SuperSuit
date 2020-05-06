@@ -1,1 +1,1 @@
-pettingzoo
+pettingzoo>=0.1.4
