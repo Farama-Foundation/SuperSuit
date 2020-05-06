@@ -14,6 +14,49 @@ env = frame_stacking(color_reduction(env, 'full'), 4)
 
 You can install it via `pip install supersuit`
 
+## Lambda functions
+
+One of the most powerful features is the ability to define your own transformations of the observation and action spaces by passing functions to the lambda wrappers.
+
+For example, adding noise to a Box observation is as simple as:
+
+```
+env = observation_lambda_wrapper(env, lambda x : x + np.random.normal(size=x.shape))
+```
+
+### Transforming spaces
+
+You also may need to transform the observation space. For example, if you need to increase the high and low bounds to accomidate this extra noise, then you can just do something like
+
+```
+env = observation_lambda_wrapper(env,
+    lambda x : x + np.random.normal(size=x.shape),
+    lambda obs_space : gym.spaces.Box(obs_space.low-5,obs_space.high+5))
+```
+
+If you don't specify an observation space transformation, and the observation space is a Box, the observation space will be inferred automatically by transformming the low and the high bounds of the Box according to the specified  transformation function. This is appropriate for many common transformations.
+
+### Action lambda
+
+If you need to transform the actions, the process is similar, but remember you are transforming the actions in reverse, from the actions received by the wrapper to the actions expected by the base environment.
+
+So if you want to add an action to your action space which is a "random action", then just
+
+```
+n = env.action_space.n
+env = action_lambda_wrapper(env,
+    lambda action : random.randrange(n) if action == n else action,
+    lambda act_space : gym.spaces.Discrete(n+1))
+```
+
+### Lambda Reference
+
+`observation_lambda_wrapper(change_observation_fn, change_obs_space_fn=None)`
+allows you to define arbitrary changes to the observations by specifying the observation transformation function  `change_observation_fn(observation) : observation`, and the observation space transformation `change_obs_space_fn(obs_space) : obs_space`. For Box-Box transformations the space transformation will be inferred from `change_observation_fn` if `change_obs_space_fn=None`.
+
+`action_lambda_wrapper(change_action_fn, change_space_fn)` Allows you to define arbitrary changes to the actions with the function parameter `change_action_fn(action) : action` and to the action spaces with `change_space_fn(action_space) : action_space`
+
+
 ## Full list of functions:
 
 `color_reduction(env, mode='full')` simplifies color information in graphical ((x,y,3) shaped) environments. `mode='full'` fully greyscales of the observation. This can be computationally intensive. Arguments of 'R', 'G' or 'B' just take the corresponding R, G or B color channel from observation. This is much faster and is generally sufficient.
@@ -35,11 +78,6 @@ You can install it via `pip install supersuit`
 `homogenize_observations(env)` pads observations to be of the shape of the largest observaion of any agent, per the algorithm posed in *Parameter Sharing is Surprisingly Useful for Deep Reinforcement Learning*. This enables MARL methods that require the observations of all agents to work in environments with heterogenous agents. This currently supports on Discrete and Box observation spaces.
 
 `homogenize_actions(env)` actions will be of same shape and belong to the same action_space. Discrete actions will be set to zero if they overshoot their original action space, and Box action spaces will be cropped.
-
-`observation_lambda_wrapper(change_observation_fn, change_obs_space_fn=None)`
-allows you to define arbitrary changes to the observations by specifying the observation transformation function  `change_observation_fn(observation) : observation`, and the observation space transformation `change_obs_space_fn(obs_space) : obs_space`. For Box-Box transformations the space transformation will be inferred from `change_observation_fn` if `change_obs_space_fn=None`.
-
-`action_lambda_wrapper(change_action_fn, change_space_fn)` Allows you to define arbitrary changes to the actions with the function parameter `change_action_fn(action) : action` and to the action spaces with `change_space_fn(action_space) : action_space`
 
 
 We hope to support Gym in all wrappers that are not explicitly multiplayer.
