@@ -24,7 +24,9 @@ class BaseWrapper(AECEnv):
         self.action_spaces = copy.copy(self.env.action_spaces)
         self.agent_order = self.env.agent_order
 
-        self._has_reset = False
+        self._check_wrapper_params()
+
+        self._modify_spaces()
 
     def _check_wrapper_params(self):
         raise NotImplementedError()
@@ -56,13 +58,6 @@ class BaseWrapper(AECEnv):
         self.rewards = self.env.rewards
         self.dones = self.env.dones
         self.infos = self.env.infos
-
-        if not self._has_reset:
-            self._check_wrapper_params()
-
-            self._modify_spaces()
-
-            self._has_reset = True
 
         self._update_step(agent,observation)
         if observe:

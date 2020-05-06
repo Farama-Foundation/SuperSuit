@@ -203,8 +203,6 @@ class continuous_actions(ActionWrapper):
         super().__init__(env)
 
     def _check_wrapper_params(self):
-        if 'legal_moves' in self.infos:
-            warnings.warn("Using the continuous_actions wrapper on an environment with a legal moves list. This list will be removed from the environment.")
         for space in self.action_spaces.values():
             continuous_action_ops.check_action_space(space)
 
