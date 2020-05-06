@@ -6,7 +6,7 @@ python:
   - "3.8"
 
 install:
-  - pip3 install -r requirements.txt
+  - pip3 install -r requirements.txt -v
 
 script:
   - pytest
