@@ -6,11 +6,6 @@ import warnings
 from skimage import measure
 from pettingzoo import AECEnv
 
-from .frame_stack import stack_obs_space, stack_obs
-
-COLOR_RED_LIST = ["full", 'R', 'G', 'B']
-OBS_RESHAPE_LIST = ["expand", "flatten"]
-
 
 class BaseWrapper(AECEnv):
 
