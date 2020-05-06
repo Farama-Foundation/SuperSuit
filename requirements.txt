@@ -1,0 +1,4 @@
+pettingzoo
+gym
+numpy
+scikit-image
