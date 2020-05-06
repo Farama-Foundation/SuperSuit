@@ -24,7 +24,7 @@ For example, adding noise to a Box observation is as simple as:
 env = observation_lambda_wrapper(env, lambda x : x + np.random.normal(size=x.shape))
 ```
 
-### Transforming spaces
+#### Transforming spaces
 
 You also may need to transform the observation space. For example, if you need to increase the high and low bounds to accomidate this extra noise, then you can just do something like
 
@@ -36,7 +36,7 @@ env = observation_lambda_wrapper(env,
 
 If you don't specify an observation space transformation, and the observation space is a Box, the observation space will be inferred automatically by transformming the low and the high bounds of the Box according to the specified  transformation function. This is appropriate for many common transformations.
 
-### Action lambda
+#### Action lambda wrapper
 
 If you need to transform the actions, the process is similar, but remember you are transforming the actions in reverse, from the actions received by the wrapper to the actions expected by the base environment.
 
@@ -49,7 +49,7 @@ env = action_lambda_wrapper(env,
     lambda act_space : gym.spaces.Discrete(n+1))
 ```
 
-### Lambda Reference
+#### Lambda Reference
 
 `observation_lambda_wrapper(change_observation_fn, change_obs_space_fn=None)`
 allows you to define arbitrary changes to the observations by specifying the observation transformation function  `change_observation_fn(observation) : observation`, and the observation space transformation `change_obs_space_fn(obs_space) : obs_space`. For Box-Box transformations the space transformation will be inferred from `change_observation_fn` if `change_obs_space_fn=None`.
@@ -75,9 +75,10 @@ allows you to define arbitrary changes to the observations by specifying the obs
 
 `reshape(env, shape)` reshapes observations into given shape.
 
-`homogenize_observations(env)` pads observations to be of the shape of the largest observaion of any agent, per the algorithm posed in *Parameter Sharing is Surprisingly Useful for Deep Reinforcement Learning*. This enables MARL methods that require the observations of all agents to work in environments with heterogenous agents. This currently supports on Discrete and Box observation spaces.
+`homogenize_observations(env)` (multiplayer only) pads observations to be of the shape of the largest observation of any agent, per the algorithm posed in *Parameter Sharing is Surprisingly Useful for Deep Reinforcement Learning*. This enables MARL methods that require the observations of all agents to work in environments with heterogenous agents. This currently supports on Discrete and Box observation spaces.
 
-`homogenize_actions(env)` actions will be of same shape and belong to the same action_space. Discrete actions will be set to zero if they overshoot their original action space, and Box action spaces will be cropped.
+`homogenize_actions(env)` (multiplayer only) actions spaces of all players will be expanded to be of same shape and belong to the same action_space. Discrete actions inside this expanded space but outside the original space will be set to zero. Box action spaces will be cropped from the new space to the original space.
 
+### Future development
 
 We hope to support Gym in all wrappers that are not explicitly multiplayer.
