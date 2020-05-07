@@ -49,13 +49,6 @@ env = action_lambda_wrapper(env,
     lambda act_space : gym.spaces.Discrete(n+1))
 ```
 
-#### Lambda Reference
-
-`observation_lambda_wrapper(change_observation_fn, change_obs_space_fn=None)`
-allows you to define arbitrary changes to the observations by specifying the observation transformation function  `change_observation_fn(observation) : observation`, and the observation space transformation `change_obs_space_fn(obs_space) : obs_space`. For Box-Box transformations the space transformation will be inferred from `change_observation_fn` if `change_obs_space_fn=None`.
-
-`action_lambda_wrapper(change_action_fn, change_space_fn)` Allows you to define arbitrary changes to the actions with the function parameter `change_action_fn(action) : action` and to the action spaces with `change_space_fn(action_space) : action_space`
-
 
 ## Full list of functions:
 
@@ -78,6 +71,11 @@ allows you to define arbitrary changes to the observations by specifying the obs
 `homogenize_observations(env)` (multiplayer only) pads observations to be of the shape of the largest observation of any agent, per the algorithm posed in *Parameter Sharing is Surprisingly Useful for Deep Reinforcement Learning*. This enables MARL methods that require the observations of all agents to work in environments with heterogenous agents. This currently supports on Discrete and Box observation spaces.
 
 `homogenize_actions(env)` (multiplayer only) actions spaces of all players will be expanded to be of same shape and belong to the same action_space. Discrete actions inside this expanded space but outside the original space will be set to zero. Box action spaces will be cropped from the new space to the original space.
+
+`observation_lambda_wrapper(change_observation_fn, change_obs_space_fn=None)`
+allows you to define arbitrary changes to the observations by specifying the observation transformation function  `change_observation_fn(observation) : observation`, and the observation space transformation `change_obs_space_fn(obs_space) : obs_space`. For Box-Box transformations the space transformation will be inferred from `change_observation_fn` if `change_obs_space_fn=None`.
+
+`action_lambda_wrapper(change_action_fn, change_space_fn)` Allows you to define arbitrary changes to the actions with the function parameter `change_action_fn(action) : action` and to the action spaces with `change_space_fn(action_space) : action_space`
 
 ### Future development
 
