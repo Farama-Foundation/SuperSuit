@@ -14,10 +14,9 @@ setuptools.setup(
     url="https://github.com/PettingZoo-Team/SuperSuit",
     keywords=["Reinforcement Learning", "gym"],
     packages=setuptools.find_packages(),
-    python_requires='>=3.5',
+    python_requires='>=3.6',
     data_files = [("", ["LICENSE.txt"])],
     classifiers=[
-        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
