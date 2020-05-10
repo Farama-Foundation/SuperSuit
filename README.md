@@ -47,34 +47,37 @@ Gym support is currently under development, PettingZoo support is complete.
 
 ## Lambda Functions
 
-If none of the build in micro-wrappers are suitable for your needs, you can submit a PR or use a lambda function.
+If none of the build in micro-wrappers are suitable for your needs, you can use a lambda function (or if your needs are still not met, submit a PR).
 
-`action_lambda(env, change_action_fn, change_space_fn)` allows you to define arbitrary changes to the actions via `change_action_fn(action) : action` and to the action spaces with `change_space_fn(action_space) : action_space`. Remember that you are transforming the actions received by the wrapper to the actions expected by the base environment.
+`action_lambda(env, change_action_fn, change_space_fn)` allows you to define arbitrary changes to the actions via `change_action_fn(action, space) : action` and to the action spaces with `change_space_fn(action_space) : action_space`. Remember that you are transforming the actions received by the wrapper to the actions expected by the base environment.
 
 `observation_lambda(env, observation_fn, observation_space_fn=None)` allows you to define arbitrary changes to the via `observation_fn(observation) : observation`, and `observation_space_fn(obs_space) : obs_space`. For Box-Box transformations the space transformation will be inferred from `change_observation_fn` if `change_obs_space_fn=None` by passing the `high` and `low` bounds through the `observation_space_fn`.
 
+#### Lambda Examples
 
 Adding noise to a Box observation looks like:
 
 ```
-env = observation_lambda_wrapper(env, lambda x : x + np.random.normal(size=x.shape))
+env = observation_lambda(env, lambda x : x + np.random.normal(size=x.shape))
 ```
 
 Adding noise to a box observation and increasing the high and low bounds to accommodate this extra noise looks like:
 
 ```
-env = observation_lambda_wrapper(env,
+env = observation_lambda(env,
     lambda x : x + np.random.normal(size=x.shape),
     lambda obs_space : gym.spaces.Box(obs_space.low-5,obs_space.high+5))
 ```
 
-Adding add a random action input to a discrete environment looks like this:
+Changing 1d box action space to a Discrete space by mapping the discrete actions to one-hot vectors.
 
 ```
-n = env.action_space.n
-env = action_lambda_wrapper(env,
-    lambda action : random.randrange(n) if action == n else action,
-    lambda act_space : gym.spaces.Discrete(n+1))
+def one_hot(x,n):
+    v = np.zeros(n)
+    v[x] = 1
+    return v
+
+env = action_lambda(env,
+    lambda action, act_space : one_hot(action, act_space.shape[0]),
+    lambda act_space : gym.spaces.Discrete(act_space.shape[0]))
 ```
-
-
