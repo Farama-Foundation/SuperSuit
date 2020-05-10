@@ -69,6 +69,14 @@ env = observation_lambda(env,
     lambda obs_space : gym.spaces.Box(obs_space.low-5,obs_space.high+5))
 ```
 
+If you know the inner details of the environment, you can hardcode the appropriate values. For example, if you know you have a Box space of 20x20, you can just do
+
+```
+env = observation_lambda(env,
+    lambda x : np.pad(x,pad_width=4)
+    lambda _ : gym.spaces.Box(low=0,high=1,shape=(28,28)))
+```
+
 Changing 1d box action space to a Discrete space by mapping the discrete actions to one-hot vectors.
 
 ```
