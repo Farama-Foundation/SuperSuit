@@ -53,7 +53,7 @@ If none of the build in micro-wrappers are suitable for your needs, you can use 
 
 `observation_lambda(env, observation_fn, observation_space_fn=None)` allows you to define arbitrary changes to the via `observation_fn(observation) : observation`, and `observation_space_fn(obs_space) : obs_space`. For Box-Box transformations the space transformation will be inferred from `change_observation_fn` if `change_obs_space_fn=None` by passing the `high` and `low` bounds through the `observation_space_fn`.
 
-#### Lambda Examples
+### Lambda Function Examples
 
 Adding noise to a Box observation looks like:
 
