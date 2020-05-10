@@ -16,6 +16,7 @@ env = frame_stacking(color_reduction(env, 'full'), 4)
 
 You can install it via `pip install supersuit`
 
+Gym support is currently under development, PettingZoo support is complete.
 
 ## Built in Functions
 
