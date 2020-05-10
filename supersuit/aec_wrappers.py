@@ -14,7 +14,7 @@ class ObservationWrapper(BaseWrapper):
     def _update_step(self, agent, observation):
         pass
 
-class observation_lambda_wrapper(ObservationWrapper):
+class observation_lambda(ObservationWrapper):
     def __init__(self, env, change_observation_fn, change_obs_space_fn=None):
         assert callable(change_observation_fn), "change_observation_fn needs to be a function. It is {}".format(change_observation_fn)
         assert change_obs_space_fn is None or callable(change_obs_space_fn), "change_obs_space_fn needs to be a function. It is {}".format(change_obs_space_fn)
@@ -102,7 +102,7 @@ class normalize_obs(BasicObservationWrapper):
         shape = (env_min, env_max)
         super().__init__(env,basic_transforms.normalize_obs,shape)
 
-class homogenize_obs(ObservationWrapper):
+class pad_observations(ObservationWrapper):
     def _check_wrapper_params(self):
         spaces = list(self.observation_spaces.values())
         homogenize_ops.check_homogenize_spaces(spaces)
@@ -160,7 +160,7 @@ class ActionWrapper(BaseWrapper):
     def _update_step(self, agent, observation):
         pass
 
-class action_lambda_wrapper(ActionWrapper):
+class action_lambda(ActionWrapper):
     def __init__(self, env, change_action_fn, change_space_fn):
         assert callable(change_action_fn), "change_action_fn needs to be a function. It is {}".format(change_action_fn)
         assert callable(change_space_fn), "change_space_fn needs to be a function. It is {}".format(change_space_fn)
@@ -181,9 +181,9 @@ class action_lambda_wrapper(ActionWrapper):
         self.action_spaces = new_spaces
 
     def _modify_action(self, agent, action):
-        return self.change_action_fn(action, self.action_spaces[agent])
+        return self.change_action_fn(action, self.env.action_spaces[agent])
 
-class homogenize_actions(ActionWrapper):
+class pad_action_space(ActionWrapper):
     def _check_wrapper_params(self):
         homogenize_ops.check_homogenize_spaces(list(self.env.action_spaces.values()))
 

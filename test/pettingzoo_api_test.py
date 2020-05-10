@@ -18,4 +18,4 @@ def test_pettinzoo_continuous_actions():
     # wrapped_env.reset()
     # wrapped_env.step(np.nan*np.ones(4672))
     api_test.api_test(wrapped_env)
-    seed_test.seed_test(lambda : continuous_actions(simple_push_v0.env()))
+    seed_test.seed_test(lambda seed=None: continuous_actions(simple_push_v0.env(seed=seed)))
