@@ -68,7 +68,7 @@ class BasicObservationWrapper(ObservationWrapper):
         self.observation_spaces = new_spaces
 
     def _modify_observation(self, agent, observation):
-        obs_space = self.observation_spaces[agent]
+        obs_space = self.env.observation_spaces[agent]
         return self.module.change_observation(observation, obs_space, self.param)
 
 
