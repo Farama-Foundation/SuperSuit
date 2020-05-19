@@ -7,11 +7,11 @@ We support Gym for single agent environments and PettingZoo for multi-agent envi
 
 ```
 import gym
-from supersuit import color_reduction, frame_stacking
+from supersuit import color_reduction, frame_stack
 
 env = gym.make('SpaceInvaders-v0')
 
-env = frame_stacking(color_reduction(env, 'full'), 4)
+env = frame_stack(color_reduction(env, 'full'), 4)
 ```
 
 You can install it via `pip install supersuit`
