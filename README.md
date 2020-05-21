@@ -39,7 +39,7 @@ Gym support is currently under development, PettingZoo support is complete.
 
 ## Built in Multi-Agent Only Functions
 
-`agent_indicator(env)` Incomplete, adds an indicator of the agent ID to the observation, only supports discrete and 1D box. This allows MADRL methods like parameter sharing to learn policies for heterogeneous agents since the policy can tell what agent it's acting on.
+`agent_indicator(env)` Adds an indicator of the agent ID to the observation, only supports discrete and 1D box. This allows MADRL methods like parameter sharing to learn policies for heterogeneous agents since the policy can tell what agent it's acting on.
 
 `pad_action_space(env)` actions spaces of all players will all be padded to be be the same as the biggest, per the algorithm posed in *Parameter Sharing is Surprisingly Useful for Deep Reinforcement Learning*.  This enables MARL methods that require the homogeneous action spaces for all agents to work in environments with heterogeneous action spaces. Discrete actions inside padded region will be set to zero, and Box actions will be cropped down to the original space.
 
