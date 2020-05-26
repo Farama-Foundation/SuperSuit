@@ -22,7 +22,7 @@ Gym support is currently under development, PettingZoo support is complete.
 
 `color_reduction(env, mode='full')` simplifies color information in graphical ((x,y,3) shaped) environments. `mode='full'` fully greyscales of the observation. This can be computationally intensive. Arguments of 'R', 'G' or 'B' just take the corresponding R, G or B color channel from observation. This is much faster and is generally sufficient.
 
-`continuous_actions(env)` discrete action spaces are converted to a 1d Box action space of size *n*. This space is treated as a vector of logits, and the multinomial distribution defined by those input logits is sampled to get a discrete value. Currently supports Discrete action spaces. It passes Box action spaces through without any alteration. 
+`continuous_actions(env)` discrete action spaces are converted to a 1d Box action space of size *n*. This space is treated as a vector of logits, and the multinomial distribution defined by those input logits is sampled to get a discrete value. Currently supports Discrete action spaces. It passes Box action spaces through without any alteration.
 
 `down_scale(env, x_scale=1, y_scale=1)` uses mean pooling to reduce the observations output by each game by the given x and y scales. The dimension of an environment must be an integer multiple of it's scale. This is only available for 2D or 3D observations.
 
@@ -39,7 +39,7 @@ Gym support is currently under development, PettingZoo support is complete.
 
 ## Built in Multi-Agent Only Functions
 
-`agent_indicator(env)` Incomplete, adds an indicator of the agent ID to the observation, only supports discrete and 1D box. This allows MADRL methods like parameter sharing to learn policies for heterogeneous agents since the policy can tell what agent it's acting on.
+`agent_indicator(env, type_only=False)` Adds an indicator of the agent ID to the observation, only supports discrete and 1D, 2D, and 3D box. This allows MADRL methods like parameter sharing to learn policies for heterogeneous agents since the policy can tell what agent it's acting on. The `type_only` parameter means that only the type of the agent defined in the `<type>_<n>` name specification is added to the observation. This is useful for environments with a large number of mostly homogeneous agents. 
 
 `pad_action_space(env)` actions spaces of all players will all be padded to be be the same as the biggest, per the algorithm posed in *Parameter Sharing is Surprisingly Useful for Deep Reinforcement Learning*.  This enables MARL methods that require the homogeneous action spaces for all agents to work in environments with heterogeneous action spaces. Discrete actions inside padded region will be set to zero, and Box actions will be cropped down to the original space.
 

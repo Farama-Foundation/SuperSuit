@@ -1,9 +1,10 @@
 from .base_aec_wrapper import BaseWrapper
 from gym.spaces import Box,Space,Discrete
 from . import basic_transforms
-from .frame_stack import stack_obs_space,stack_init,stack_obs
+from .adv_transforms.frame_stack import stack_obs_space,stack_init,stack_obs
 from .action_transforms import homogenize_ops
 from .action_transforms import continuous_action_ops
+from .adv_transforms import agent_indicator as agent_ider
 import numpy as np
 
 
@@ -101,6 +102,24 @@ class normalize_obs(BasicObservationWrapper):
     def __init__(self,env,env_min=0.,env_max=1.):
         shape = (env_min, env_max)
         super().__init__(env,basic_transforms.normalize_obs,shape)
+
+class agent_indicator(ObservationWrapper):
+    def __init__(self,env,type_only=False):
+        self.type_only = type_only
+        self.indicator_map = agent_ider.get_indicator_map(env.agents,type_only)
+        self.num_indicators = len(set(self.indicator_map.values()))
+        super().__init__(env)
+
+    def _check_wrapper_params(self):
+        agent_ider.check_params(self.observation_spaces.values())
+
+    def _modify_spaces(self):
+        num_indicators = len(self.indicator_map)
+        self.observation_spaces = {agent:agent_ider.change_obs_space(space,num_indicators) for agent,space in self.observation_spaces.items()}
+
+    def _modify_observation(self, agent, observation):
+        new_obs = agent_ider.change_observation(observation, self.env.observation_spaces[agent], (self.indicator_map[agent], self.num_indicators))
+        return new_obs
 
 class pad_observations(ObservationWrapper):
     def _check_wrapper_params(self):
