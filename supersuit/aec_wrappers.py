@@ -58,7 +58,7 @@ class BasicObservationWrapper(ObservationWrapper):
 
     def _check_wrapper_params(self):
         assert all([isinstance(obs_space, Box) for obs_space in self.observation_spaces.values()]), \
-            "All agents' observation spaces are not Box: {}, and as such the observation spaces are not modified.".format(self.observation_spaces)
+            "All agents' observation spaces are not Box, they are: {}.".format(self.observation_spaces)
         for obs_space in self.env.observation_spaces.values():
             self.module.check_param(obs_space,self.param)
 
@@ -114,8 +114,7 @@ class agent_indicator(ObservationWrapper):
         agent_ider.check_params(self.observation_spaces.values())
 
     def _modify_spaces(self):
-        num_indicators = len(self.indicator_map)
-        self.observation_spaces = {agent:agent_ider.change_obs_space(space,num_indicators) for agent,space in self.observation_spaces.items()}
+        self.observation_spaces = {agent:agent_ider.change_obs_space(space,self.num_indicators) for agent,space in self.observation_spaces.items()}
 
     def _modify_observation(self, agent, observation):
         new_obs = agent_ider.change_observation(observation, self.env.observation_spaces[agent], (self.indicator_map[agent], self.num_indicators))
