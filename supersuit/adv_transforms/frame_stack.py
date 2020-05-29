@@ -40,7 +40,7 @@ def stack_obs_space(obs_space, stack_size):
     elif isinstance(obs_space, Discrete):
         return Discrete(obs_space.n ** stack_size)
     else:
-         assert False, "Stacking is currently only allowed for Box and Discrete observation spaces. The given observation space is {}".format(obs_space)
+        assert False, "Stacking is currently only allowed for Box and Discrete observation spaces. The given observation space is {}".format(obs_space)
 
 def stack_init(obs_space, stack_size):
     if isinstance(obs_space, Box):
