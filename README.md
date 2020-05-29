@@ -7,7 +7,7 @@ We support Gym for single agent environments and PettingZoo for multi-agent envi
 
 ```
 import gym
-from supersuit import color_reduction, frame_stack
+from supersuit.gym_wrappers import color_reduction, frame_stack
 
 env = gym.make('SpaceInvaders-v0')
 
@@ -16,7 +16,16 @@ env = frame_stack(color_reduction(env, 'full'), 4)
 
 You can install it via `pip install supersuit`
 
-Gym support is currently under development, PettingZoo support is complete.
+Similarly, for pettingzoo,
+
+```
+import pettingzoo.gamma
+from supersuit.aec_wrappers import color_reduction, frame_stack
+
+env = pettingzoo.gamma.pistonball_v0.env()
+
+env = frame_stack(color_reduction(env, 'full'), 4)
+```
 
 ## Built in Functions
 
@@ -39,7 +48,7 @@ Gym support is currently under development, PettingZoo support is complete.
 
 ## Built in Multi-Agent Only Functions
 
-`agent_indicator(env, type_only=False)` Adds an indicator of the agent ID to the observation, only supports discrete and 1D, 2D, and 3D box. This allows MADRL methods like parameter sharing to learn policies for heterogeneous agents since the policy can tell what agent it's acting on. The `type_only` parameter means that only the type of the agent defined in the `<type>_<n>` name specification is added to the observation. This is useful for environments with a large number of mostly homogeneous agents. 
+`agent_indicator(env, type_only=False)` Adds an indicator of the agent ID to the observation, only supports discrete and 1D, 2D, and 3D box. This allows MADRL methods like parameter sharing to learn policies for heterogeneous agents since the policy can tell what agent it's acting on. The `type_only` parameter means that only the type of the agent defined in the `<type>_<n>` name specification is added to the observation. This is useful for environments with a large number of mostly homogeneous agents.
 
 `pad_action_space(env)` actions spaces of all players will all be padded to be be the same as the biggest, per the algorithm posed in *Parameter Sharing is Surprisingly Useful for Deep Reinforcement Learning*.  This enables MARL methods that require the homogeneous action spaces for all agents to work in environments with heterogeneous action spaces. Discrete actions inside padded region will be set to zero, and Box actions will be cropped down to the original space.
 
