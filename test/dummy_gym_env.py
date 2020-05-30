@@ -9,7 +9,7 @@ class DummyEnv(gym.Env):
         self.action_space = action_space
 
     def step(self, action):
-        return self._observation
+        return self._observation, 1, False, {}
 
     def reset(self):
         return self._observation
