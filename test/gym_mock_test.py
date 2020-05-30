@@ -14,7 +14,7 @@ def test_reshape():
     env = reshape(base_env, (64, 3))
     obs = env.reset()
     assert obs.shape == (64,3)
-    first_obs = env.step(5)
+    first_obs,_,_,_ = env.step(5)
     assert np.all(np.equal(first_obs,base_obs.reshape([64,3])))
 
 def new_dummy():
@@ -29,6 +29,8 @@ wrappers = [
     gym_wrappers.normalize_obs(new_dummy(),env_min=-1,env_max=5.),
     gym_wrappers.frame_stack(new_dummy(),8),
     gym_wrappers.continuous_actions(new_dummy()),
+    #gym_wrappers.normalize_reward(new_dummy()),
+    gym_wrappers.reward_lambda(new_dummy(),lambda x: x/10),
 ]
 @pytest.mark.parametrize("env", wrappers)
 def test_basic_wrappers(env):

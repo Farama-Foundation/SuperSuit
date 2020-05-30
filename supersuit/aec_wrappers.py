@@ -247,3 +247,37 @@ class continuous_actions(ActionWrapper):
         res = super().step(action, observe)
         self._remove_infos()
         return res
+
+
+class RewardWrapper(ActionWrapper,ObservationWrapper):
+    def _check_wrapper_params(self):
+        pass
+
+    def _modify_spaces(self):
+        pass
+
+class reward_lambda(RewardWrapper):
+    def __init__(self, env, change_reward_fn):
+        assert callable(change_reward_fn), "change_reward_fn needs to be a function. It is {}".format(change_reward_fn)
+        self.change_reward_fn = change_reward_fn
+
+        super().__init__(env)
+
+    def _update_step(self, agent, obs):
+        self.rewards = {self.change_reward_fn(reward) for agent,reward in self.rewards.items()}
+
+# class normalize_reward(RewardWrapper):
+#     def reset(self, observe=True):
+#         self.first_nonzeros = {agent:None for agent in self.agents}
+#         return super().reset(observe)
+#
+#     def _update_step(self, agent_to_step, obs):
+#         for agent,reward in self.rewards.items():
+#             first_nonzero = self.first_nonzeros[agent]
+#             if first_nonzero is None and reward != 0:
+#                 self.first_nonzeros[agent] = first_nonzero = abs(float(reward))
+#
+#             if first_nonzero is not None:
+#                 reward = reward / first_nonzero
+#
+#             self.rewards[agent] = reward
