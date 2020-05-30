@@ -8,9 +8,9 @@ import gym
 
 class ObservationWrapper(gym.Wrapper):
     def step(self, action):
-        observation,rew,done,info = self.env.step(action)
+        observation = self.env.step(action)
         observation = self._modify_observation(observation)
-        return observation,rew,done,info
+        return observation
 
     def reset(self):
         observation = self.env.reset()
@@ -166,31 +166,3 @@ class continuous_actions(ActionWrapper):
         act_space = self.env.action_space
         new_action = continuous_action_ops.modify_action(act_space, action, self.np_random)
         return new_action
-
-class RewardWrapper(gym.Wrapper):
-    def step(self, action):
-        obs, rew, done, info = super().step(action)
-        return obs, self._change_reward_fn(rew), done, info
-
-
-class reward_lambda(RewardWrapper):
-    def __init__(self, env, change_reward_fn):
-        assert callable(change_reward_fn), "change_reward_fn needs to be a function. It is {}".format(change_reward_fn)
-        self._change_reward_fn = change_reward_fn
-
-        super().__init__(env)
-
-# class normalize_reward(RewardWrapper):
-#     def reset(self):
-#         self.first_nonzero = None
-#         return super().reset()
-#
-#     def _change_reward_fn(self, reward):
-#         first_nonzero = self.first_nonzero
-#         if first_nonzero is None and reward != 0:
-#             self.first_nonzero = first_nonzero = abs(float(reward))
-#
-#         if first_nonzero is not None:
-#             reward = reward / first_nonzero
-#
-#         return reward

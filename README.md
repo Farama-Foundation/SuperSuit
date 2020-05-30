@@ -62,8 +62,6 @@ If none of the build in micro-wrappers are suitable for your needs, you can use 
 
 `observation_lambda(env, observation_fn, observation_space_fn=None)` allows you to define arbitrary changes to the via `observation_fn(observation) : observation`, and `observation_space_fn(obs_space) : obs_space`. For Box-Box transformations the space transformation will be inferred from `change_observation_fn` if `change_obs_space_fn=None` by passing the `high` and `low` bounds through the `observation_space_fn`.
 
-`reward_lambda(env, change_reward_fn)` allows you to make arbitrary changes to rewards by passing in a `change_reward_fn(reward) : reward` function. For gym environments this is called every step to transform the returned reward. For AECEnv, this function is used to change each element in the rewards dictionary every step, taking NxM time.
-
 ### Lambda Function Examples
 
 Adding noise to a Box observation looks like:

@@ -82,8 +82,6 @@ wrappers = [
     aec_wrappers.continuous_actions(new_dummy()),
     aec_wrappers.agent_indicator(new_dummy(),True),
     aec_wrappers.agent_indicator(new_dummy(),False),
-    #aec_wrappers.normalize_reward(new_dummy()),
-    aec_wrappers.reward_lambda(new_dummy(), lambda x:x/10),
 ]
 @pytest.mark.parametrize("env", wrappers)
 def test_basic_wrappers(env):
