@@ -31,6 +31,7 @@ wrappers = [
     gym_wrappers.continuous_actions(new_dummy()),
     #gym_wrappers.normalize_reward(new_dummy()),
     gym_wrappers.reward_lambda(new_dummy(),lambda x: x/10),
+    gym_wrappers.clip_reward(new_dummy()),
 ]
 @pytest.mark.parametrize("env", wrappers)
 def test_basic_wrappers(env):
@@ -90,6 +91,13 @@ def test_action_lambda():
 
     env.reset()
     env.step(2)
+
+
+def test_rew_lambda():
+    env = gym_wrappers.reward_lambda(new_dummy(), lambda x:x/10)
+    env.reset()
+    obs,rew,done,info = env.step(0)
+    assert rew == 1./10
 
 def test_continuous_actions():
     base_act_spaces = Discrete(5)

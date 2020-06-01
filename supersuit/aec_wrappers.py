@@ -256,28 +256,22 @@ class RewardWrapper(ActionWrapper,ObservationWrapper):
     def _modify_spaces(self):
         pass
 
+    def _update_step(self, agent, obs):
+        self.rewards = {agent: self._change_reward_fn(reward) for agent,reward in self.rewards.items()}
+
 class reward_lambda(RewardWrapper):
     def __init__(self, env, change_reward_fn):
         assert callable(change_reward_fn), "change_reward_fn needs to be a function. It is {}".format(change_reward_fn)
-        self.change_reward_fn = change_reward_fn
+        self._change_reward_fn = change_reward_fn
 
         super().__init__(env)
 
-    def _update_step(self, agent, obs):
-        self.rewards = {self.change_reward_fn(reward) for agent,reward in self.rewards.items()}
+class clip_reward(RewardWrapper):
+    def __init__(self, env, lower_bound=-1, upper_bound=1):
+        self.lower_bound = lower_bound
+        self.upper_bound = upper_bound
 
-# class normalize_reward(RewardWrapper):
-#     def reset(self, observe=True):
-#         self.first_nonzeros = {agent:None for agent in self.agents}
-#         return super().reset(observe)
-#
-#     def _update_step(self, agent_to_step, obs):
-#         for agent,reward in self.rewards.items():
-#             first_nonzero = self.first_nonzeros[agent]
-#             if first_nonzero is None and reward != 0:
-#                 self.first_nonzeros[agent] = first_nonzero = abs(float(reward))
-#
-#             if first_nonzero is not None:
-#                 reward = reward / first_nonzero
-#
-#             self.rewards[agent] = reward
+        super().__init__(env)
+
+    def _change_reward_fn(self, rew):
+        return max(min(rew, self.upper_bound), self.lower_bound)

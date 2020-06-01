@@ -180,17 +180,12 @@ class reward_lambda(RewardWrapper):
 
         super().__init__(env)
 
-# class normalize_reward(RewardWrapper):
-#     def reset(self):
-#         self.first_nonzero = None
-#         return super().reset()
-#
-#     def _change_reward_fn(self, reward):
-#         first_nonzero = self.first_nonzero
-#         if first_nonzero is None and reward != 0:
-#             self.first_nonzero = first_nonzero = abs(float(reward))
-#
-#         if first_nonzero is not None:
-#             reward = reward / first_nonzero
-#
-#         return reward
+class clip_reward(RewardWrapper):
+    def __init__(self, env, lower_bound=-1, upper_bound=1):
+        self.lower_bound = lower_bound
+        self.upper_bound = upper_bound
+
+        super().__init__(env)
+
+    def _change_reward_fn(self, rew):
+        return max(min(rew, self.upper_bound), self.lower_bound)

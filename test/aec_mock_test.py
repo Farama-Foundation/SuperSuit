@@ -84,6 +84,7 @@ wrappers = [
     aec_wrappers.agent_indicator(new_dummy(),False),
     #aec_wrappers.normalize_reward(new_dummy()),
     aec_wrappers.reward_lambda(new_dummy(), lambda x:x/10),
+    aec_wrappers.clip_reward(new_dummy()),
 ]
 @pytest.mark.parametrize("env", wrappers)
 def test_basic_wrappers(env):
@@ -97,6 +98,11 @@ def test_basic_wrappers(env):
     assert obs_space.contains(first_obs)
     env.step(act_space.sample())
 
+
+def test_rew_lambda():
+    env = aec_wrappers.reward_lambda(new_dummy(), lambda x:x/10)
+    env.reset()
+    assert env.rewards[env.agent_selection] == 1./10
 
 def test_lambda():
     def add1(obs):
