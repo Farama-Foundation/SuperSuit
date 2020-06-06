@@ -1,9 +1,10 @@
 from .base_aec_wrapper import BaseWrapper
 from gym.spaces import Box,Space,Discrete
 from . import basic_transforms
-from .frame_stack import stack_obs_space,stack_init,stack_obs
+from .adv_transforms.frame_stack import stack_obs_space,stack_init,stack_obs
 from .action_transforms import homogenize_ops
 from .action_transforms import continuous_action_ops
+from .adv_transforms import agent_indicator as agent_ider
 import numpy as np
 
 
@@ -14,7 +15,7 @@ class ObservationWrapper(BaseWrapper):
     def _update_step(self, agent, observation):
         pass
 
-class observation_lambda_wrapper(ObservationWrapper):
+class observation_lambda(ObservationWrapper):
     def __init__(self, env, change_observation_fn, change_obs_space_fn=None):
         assert callable(change_observation_fn), "change_observation_fn needs to be a function. It is {}".format(change_observation_fn)
         assert change_obs_space_fn is None or callable(change_obs_space_fn), "change_obs_space_fn needs to be a function. It is {}".format(change_obs_space_fn)
@@ -57,7 +58,7 @@ class BasicObservationWrapper(ObservationWrapper):
 
     def _check_wrapper_params(self):
         assert all([isinstance(obs_space, Box) for obs_space in self.observation_spaces.values()]), \
-            "All agents' observation spaces are not Box: {}, and as such the observation spaces are not modified.".format(self.observation_spaces)
+            "All agents' observation spaces are not Box, they are: {}.".format(self.observation_spaces)
         for obs_space in self.env.observation_spaces.values():
             self.module.check_param(obs_space,self.param)
 
@@ -68,7 +69,7 @@ class BasicObservationWrapper(ObservationWrapper):
         self.observation_spaces = new_spaces
 
     def _modify_observation(self, agent, observation):
-        obs_space = self.observation_spaces[agent]
+        obs_space = self.env.observation_spaces[agent]
         return self.module.change_observation(observation, obs_space, self.param)
 
 
@@ -102,7 +103,24 @@ class normalize_obs(BasicObservationWrapper):
         shape = (env_min, env_max)
         super().__init__(env,basic_transforms.normalize_obs,shape)
 
-class homogenize_obs(ObservationWrapper):
+class agent_indicator(ObservationWrapper):
+    def __init__(self,env,type_only=False):
+        self.type_only = type_only
+        self.indicator_map = agent_ider.get_indicator_map(env.agents,type_only)
+        self.num_indicators = len(set(self.indicator_map.values()))
+        super().__init__(env)
+
+    def _check_wrapper_params(self):
+        agent_ider.check_params(self.observation_spaces.values())
+
+    def _modify_spaces(self):
+        self.observation_spaces = {agent:agent_ider.change_obs_space(space,self.num_indicators) for agent,space in self.observation_spaces.items()}
+
+    def _modify_observation(self, agent, observation):
+        new_obs = agent_ider.change_observation(observation, self.env.observation_spaces[agent], (self.indicator_map[agent], self.num_indicators))
+        return new_obs
+
+class pad_observations(ObservationWrapper):
     def _check_wrapper_params(self):
         spaces = list(self.observation_spaces.values())
         homogenize_ops.check_homogenize_spaces(spaces)
@@ -160,7 +178,7 @@ class ActionWrapper(BaseWrapper):
     def _update_step(self, agent, observation):
         pass
 
-class action_lambda_wrapper(ActionWrapper):
+class action_lambda(ActionWrapper):
     def __init__(self, env, change_action_fn, change_space_fn):
         assert callable(change_action_fn), "change_action_fn needs to be a function. It is {}".format(change_action_fn)
         assert callable(change_space_fn), "change_space_fn needs to be a function. It is {}".format(change_space_fn)
@@ -181,9 +199,9 @@ class action_lambda_wrapper(ActionWrapper):
         self.action_spaces = new_spaces
 
     def _modify_action(self, agent, action):
-        return self.change_action_fn(action, self.action_spaces[agent])
+        return self.change_action_fn(action, self.env.action_spaces[agent])
 
-class homogenize_actions(ActionWrapper):
+class pad_action_space(ActionWrapper):
     def _check_wrapper_params(self):
         homogenize_ops.check_homogenize_spaces(list(self.env.action_spaces.values()))
 

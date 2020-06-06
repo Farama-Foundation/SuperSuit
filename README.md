@@ -7,63 +7,31 @@ We support Gym for single agent environments and PettingZoo for multi-agent envi
 
 ```
 import gym
-from supersuit import color_reduction, frame_stacking
+from supersuit.gym_wrappers import color_reduction, frame_stack
 
 env = gym.make('SpaceInvaders-v0')
 
-env = frame_stacking(color_reduction(env, 'full'), 4)
+env = frame_stack(color_reduction(env, 'full'), 4)
 ```
 
 You can install it via `pip install supersuit`
 
-## Lambda functions
-
-One of the most powerful features is the ability to define your own transformations of the observation and action spaces by passing functions to the lambda wrappers.
-
-For example, adding noise to a Box observation is as simple as:
+Similarly, for pettingzoo,
 
 ```
-env = observation_lambda_wrapper(env, lambda x : x + np.random.normal(size=x.shape))
+import pettingzoo.gamma
+from supersuit.aec_wrappers import color_reduction, frame_stack
+
+env = pettingzoo.gamma.pistonball_v0.env()
+
+env = frame_stack(color_reduction(env, 'full'), 4)
 ```
 
-#### Transforming spaces
-
-You also may need to transform the observation space. For example, if you need to increase the high and low bounds to accomidate this extra noise, then you can just do something like
-
-```
-env = observation_lambda_wrapper(env,
-    lambda x : x + np.random.normal(size=x.shape),
-    lambda obs_space : gym.spaces.Box(obs_space.low-5,obs_space.high+5))
-```
-
-If you don't specify an observation space transformation, and the observation space is a Box, the observation space will be inferred automatically by transformming the low and the high bounds of the Box according to the specified  transformation function. This is appropriate for many common transformations.
-
-#### Action lambda wrapper
-
-If you need to transform the actions, the process is similar, but remember you are transforming the actions in reverse, from the actions received by the wrapper to the actions expected by the base environment.
-
-So if you want to add an action to your action space which is a "random action", then just
-
-```
-n = env.action_space.n
-env = action_lambda_wrapper(env,
-    lambda action : random.randrange(n) if action == n else action,
-    lambda act_space : gym.spaces.Discrete(n+1))
-```
-
-#### Lambda Reference
-
-`observation_lambda_wrapper(change_observation_fn, change_obs_space_fn=None)`
-allows you to define arbitrary changes to the observations by specifying the observation transformation function  `change_observation_fn(observation) : observation`, and the observation space transformation `change_obs_space_fn(obs_space) : obs_space`. For Box-Box transformations the space transformation will be inferred from `change_observation_fn` if `change_obs_space_fn=None`.
-
-`action_lambda_wrapper(change_action_fn, change_space_fn)` Allows you to define arbitrary changes to the actions with the function parameter `change_action_fn(action) : action` and to the action spaces with `change_space_fn(action_space) : action_space`
-
-
-## Full list of functions:
+## Built in Functions
 
 `color_reduction(env, mode='full')` simplifies color information in graphical ((x,y,3) shaped) environments. `mode='full'` fully greyscales of the observation. This can be computationally intensive. Arguments of 'R', 'G' or 'B' just take the corresponding R, G or B color channel from observation. This is much faster and is generally sufficient.
 
-`continuous_actions(env, seed=None)` discrete action spaces are converted to a 1d Box action space of size *n*. This space is treated as a vector of logits, and the multinomial distribution defined by those input logits is sampled to get a discrete value. Currently supports Discrete action spaces. It passes Box action spaces through without any alteration. Setting the `seed` parameter allows this module to act deterministically.
+`continuous_actions(env)` discrete action spaces are converted to a 1d Box action space of size *n*. This space is treated as a vector of logits, and the multinomial distribution defined by those input logits is sampled to get a discrete value. Currently supports Discrete action spaces. It passes Box action spaces through without any alteration.
 
 `down_scale(env, x_scale=1, y_scale=1)` uses mean pooling to reduce the observations output by each game by the given x and y scales. The dimension of an environment must be an integer multiple of it's scale. This is only available for 2D or 3D observations.
 
@@ -77,10 +45,56 @@ allows you to define arbitrary changes to the observations by specifying the obs
 
 `reshape(env, shape)` reshapes observations into given shape.
 
-`homogenize_observations(env)` (multiplayer only) pads observations to be of the shape of the largest observation of any agent, per the algorithm posed in *Parameter Sharing is Surprisingly Useful for Deep Reinforcement Learning*. This enables MARL methods that require the observations of all agents to work in environments with heterogenous agents. This currently supports on Discrete and Box observation spaces.
 
-`homogenize_actions(env)` (multiplayer only) actions spaces of all players will be expanded to be of same shape and belong to the same action_space. Discrete actions inside this expanded space but outside the original space will be set to zero. Box action spaces will be cropped from the new space to the original space.
+## Built in Multi-Agent Only Functions
 
-### Future development
+`agent_indicator(env, type_only=False)` Adds an indicator of the agent ID to the observation, only supports discrete and 1D, 2D, and 3D box. This allows MADRL methods like parameter sharing to learn policies for heterogeneous agents since the policy can tell what agent it's acting on. The `type_only` parameter means that only the type of the agent defined in the `<type>_<n>` name specification is added to the observation. This is useful for environments with a large number of mostly homogeneous agents.
 
-We hope to support Gym in all wrappers that are not explicitly multiplayer.
+`pad_action_space(env)` actions spaces of all players will all be padded to be be the same as the biggest, per the algorithm posed in *Parameter Sharing is Surprisingly Useful for Deep Reinforcement Learning*.  This enables MARL methods that require the homogeneous action spaces for all agents to work in environments with heterogeneous action spaces. Discrete actions inside padded region will be set to zero, and Box actions will be cropped down to the original space.
+
+`pad_observations(env)` pads observations to be of the shape of the largest observation of any agent, per the algorithm posed in *Parameter Sharing is Surprisingly Useful for Deep Reinforcement Learning*. This enables MARL methods that require homogeneous observations from all agents to work in environments with heterogeneous observations. This currently supports Discrete and Box observation spaces.
+
+## Lambda Functions
+
+If none of the build in micro-wrappers are suitable for your needs, you can use a lambda function (or if your needs are still not met, submit a PR).
+
+`action_lambda(env, change_action_fn, change_space_fn)` allows you to define arbitrary changes to the actions via `change_action_fn(action, space) : action` and to the action spaces with `change_space_fn(action_space) : action_space`. Remember that you are transforming the actions received by the wrapper to the actions expected by the base environment.
+
+`observation_lambda(env, observation_fn, observation_space_fn=None)` allows you to define arbitrary changes to the via `observation_fn(observation) : observation`, and `observation_space_fn(obs_space) : obs_space`. For Box-Box transformations the space transformation will be inferred from `change_observation_fn` if `change_obs_space_fn=None` by passing the `high` and `low` bounds through the `observation_space_fn`.
+
+### Lambda Function Examples
+
+Adding noise to a Box observation looks like:
+
+```
+env = observation_lambda(env, lambda x : x + np.random.normal(size=x.shape))
+```
+
+Adding noise to a box observation and increasing the high and low bounds to accommodate this extra noise looks like:
+
+```
+env = observation_lambda(env,
+    lambda x : x + np.random.normal(size=x.shape),
+    lambda obs_space : gym.spaces.Box(obs_space.low-5,obs_space.high+5))
+```
+
+If you know the inner details of the environment, you can hardcode the appropriate values. For example, if you know you have a Box space of 20x20, you can just do
+
+```
+env = observation_lambda(env,
+    lambda x : np.pad(x,pad_width=4)
+    lambda _ : gym.spaces.Box(low=0,high=1,shape=(28,28)))
+```
+
+Changing 1d box action space to a Discrete space by mapping the discrete actions to one-hot vectors.
+
+```
+def one_hot(x,n):
+    v = np.zeros(n)
+    v[x] = 1
+    return v
+
+env = action_lambda(env,
+    lambda action, act_space : one_hot(action, act_space.shape[0]),
+    lambda act_space : gym.spaces.Discrete(act_space.shape[0]))
+```

@@ -25,7 +25,6 @@ class DummyEnv(AECEnv):
         return self._observations[agent]
 
     def step(self, action, observe=True):
-        old_sel = self.agent_selection
         self.agent_selection = self._agent_selector.next()
         if observe:
             return self._observations[self.agent_selection]

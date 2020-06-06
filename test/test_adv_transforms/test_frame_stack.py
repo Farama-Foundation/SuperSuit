@@ -1,4 +1,4 @@
-from supersuit.frame_stack import stack_obs_space,stack_init,stack_obs
+from supersuit.adv_transforms.frame_stack import stack_obs_space,stack_init,stack_obs
 from gym.spaces import Box, Discrete
 import numpy as np
 import pytest
