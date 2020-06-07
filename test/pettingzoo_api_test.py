@@ -2,7 +2,7 @@ from pettingzoo.tests import api_test,seed_test,error_tests
 from pettingzoo.mpe import simple_push_v0
 #from pettingzoo.sisl import multiwalker
 
-from supersuit.action_transforms import continuous_actions,frame_stack
+from supersuit.aec_wrappers import continuous_actions,frame_stack
 import numpy as np
 
 def test_pettinzoo_frame_stack():
