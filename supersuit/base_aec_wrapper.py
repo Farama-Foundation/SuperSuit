@@ -78,13 +78,13 @@ class BaseWrapper(AECEnv):
         action = self._modify_action(agent, action)
         next_obs = self.env.step(action, observe=observe)
         new_agent = self.env.agent_selection
-        self._update_step(new_agent,next_obs)
 
         self.agent_selection = self.env.agent_selection
         self.agent_order = self.env.agent_order
         self.rewards = self.env.rewards
         self.dones = self.env.dones
         self.infos = self.env.infos
+        self._update_step(new_agent,next_obs)
 
         if observe:
             next_obs = self._modify_observation(new_agent,next_obs)

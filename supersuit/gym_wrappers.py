@@ -8,9 +8,9 @@ import gym
 
 class ObservationWrapper(gym.Wrapper):
     def step(self, action):
-        observation = self.env.step(action)
+        observation,rew,done,info = self.env.step(action)
         observation = self._modify_observation(observation)
-        return observation
+        return observation,rew,done,info
 
     def reset(self):
         observation = self.env.reset()
@@ -166,3 +166,26 @@ class continuous_actions(ActionWrapper):
         act_space = self.env.action_space
         new_action = continuous_action_ops.modify_action(act_space, action, self.np_random)
         return new_action
+
+class RewardWrapper(gym.Wrapper):
+    def step(self, action):
+        obs, rew, done, info = super().step(action)
+        return obs, self._change_reward_fn(rew), done, info
+
+
+class reward_lambda(RewardWrapper):
+    def __init__(self, env, change_reward_fn):
+        assert callable(change_reward_fn), "change_reward_fn needs to be a function. It is {}".format(change_reward_fn)
+        self._change_reward_fn = change_reward_fn
+
+        super().__init__(env)
+
+class clip_reward(RewardWrapper):
+    def __init__(self, env, lower_bound=-1, upper_bound=1):
+        self.lower_bound = lower_bound
+        self.upper_bound = upper_bound
+
+        super().__init__(env)
+
+    def _change_reward_fn(self, rew):
+        return max(min(rew, self.upper_bound), self.lower_bound)

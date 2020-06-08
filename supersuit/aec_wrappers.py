@@ -247,3 +247,31 @@ class continuous_actions(ActionWrapper):
         res = super().step(action, observe)
         self._remove_infos()
         return res
+
+
+class RewardWrapper(ActionWrapper,ObservationWrapper):
+    def _check_wrapper_params(self):
+        pass
+
+    def _modify_spaces(self):
+        pass
+
+    def _update_step(self, agent, obs):
+        self.rewards = {agent: self._change_reward_fn(reward) for agent,reward in self.rewards.items()}
+
+class reward_lambda(RewardWrapper):
+    def __init__(self, env, change_reward_fn):
+        assert callable(change_reward_fn), "change_reward_fn needs to be a function. It is {}".format(change_reward_fn)
+        self._change_reward_fn = change_reward_fn
+
+        super().__init__(env)
+
+class clip_reward(RewardWrapper):
+    def __init__(self, env, lower_bound=-1, upper_bound=1):
+        self.lower_bound = lower_bound
+        self.upper_bound = upper_bound
+
+        super().__init__(env)
+
+    def _change_reward_fn(self, rew):
+        return max(min(rew, self.upper_bound), self.lower_bound)

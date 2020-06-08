@@ -54,6 +54,8 @@ env = frame_stack(color_reduction(env, 'full'), 4)
 
 `pad_observations(env)` pads observations to be of the shape of the largest observation of any agent, per the algorithm posed in *Parameter Sharing is Surprisingly Useful for Deep Reinforcement Learning*. This enables MARL methods that require homogeneous observations from all agents to work in environments with heterogeneous observations. This currently supports Discrete and Box observation spaces.
 
+`clip_reward(env, lower_bound=-1, upper_bound=1)` clips rewards to between lower_bound and upper_bound. This is a popular way of handling rewards with significant variance of magnitude, especially in Atari environments.
+
 ## Lambda Functions
 
 If none of the build in micro-wrappers are suitable for your needs, you can use a lambda function (or if your needs are still not met, submit a PR).
@@ -61,6 +63,8 @@ If none of the build in micro-wrappers are suitable for your needs, you can use 
 `action_lambda(env, change_action_fn, change_space_fn)` allows you to define arbitrary changes to the actions via `change_action_fn(action, space) : action` and to the action spaces with `change_space_fn(action_space) : action_space`. Remember that you are transforming the actions received by the wrapper to the actions expected by the base environment.
 
 `observation_lambda(env, observation_fn, observation_space_fn=None)` allows you to define arbitrary changes to the via `observation_fn(observation) : observation`, and `observation_space_fn(obs_space) : obs_space`. For Box-Box transformations the space transformation will be inferred from `change_observation_fn` if `change_obs_space_fn=None` by passing the `high` and `low` bounds through the `observation_space_fn`.
+
+`reward_lambda(env, change_reward_fn)` allows you to make arbitrary changes to rewards by passing in a `change_reward_fn(reward) : reward` function. For gym environments this is called every step to transform the returned reward. For AECEnv, this function is used to change each element in the rewards dictionary every step, taking NxM time.
 
 ### Lambda Function Examples
 
