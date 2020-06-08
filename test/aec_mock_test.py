@@ -6,7 +6,7 @@ from supersuit import aec_wrappers
 import pytest
 
 
-base_obs = {"a{}".format(idx): np.zeros([8,8,3]) + np.arange(3) + idx for idx in range(2)}
+base_obs = {"a{}".format(idx): np.zeros([8,8,3],dtype=np.float32) + np.arange(3) + idx for idx in range(2)}
 base_obs_space = {"a{}".format(idx): Box(low=np.float32(0.),high=np.float32(10.),shape=[8,8,3]) for idx in range(2)}
 base_act_spaces = {"a{}".format(idx): Discrete(5) for idx in range(2)}
 
@@ -63,7 +63,7 @@ def test_reshape():
 
 def new_dummy():
 
-    base_obs = {"a_{}".format(idx): np.zeros([8,8,3]) + np.arange(3) + idx for idx in range(2)}
+    base_obs = {"a_{}".format(idx): (np.zeros([8,8,3],dtype=np.float32) + np.arange(3) + idx).astype(np.float32) for idx in range(2)}
     base_obs_space = {"a_{}".format(idx): Box(low=np.float32(0.),high=np.float32(10.),shape=[8,8,3]) for idx in range(2)}
     base_act_spaces = {"a_{}".format(idx): Discrete(5) for idx in range(2)}
 
@@ -92,10 +92,8 @@ def test_basic_wrappers(env):
     act_space = env.action_spaces[env.agent_selection]
     obs_space = env.observation_spaces[env.agent_selection]
     first_obs = env.observe("a_0")
-    print(obs_space.low.shape)
-    print(obs_space.high.shape)
-    print(first_obs.shape)
     assert obs_space.contains(first_obs)
+    assert first_obs.dtype == obs_space.dtype
     env.step(act_space.sample())
 
 

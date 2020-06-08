@@ -5,7 +5,7 @@ from supersuit.gym_wrappers import frame_stack,reshape,observation_lambda,action
 from supersuit import gym_wrappers
 import pytest
 
-base_obs = np.zeros([8,8,3]) + np.arange(3)
+base_obs = (np.zeros([8,8,3])+ np.arange(3)).astype(np.float32)
 base_obs_space = Box(low=np.float32(0.),high=np.float32(10.),shape=[8,8,3])
 base_act_spaces =  Discrete(5)
 
@@ -39,6 +39,7 @@ def test_basic_wrappers(env):
     act_space = env.action_space
     obs_space = env.observation_space
     assert obs_space.contains(obs)
+    assert obs.dtype == obs_space.dtype
     env.step(act_space.sample())
 
 def test_lambda():

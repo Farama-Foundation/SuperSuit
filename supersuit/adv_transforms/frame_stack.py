@@ -45,7 +45,7 @@ def stack_obs_space(obs_space, stack_size):
 def stack_init(obs_space, stack_size):
     if isinstance(obs_space, Box):
         tile_shape, new_shape = get_tile_shape(obs_space.low.shape, stack_size)
-        return np.tile(np.zeros(new_shape),tile_shape)
+        return np.tile(np.zeros(new_shape,dtype=obs_space.dtype),tile_shape)
     else:
         return 0
 
