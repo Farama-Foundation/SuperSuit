@@ -22,7 +22,6 @@ class BaseWrapper(AECEnv):
         self.agents = self.env.agents
         self.observation_spaces = copy.copy(self.env.observation_spaces)
         self.action_spaces = copy.copy(self.env.action_spaces)
-        # self.agent_order = self.env.agent_order
 
         self._check_wrapper_params()
 
@@ -54,7 +53,6 @@ class BaseWrapper(AECEnv):
         agent = self.env.agent_selection
 
         self.agent_selection = self.env.agent_selection
-        self.agent_order = self.env.agent_order
         self.rewards = self.env.rewards
         self.dones = self.env.dones
         self.infos = self.env.infos
@@ -80,7 +78,6 @@ class BaseWrapper(AECEnv):
         new_agent = self.env.agent_selection
 
         self.agent_selection = self.env.agent_selection
-        self.agent_order = self.env.agent_order
         self.rewards = self.env.rewards
         self.dones = self.env.dones
         self.infos = self.env.infos
