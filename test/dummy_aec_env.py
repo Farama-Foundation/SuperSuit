@@ -10,16 +10,13 @@ class DummyEnv(AECEnv):
 
         self.agents = [x for x in observation_spaces.keys()]
         self.num_agents = len(self.agents)
-        self.agent_order = list(self.agents)
-        self._agent_selector = agent_selector(self.agent_order)
+        self._agent_selector = agent_selector(self.agents)
         self.agent_selection = self._agent_selector.reset()
         self.action_spaces = action_spaces
 
         self.rewards = {a:1 for a in self.agents}
         self.dones = {a:False for a in self.agents}
         self.infos = {a:{} for a in self.agents}
-
-        self.agent_order = self.agents
 
     def observe(self, agent):
         return self._observations[agent]
