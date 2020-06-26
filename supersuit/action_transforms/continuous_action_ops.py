@@ -8,7 +8,7 @@ def check_action_space(act_space):
 
 def change_action_space(act_space):
     if isinstance(act_space, spaces.Discrete):
-        new_act_space = spaces.Box(low=-np.float32(np.inf), high=np.float32(np.inf), shape=(act_space.n,))
+        new_act_space = spaces.Box(low=-10, high=10, shape=(act_space.n,))
     elif isinstance(act_space, spaces.Box):
         new_act_space = act_space
 
@@ -29,7 +29,7 @@ def modify_action(act_space, action, np_random):
         if np.any(np.isnan(action)):
             new_action = np.nan
         else:
-            new_action = sample_softmax(action)
+            new_action = int(sample_softmax(action))
     elif isinstance(act_space, spaces.Box):
         new_action = action
 
