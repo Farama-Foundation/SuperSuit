@@ -21,6 +21,8 @@ def check_homogenize_spaces(all_spaces):
 
 def pad_to(arr,new_shape,pad_value):
     old_shape = arr.shape
+    if old_shape == new_shape:
+        return arr
     pad_size = [ns-os for ns,os in zip(new_shape,old_shape)]
     pad_tuples = [(0,ps) for ps in pad_size]
     return np.pad(arr,pad_tuples,constant_values=pad_value)
@@ -49,11 +51,14 @@ def dehomogenize_actions(orig_action_space, action):
         # choose only the relevant action values
         cur_shape = action.shape
         new_shape = orig_action_space.shape
-        assert len(cur_shape) == len(new_shape)
-        slices = [slice(0,i) for i in new_shape]
-        new_action = action[tuple(slices)]
+        if cur_shape == new_shape:
+            return new_action
+        else:
+            assert len(cur_shape) == len(new_shape)
+            slices = [slice(0,i) for i in new_shape]
+            new_action = action[tuple(slices)]
 
-        return new_action
+            return new_action
 
     elif isinstance(orig_action_space, spaces.Discrete):
         # extra action values refer to action value 0
