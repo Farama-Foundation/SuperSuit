@@ -29,7 +29,6 @@ def pad_to(arr,new_shape,pad_value):
 
 def homogenize_spaces(all_spaces):
     space1 = all_spaces[0]
-    print(space1.dtype)
     if isinstance(space1, spaces.Box):
         all_dims = np.array([space.shape for space in all_spaces],dtype=np.int32)
         max_dims = np.max(all_dims,axis=0)
