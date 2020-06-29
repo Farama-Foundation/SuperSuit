@@ -3,12 +3,16 @@ import numpy as np
 from gym.spaces import Box,Discrete
 from gym import spaces
 
-def check_action_space(act_space):
+def check_action_space(act_space, bounds):
+    assert isinstance(bounds, tuple) and len(bounds) == 2, "`bounds` parameter must be a tuple of length 2"
+    float(bounds[0]) # bounds needs to be convertible to float
+    float(bounds[1])
     assert isinstance(act_space, spaces.Discrete) or isinstance(act_space, spaces.Box),"space {} is not supported by the continuous_actions option of the wrapper".format(act_space)
 
-def change_action_space(act_space):
+def change_action_space(act_space, bounds):
     if isinstance(act_space, spaces.Discrete):
-        new_act_space = spaces.Box(low=-np.float32(np.inf), high=np.float32(np.inf), shape=(act_space.n,))
+        low, high = bounds
+        new_act_space = spaces.Box(low=low, high=high, shape=(act_space.n,))
     elif isinstance(act_space, spaces.Box):
         new_act_space = act_space
 

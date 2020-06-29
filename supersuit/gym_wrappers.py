@@ -150,16 +150,17 @@ class action_lambda(ActionWrapper):
         return self.change_action_fn(action, self.env.action_space)
 
 class continuous_actions(ActionWrapper):
-    def __init__(self, env):
+    def __init__(self, env, bounds=(-10,10)):
         super().__init__(env)
         SEED = 0x601326ad
+        self.bounds = bounds
         self.np_random = np.random.RandomState(SEED)
 
-        continuous_action_ops.check_action_space(self.action_space)
+        continuous_action_ops.check_action_space(self.action_space, self.bounds)
         self._modify_spaces()
 
     def _modify_spaces(self):
-        space = continuous_action_ops.change_action_space(self.action_space)
+        space = continuous_action_ops.change_action_space(self.action_space, self.bounds)
         self.action_space = space
 
     def _modify_action(self, action):

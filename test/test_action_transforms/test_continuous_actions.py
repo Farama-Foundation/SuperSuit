@@ -8,12 +8,18 @@ box_spaces = Box(low=np.float32(0),high=np.float32(1),shape=(5,4))
 discrete_spaces = Discrete(5)
 
 def test_param_check():
-    check_action_space(box_spaces)
-    check_action_space(discrete_spaces)
+    with pytest.raises(ValueError):
+        check_action_space(box_spaces, ("bob", 2))
+    with pytest.raises(AssertionError):
+        check_action_space(box_spaces, 2)
+    bounds = (-5,5)
+    check_action_space(box_spaces, bounds)
+    check_action_space(discrete_spaces, bounds)
 
 def test_continuous_space_transform():
-    old_box = change_action_space(box_spaces)
-    new_box = change_action_space(discrete_spaces)
+    bounds = (-5,5)
+    old_box = change_action_space(box_spaces, bounds)
+    new_box = change_action_space(discrete_spaces, bounds)
     assert old_box.shape == (5,4)
     assert new_box.shape == (5,)
 

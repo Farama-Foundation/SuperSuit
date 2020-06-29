@@ -215,17 +215,18 @@ class pad_action_space(ActionWrapper):
         return new_action
 
 class continuous_actions(ActionWrapper):
-    def __init__(self, env):
+    def __init__(self, env, bounds=(-10,10)):
         SEED = 0x601326ad
+        self.bounds = bounds
         self.np_random = np.random.RandomState(SEED)
         super().__init__(env)
 
     def _check_wrapper_params(self):
         for space in self.action_spaces.values():
-            continuous_action_ops.check_action_space(space)
+            continuous_action_ops.check_action_space(space, self.bounds)
 
     def _modify_spaces(self):
-        spaces = {agent: continuous_action_ops.change_action_space(act_space) for agent,act_space in self.env.action_spaces.items()}
+        spaces = {agent: continuous_action_ops.change_action_space(act_space, self.bounds) for agent,act_space in self.env.action_spaces.items()}
 
         self.action_spaces = spaces
 
