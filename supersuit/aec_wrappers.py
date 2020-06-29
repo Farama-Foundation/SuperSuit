@@ -82,7 +82,7 @@ class down_scale(BasicObservationWrapper):
         old_obs_shape = list(env.observation_spaces.values())[0].shape
         scale_list = [1]*len(old_obs_shape)
         scale_list[0] = y_scale
-        scale_list[0] = x_scale
+        scale_list[1] = x_scale
         scale_tuple = tuple(scale_list)
         super().__init__(env,basic_transforms.down_scale,scale_tuple)
 

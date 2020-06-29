@@ -13,7 +13,7 @@ def check_param(obs_space, down_scale):
 def change_obs_space(obs_space, param):
     return convert_box(lambda obs:change_observation(obs, obs_space, param), obs_space)
 
-def change_observation(obs, obs_space,down_scale):
+def change_observation(obs, obs_space, down_scale):
     mean = lambda x, axis: np.mean(x, axis=axis, dtype=obs_space.dtype)
     obs = measure.block_reduce(obs, block_size=down_scale, func=mean)
     return obs
