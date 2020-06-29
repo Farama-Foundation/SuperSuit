@@ -33,7 +33,7 @@ def modify_action(act_space, action, np_random):
         if np.any(np.isnan(action)):
             new_action = np.nan
         else:
-            new_action = sample_softmax(action)
+            new_action = int(sample_softmax(action))
     elif isinstance(act_space, spaces.Box):
         new_action = action
 
