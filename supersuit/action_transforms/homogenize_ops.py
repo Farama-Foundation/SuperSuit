@@ -51,7 +51,7 @@ def dehomogenize_actions(orig_action_space, action):
         cur_shape = action.shape
         new_shape = orig_action_space.shape
         if cur_shape == new_shape:
-            return new_action
+            return action
         else:
             assert len(cur_shape) == len(new_shape)
             slices = [slice(0,i) for i in new_shape]
