@@ -102,3 +102,7 @@ env = action_lambda(env,
     lambda action, act_space : one_hot(action, act_space.shape[0]),
     lambda act_space : gym.spaces.Discrete(act_space.shape[0]))
 ```
+
+## Reward Program
+
+We have a sort bug/documentation error bounty program, inspired by [Donald Knuth's reward checks](https://en.wikipedia.org/wiki/Knuth_reward_check). People who make mergable PRs which properly address meaningful problems in the code, or which make meaningful improvements to the documentation, can recieve a negotiable check for "hexadecimal dollar" ($2.56) mailed to them, or sent to them via PayPal. To redeem this, just send an email to justinkterry@gmail.com with your mailing adress or PayPal adress. We also pay out 32 cents for small fixes.
