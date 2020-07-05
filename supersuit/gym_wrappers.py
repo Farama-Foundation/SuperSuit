@@ -2,7 +2,6 @@ from .base_aec_wrapper import BaseWrapper
 from gym.spaces import Box,Space,Discrete
 from . import basic_transforms
 from .adv_transforms.frame_stack import stack_obs_space,stack_init,stack_obs
-from .action_transforms import continuous_action_ops
 import numpy as np
 import gym
 
@@ -148,25 +147,6 @@ class action_lambda(ActionWrapper):
 
     def _modify_action(self, action):
         return self.change_action_fn(action, self.env.action_space)
-
-class continuous_actions(ActionWrapper):
-    def __init__(self, env, bounds=(-10,10)):
-        super().__init__(env)
-        SEED = 0x601326ad
-        self.bounds = bounds
-        self.np_random = np.random.RandomState(SEED)
-
-        continuous_action_ops.check_action_space(self.action_space, self.bounds)
-        self._modify_spaces()
-
-    def _modify_spaces(self):
-        space = continuous_action_ops.change_action_space(self.action_space, self.bounds)
-        self.action_space = space
-
-    def _modify_action(self, action):
-        act_space = self.env.action_space
-        new_action = continuous_action_ops.modify_action(act_space, action, self.np_random)
-        return new_action
 
 class RewardWrapper(gym.Wrapper):
     def step(self, action):
