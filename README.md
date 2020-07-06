@@ -56,6 +56,14 @@ env = frame_stack(color_reduction(env, 'full'), 4)
 
 `clip_reward(env, lower_bound=-1, upper_bound=1)` clips rewards to between lower_bound and upper_bound. This is a popular way of handling rewards with significant variance of magnitude, especially in Atari environments.
 
+## Vector environment helpers
+
+`gym_vec_env(env, num_envs, multiprocessing=False)` creates a gym vector environment with `num_envs` copies of the environment. If `multiprocessing` is true, uses AsyncVectorEnv instead of SyncVectorEnv.
+
+`stable_baselines_vec_env(env, num_envs, multiprocessing=False)` creates a stable_baselines vector environment with num_envs copies of the environment. If `multiprocessing` is true, uses SubprocVecEnv instead of DummyVecEnv. Needs stable_baselines to be installed to work.
+
+`stable_baselines3_vec_env(env, num_envs, multiprocessing=False)` creates a stable_baselines vector environment with num_envs copies of the environment. If `multiprocessing` is true, uses SubprocVecEnv instead of DummyVecEnv. Needs stable_baselines3 to be installed to work.
+
 ## Lambda Functions
 
 If none of the build in micro-wrappers are suitable for your needs, you can use a lambda function (or if your needs are still not met, submit a PR).
