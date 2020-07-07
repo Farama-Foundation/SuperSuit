@@ -167,6 +167,34 @@ class frame_stack(BaseWrapper):
             observation = self.observe(agent)
         self.stacks[agent] = stack_obs(self.stacks[agent], observation, self.env.observation_spaces[agent], self.stack_size)
 
+
+class frame_skip(BaseWrapper):
+    def __init__(self, env, frame_skip, seed=None):
+        super().__init__(env)
+        self.frame_skip = check_transform_frameskip(frame_skip)
+        self.np_random, seed = gym.utils.seeding.np_random(seed)
+
+        super().__init__(env)
+
+    def _check_wrapper_params(self):
+        pass
+
+    def _modify_spaces(self):
+        pass
+
+    def _modify_action(self, agent, action):
+        return action
+
+    def _modify_observation(self, agent, observation):
+        return observation
+
+    def reset(self, observe=True):
+        self.stacks = {agent: stack_init(space, self.stack_size) for agent,space in self.env.observation_spaces.items()}
+        return super().reset(observe)
+
+    def step(self, action, observe=True):
+        
+
 class ActionWrapper(BaseWrapper):
     def __init__(self, env):
         super().__init__(env)

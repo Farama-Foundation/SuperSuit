@@ -2,6 +2,7 @@ from .base_aec_wrapper import BaseWrapper
 from gym.spaces import Box,Space,Discrete
 from . import basic_transforms
 from .adv_transforms.frame_stack import stack_obs_space,stack_init,stack_obs
+from .adv_transforms.frame_skip import check_transform_frameskip
 import numpy as np
 import gym
 
@@ -101,7 +102,7 @@ class frame_stack(ObservationWrapper):
         self.stack_size = num_frames
         super().__init__(env)
         self._check_wrapper_params()
-        self.observation_space =stack_obs_space(self.env.observation_space, self.stack_size)
+        self.observation_space = stack_obs_space(self.env.observation_space, self.stack_size)
 
     def _check_wrapper_params(self):
         assert isinstance(self.stack_size, int), "stack size of frame_stack must be an int"
@@ -122,6 +123,24 @@ class frame_stack(ObservationWrapper):
         self.stack = stack_obs(self.stack, observation, self.env.observation_space, self.stack_size)
         return self.stack
 
+class frame_skip(gym.Wrapper):
+    def __init__(self, env, frame_skip, seed=None):
+        super().__init__(env)
+        self.frame_skip = check_transform_frameskip(frame_skip)
+        self.np_random, seed = gym.utils.seeding.np_random(seed)
+
+    def step(self, action):
+        low, high = self.frame_skip
+        num_skips = int(self.np_random.randint(low, high+1))
+        total_reward = 0.
+
+        for x in range(num_skips):
+            obs, rew, done, info = super().step(action)
+            total_reward += rew
+            if done:
+                break
+
+        return obs, total_reward, done, info
 
 class ActionWrapper(gym.Wrapper):
     def __init__(self, env):
