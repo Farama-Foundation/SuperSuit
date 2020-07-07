@@ -3,7 +3,6 @@ from gym.spaces import Box,Space,Discrete
 from . import basic_transforms
 from .adv_transforms.frame_stack import stack_obs_space,stack_init,stack_obs
 from .action_transforms import homogenize_ops
-from .action_transforms import continuous_action_ops
 from .adv_transforms import agent_indicator as agent_ider
 import numpy as np
 
@@ -213,42 +212,6 @@ class pad_action_space(ActionWrapper):
     def _modify_action(self, agent, action):
         new_action = homogenize_ops.dehomogenize_actions(self.env.action_spaces[agent], action)
         return new_action
-
-class continuous_actions(ActionWrapper):
-    def __init__(self, env, bounds=(-10,10)):
-        SEED = 0x601326ad
-        self.bounds = bounds
-        self.np_random = np.random.RandomState(SEED)
-        super().__init__(env)
-
-    def _check_wrapper_params(self):
-        for space in self.action_spaces.values():
-            continuous_action_ops.check_action_space(space, self.bounds)
-
-    def _modify_spaces(self):
-        spaces = {agent: continuous_action_ops.change_action_space(act_space, self.bounds) for agent,act_space in self.env.action_spaces.items()}
-
-        self.action_spaces = spaces
-
-    def _modify_action(self, agent, action):
-        act_space = self.env.action_spaces[agent]
-        new_action = continuous_action_ops.modify_action(act_space, action, self.np_random)
-        return new_action
-
-    def _remove_infos(self):
-        self.infos = {agent: {key:value for key,value in info_dict.items() if key != "legal_moves"}
-            for agent,info_dict in self.infos.items()}
-
-    def reset(self, observe=True):
-        res = super().reset(observe)
-        self._remove_infos()
-        return res
-
-    def step(self, action, observe=True):
-        res = super().step(action, observe)
-        self._remove_infos()
-        return res
-
 
 class RewardWrapper(ActionWrapper,ObservationWrapper):
     def _check_wrapper_params(self):

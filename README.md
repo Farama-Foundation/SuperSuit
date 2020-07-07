@@ -31,8 +31,6 @@ env = frame_stack(color_reduction(env, 'full'), 4)
 
 `color_reduction(env, mode='full')` simplifies color information in graphical ((x,y,3) shaped) environments. `mode='full'` fully greyscales of the observation. This can be computationally intensive. Arguments of 'R', 'G' or 'B' just take the corresponding R, G or B color channel from observation. This is much faster and is generally sufficient.
 
-`continuous_actions(env, bounds=(-10,10))` discrete action spaces are converted to a 1d Box action space of size *n*. This space is treated as a vector of logits, and the multinomial distribution defined by those input logits is sampled to get a discrete value. The lower and upper bounds of this Box space can be specified by the `bounds` parameter. Currently supports Discrete action spaces. It passes Box action spaces through without any alteration.
-
 `down_scale(env, x_scale=1, y_scale=1)` uses mean pooling to reduce the observations output by each game by the given x and y scales. The dimension of an environment must be an integer multiple of it's scale. This is only available for 2D or 3D observations.
 
 `dtype(env, dtype)` recasts your observation as a certain dtype. Many graphical games return `uint8` observations, while neural networks generally want `float16` or `float32`.
@@ -55,6 +53,14 @@ env = frame_stack(color_reduction(env, 'full'), 4)
 `pad_observations(env)` pads observations to be of the shape of the largest observation of any agent, per the algorithm posed in *Parameter Sharing is Surprisingly Useful for Deep Reinforcement Learning*. This enables MARL methods that require homogeneous observations from all agents to work in environments with heterogeneous observations. This currently supports Discrete and Box observation spaces.
 
 `clip_reward(env, lower_bound=-1, upper_bound=1)` clips rewards to between lower_bound and upper_bound. This is a popular way of handling rewards with significant variance of magnitude, especially in Atari environments.
+
+## Vector environment helpers
+
+`gym_vec_env(env, num_envs, multiprocessing=False)` creates a gym vector environment with `num_envs` copies of the environment. If `multiprocessing` is true, uses AsyncVectorEnv instead of SyncVectorEnv.
+
+`stable_baselines_vec_env(env, num_envs, multiprocessing=False)` creates a stable_baselines vector environment with num_envs copies of the environment. If `multiprocessing` is true, uses SubprocVecEnv instead of DummyVecEnv. Needs stable_baselines to be installed to work.
+
+`stable_baselines3_vec_env(env, num_envs, multiprocessing=False)` creates a stable_baselines vector environment with num_envs copies of the environment. If `multiprocessing` is true, uses SubprocVecEnv instead of DummyVecEnv. Needs stable_baselines3 to be installed to work.
 
 ## Lambda Functions
 
@@ -102,3 +108,7 @@ env = action_lambda(env,
     lambda action, act_space : one_hot(action, act_space.shape[0]),
     lambda act_space : gym.spaces.Discrete(act_space.shape[0]))
 ```
+
+## Reward Program
+
+We have a sort bug/documentation error bounty program, inspired by [Donald Knuth's reward checks](https://en.wikipedia.org/wiki/Knuth_reward_check). People who make mergable PRs which properly address meaningful problems in the code, or which make meaningful improvements to the documentation, can recieve a negotiable check for "hexadecimal dollar" ($2.56) mailed to them, or sent to them via PayPal. To redeem this, just send an email to justinkterry@gmail.com with your mailing adress or PayPal adress. We also pay out 32 cents for small fixes.

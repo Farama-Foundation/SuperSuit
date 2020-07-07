@@ -19,7 +19,6 @@ class WrapperFactory:
             return wrap_class(env, *args, **kwargs)
 
 color_reduction = WrapperFactory("color_reduction")
-continuous_actions = WrapperFactory("continuous_actions")
 down_scale = WrapperFactory("down_scale")
 dtype = WrapperFactory("dtype")
 flatten = WrapperFactory("flatten")
@@ -33,3 +32,7 @@ clip_reward = WrapperFactory("clip_reward")
 action_lambda = WrapperFactory("action_lambda")
 observation_lambda = WrapperFactory("observation_lambda")
 reward_lambda = WrapperFactory("reward_lambda")
+
+from .vector_constructors import gym_vec_env
+from .vector_constructors import stable_baselines_vec_env
+from .vector_constructors import stable_baselines3_vec_env

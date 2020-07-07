@@ -1,7 +1,7 @@
 from gym.spaces import Box, Discrete
 from .dummy_aec_env import DummyEnv
 import numpy as np
-from supersuit import frame_stack,reshape,observation_lambda,action_lambda,pad_action_space,continuous_actions,pad_observations
+from supersuit import frame_stack,reshape,observation_lambda,action_lambda,pad_action_space,pad_observations
 import supersuit
 import pytest
 
@@ -79,7 +79,6 @@ wrappers = [
     supersuit.frame_stack(new_dummy(),8),
     supersuit.pad_observations(new_dummy()),
     supersuit.pad_action_space(new_dummy()),
-    supersuit.continuous_actions(new_dummy()),
     supersuit.agent_indicator(new_dummy(),True),
     supersuit.agent_indicator(new_dummy(),False),
     #supersuit.normalize_reward(new_dummy()),
@@ -161,13 +160,3 @@ def test_dehomogenize():
     env.reset()
     assert all([s.n == 6 for s in env.action_spaces.values()])
     env.step(5)
-
-def test_continuous_actions():
-    base_act_spaces = {"a{}".format(idx): Discrete(5) for idx in range(2)}
-
-    base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
-    env = continuous_actions(base_env)
-    env.reset()
-    assert all([s.shape == (5,) for s in env.action_spaces.values()])
-    env.step(np.ones(5))
-    env.step(np.nan*np.ones(5))

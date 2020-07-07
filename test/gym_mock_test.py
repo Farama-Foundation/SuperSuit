@@ -1,7 +1,7 @@
 from .dummy_gym_env import DummyEnv
 from gym.spaces import Box, Discrete
 import numpy as np
-from supersuit import frame_stack,reshape,observation_lambda,action_lambda,continuous_actions
+from supersuit import frame_stack,reshape,observation_lambda,action_lambda
 import supersuit
 import pytest
 
@@ -28,7 +28,6 @@ wrappers = [
     supersuit.reshape(new_dummy(),(64,3)),
     supersuit.normalize_obs(new_dummy(),env_min=-1,env_max=5.),
     supersuit.frame_stack(new_dummy(),8),
-    supersuit.continuous_actions(new_dummy()),
     #supersuit.normalize_reward(new_dummy()),
     supersuit.reward_lambda(new_dummy(),lambda x: x/10),
     supersuit.clip_reward(new_dummy()),
@@ -99,13 +98,3 @@ def test_rew_lambda():
     env.reset()
     obs,rew,done,info = env.step(0)
     assert rew == 1./10
-
-def test_continuous_actions():
-    base_act_spaces = Discrete(5)
-
-    base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
-    env = continuous_actions(base_env)
-    env.reset()
-    assert env.action_space.shape == (5,)
-    env.step(np.ones(5))
-    env.step(np.nan*np.ones(5))
