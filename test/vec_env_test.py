@@ -1,4 +1,4 @@
-from supersuit.vector_constructors import gym_vec_env
+from supersuit import gym_vec_env
 import gym
 import numpy as np
 

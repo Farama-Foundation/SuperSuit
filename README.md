@@ -7,7 +7,7 @@ We support Gym for single agent environments and PettingZoo for multi-agent envi
 
 ```
 import gym
-from supersuit.gym_wrappers import color_reduction, frame_stack
+from supersuit import color_reduction, frame_stack
 
 env = gym.make('SpaceInvaders-v0')
 
@@ -20,7 +20,7 @@ Similarly, for pettingzoo,
 
 ```
 import pettingzoo.gamma
-from supersuit.aec_wrappers import color_reduction, frame_stack
+from supersuit import color_reduction, frame_stack
 
 env = pettingzoo.gamma.pistonball_v0.env()
 
