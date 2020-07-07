@@ -1,25 +1,7 @@
 import gym
 import importlib
 
-__all__ = [
-    "color_reduction",
-    "continuous_actions",
-    "down_scale",
-    "dtype",
-    "flatten",
-    "frame_stack",
-    "normalize_obs",
-    "reshape",
-    "agent_indicator",
-    "pad_action_space",
-    "pad_observations",
-    "clip_reward",
-    "action_lambda",
-    "observation_lambda",
-    "reward_lambda"
-]
-
-class MetaWrapper:
+class WrapperFactory:
     def __init__(self, wrapper_name):
         self.wrapper_name = wrapper_name
 
@@ -36,9 +18,18 @@ class MetaWrapper:
             wrap_class = getattr(aec_wrappers, self.wrapper_name)
             return wrap_class(env, *args, **kwargs)
 
-
-def __getattr__(wrapper_name):
-    if wrapper_name in __all__:
-        return MetaWrapper(wrapper_name)
-    else:
-        raise ImportError(f"cannot import name '{wrapper_name}' from 'supersuit'")
+color_reduction = WrapperFactory("color_reduction")
+continuous_actions = WrapperFactory("continuous_actions")
+down_scale = WrapperFactory("down_scale")
+dtype = WrapperFactory("dtype")
+flatten = WrapperFactory("flatten")
+frame_stack = WrapperFactory("frame_stack")
+normalize_obs = WrapperFactory("normalize_obs")
+reshape = WrapperFactory("reshape")
+agent_indicator = WrapperFactory("agent_indicator")
+pad_action_space = WrapperFactory("pad_action_space")
+pad_observations = WrapperFactory("pad_observations")
+clip_reward = WrapperFactory("clip_reward")
+action_lambda = WrapperFactory("action_lambda")
+observation_lambda = WrapperFactory("observation_lambda")
+reward_lambda = WrapperFactory("reward_lambda")

@@ -1,8 +1,8 @@
 from gym.spaces import Box, Discrete
 from .dummy_aec_env import DummyEnv
 import numpy as np
-from supersuit.aec_wrappers import frame_stack,reshape,observation_lambda,action_lambda,pad_action_space,continuous_actions,pad_observations
-from supersuit import aec_wrappers
+from supersuit import frame_stack,reshape,observation_lambda,action_lambda,pad_action_space,continuous_actions,pad_observations
+import supersuit
 import pytest
 
 
@@ -41,13 +41,13 @@ def test_agent_indicator():
     base_act_spaces = {"{}_{}".format(let[idx],idx): Discrete(5) for idx in range(3)}
 
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
-    env = aec_wrappers.agent_indicator(base_env,type_only=True)
+    env = supersuit.agent_indicator(base_env,type_only=True)
     obs = env.reset()
     assert obs.shape == (2,3,3)
     assert env.observation_spaces["a_0"].shape == (2,3,3)
     first_obs = env.step(2)
 
-    env = aec_wrappers.agent_indicator(base_env,type_only=False)
+    env = supersuit.agent_indicator(base_env,type_only=False)
     obs = env.reset()
     assert obs.shape == (2,3,4)
     assert env.observation_spaces["a_0"].shape == (2,3,4)
@@ -70,21 +70,21 @@ def new_dummy():
     return  DummyEnv(base_obs, base_obs_space, base_act_spaces)
 
 wrappers = [
-    aec_wrappers.color_reduction(new_dummy(),"R"),
-    aec_wrappers.down_scale(new_dummy(),x_scale=5,y_scale=10),
-    aec_wrappers.dtype(new_dummy(),np.int32),
-    aec_wrappers.flatten(new_dummy()),
-    aec_wrappers.reshape(new_dummy(),(64,3)),
-    aec_wrappers.normalize_obs(new_dummy(),env_min=-1,env_max=5.),
-    aec_wrappers.frame_stack(new_dummy(),8),
-    aec_wrappers.pad_observations(new_dummy()),
-    aec_wrappers.pad_action_space(new_dummy()),
-    aec_wrappers.continuous_actions(new_dummy()),
-    aec_wrappers.agent_indicator(new_dummy(),True),
-    aec_wrappers.agent_indicator(new_dummy(),False),
-    #aec_wrappers.normalize_reward(new_dummy()),
-    aec_wrappers.reward_lambda(new_dummy(), lambda x:x/10),
-    aec_wrappers.clip_reward(new_dummy()),
+    supersuit.color_reduction(new_dummy(),"R"),
+    supersuit.down_scale(new_dummy(),x_scale=5,y_scale=10),
+    supersuit.dtype(new_dummy(),np.int32),
+    supersuit.flatten(new_dummy()),
+    supersuit.reshape(new_dummy(),(64,3)),
+    supersuit.normalize_obs(new_dummy(),env_min=-1,env_max=5.),
+    supersuit.frame_stack(new_dummy(),8),
+    supersuit.pad_observations(new_dummy()),
+    supersuit.pad_action_space(new_dummy()),
+    supersuit.continuous_actions(new_dummy()),
+    supersuit.agent_indicator(new_dummy(),True),
+    supersuit.agent_indicator(new_dummy(),False),
+    #supersuit.normalize_reward(new_dummy()),
+    supersuit.reward_lambda(new_dummy(), lambda x:x/10),
+    supersuit.clip_reward(new_dummy()),
 ]
 @pytest.mark.parametrize("env", wrappers)
 def test_basic_wrappers(env):
@@ -98,7 +98,7 @@ def test_basic_wrappers(env):
 
 
 def test_rew_lambda():
-    env = aec_wrappers.reward_lambda(new_dummy(), lambda x:x/10)
+    env = supersuit.reward_lambda(new_dummy(), lambda x:x/10)
     env.reset()
     assert env.rewards[env.agent_selection] == 1./10
 

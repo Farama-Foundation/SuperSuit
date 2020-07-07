@@ -1,8 +1,8 @@
 from .dummy_gym_env import DummyEnv
 from gym.spaces import Box, Discrete
 import numpy as np
-from supersuit.gym_wrappers import frame_stack,reshape,observation_lambda,action_lambda,continuous_actions
-from supersuit import gym_wrappers
+from supersuit import frame_stack,reshape,observation_lambda,action_lambda,continuous_actions
+import supersuit
 import pytest
 
 base_obs = (np.zeros([8,8,3])+ np.arange(3)).astype(np.float32)
@@ -21,17 +21,17 @@ def new_dummy():
     return  DummyEnv(base_obs, base_obs_space, base_act_spaces)
 
 wrappers = [
-    gym_wrappers.color_reduction(new_dummy(),"R"),
-    gym_wrappers.down_scale(new_dummy(),x_scale=5,y_scale=10),
-    gym_wrappers.dtype(new_dummy(),np.int32),
-    gym_wrappers.flatten(new_dummy()),
-    gym_wrappers.reshape(new_dummy(),(64,3)),
-    gym_wrappers.normalize_obs(new_dummy(),env_min=-1,env_max=5.),
-    gym_wrappers.frame_stack(new_dummy(),8),
-    gym_wrappers.continuous_actions(new_dummy()),
-    #gym_wrappers.normalize_reward(new_dummy()),
-    gym_wrappers.reward_lambda(new_dummy(),lambda x: x/10),
-    gym_wrappers.clip_reward(new_dummy()),
+    supersuit.color_reduction(new_dummy(),"R"),
+    supersuit.down_scale(new_dummy(),x_scale=5,y_scale=10),
+    supersuit.dtype(new_dummy(),np.int32),
+    supersuit.flatten(new_dummy()),
+    supersuit.reshape(new_dummy(),(64,3)),
+    supersuit.normalize_obs(new_dummy(),env_min=-1,env_max=5.),
+    supersuit.frame_stack(new_dummy(),8),
+    supersuit.continuous_actions(new_dummy()),
+    #supersuit.normalize_reward(new_dummy()),
+    supersuit.reward_lambda(new_dummy(),lambda x: x/10),
+    supersuit.clip_reward(new_dummy()),
 ]
 @pytest.mark.parametrize("env", wrappers)
 def test_basic_wrappers(env):
@@ -95,7 +95,7 @@ def test_action_lambda():
 
 
 def test_rew_lambda():
-    env = gym_wrappers.reward_lambda(new_dummy(), lambda x:x/10)
+    env = supersuit.reward_lambda(new_dummy(), lambda x:x/10)
     env.reset()
     obs,rew,done,info = env.step(0)
     assert rew == 1./10
