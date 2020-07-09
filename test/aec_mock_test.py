@@ -34,6 +34,13 @@ def test_frame_stack():
         nth_obs = env.step(2)
     assert nth_obs == ((3*5+3)*5+3)*5+3
 
+def test_frame_skip():
+    base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
+    env = supersuit.frame_skip(base_env, (1,4))
+    env.reset()
+    for i in range(10):
+        env.step(0)
+
 def test_agent_indicator():
     let = ["a","a","b"]
     base_obs = {"{}_{}".format(let[idx],idx): np.zeros([2,3]) for idx in range(3)}
@@ -84,6 +91,8 @@ wrappers = [
     #supersuit.normalize_reward(new_dummy()),
     supersuit.reward_lambda(new_dummy(), lambda x:x/10),
     supersuit.clip_reward(new_dummy()),
+    supersuit.frame_skip(new_dummy(), 4),
+    supersuit.frame_skip(new_dummy(), (4,6)),
 ]
 @pytest.mark.parametrize("env", wrappers)
 def test_basic_wrappers(env):

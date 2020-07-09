@@ -169,15 +169,11 @@ class frame_stack(BaseWrapper):
             observation = self.observe(agent)
         self.stacks[agent] = stack_obs(self.stacks[agent], observation, self.env.observation_spaces[agent], self.stack_size)
 
-
 class frame_skip(BaseWrapper):
     def __init__(self, env, frame_skip, seed=None):
         super().__init__(env)
-        assert isinstance(frame_skip, int), "tuple frame_skip argument not implemented yet"
         self.frame_skip = check_transform_frameskip(frame_skip)
         self.np_random, seed = gym.utils.seeding.np_random(seed)
-
-        super().__init__(env)
 
     def _check_wrapper_params(self):
         pass
@@ -195,7 +191,7 @@ class frame_skip(BaseWrapper):
         return observation
 
     def reset(self, observe=True):
-        self.skip_num = 0#{agent: 0 for agent in self.agents}
+        self.skip_num = {agent: 0 for agent in self.agents}
         self.old_actions = {agent: None for agent in self.agents}
         #self.skips = {agent: 0 for agent,space in self.env.observation_spaces.items()}
         return super().reset(observe)
@@ -203,17 +199,17 @@ class frame_skip(BaseWrapper):
     def step(self, action, observe=True):
         cur_agent = self.agent_selection
         super().step(action, observe=False)
-        self.old_actions[cur_agent] = action
-        if all(act is not None for act in self.old_actions.values()):
-            self.skip_num = self.frame_skip[0]-1
-            while self.skip_num != 0:
-                for agent in self.agents:
-                    if not self.dones[agent]:
-                        assert agent == self.agent_selection, "frame_skip only takes in environments where live agents step in order"
-                        super().step(self.old_actions[agent], observe=False)
+        self.skip_num[cur_agent] = self.np_random.randint(self.frame_skip[0]-1,self.frame_skip[1])
+        if self.skip_num[cur_agent] != 0:
+            self.old_actions[cur_agent] = action
+        while self.old_actions[self.agent_selection] is not None:
+            step_agent = self.agent_selection
+            super().step(self.old_actions[step_agent], observe=False)
 
-                self.skip_num -= 1
-            self.old_actions = {agent: None for agent in self.agents}
+            self.skip_num[step_agent] -= 1
+            if self.skip_num[step_agent] == 0:
+                self.old_actions[step_agent] = None
+
         return self.observe(self.agent_selection) if observe else None
 
 class ActionWrapper(BaseWrapper):
