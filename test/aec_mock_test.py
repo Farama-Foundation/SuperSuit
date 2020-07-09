@@ -93,6 +93,7 @@ wrappers = [
     supersuit.clip_reward(new_dummy()),
     supersuit.frame_skip(new_dummy(), 4),
     supersuit.frame_skip(new_dummy(), (4,6)),
+    supersuit.frame_decay(new_dummy(), 0.4),
 ]
 @pytest.mark.parametrize("env", wrappers)
 def test_basic_wrappers(env):
