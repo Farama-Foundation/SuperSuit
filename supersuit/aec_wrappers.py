@@ -169,35 +169,6 @@ class frame_stack(BaseWrapper):
             observation = self.observe(agent)
         self.stacks[agent] = stack_obs(self.stacks[agent], observation, self.env.observation_spaces[agent], self.stack_size)
 
-class frame_decay(BaseWrapper):
-    def __init__(self, env, decay_rate=0.5):
-        self.decay_rate = decay_rate
-        super().__init__(env)
-
-    def _check_wrapper_params(self):
-        assert 0 < self.decay_rate <= 1., "decay rate must be between 0 and 1"
-
-    def _modify_spaces(self):
-        for obs_space in self.observation_spaces.values():
-            assert isinstance(obs_space, Box), "observation space for frame_decay must be Box"
-            obs_space.low = np.minimum(0, obs_space.low)
-
-    def _update_step(self, agent, obs):
-        pass
-
-    def _modify_action(self, agent, action):
-        return action
-
-    def _modify_observation(self, agent, observation):
-        old_obs = self.old_obss[agent] * self.decay_rate + (1-self.decay_rate) * observation
-        self.old_obss[agent] = old_obs
-        return old_obs
-
-    def reset(self, observe=True):
-        self.old_obss = {agent:np.zeros_like(obs_space.low) for agent,obs_space in self.observation_spaces.items()}
-        return super().reset(observe)
-
-
 class frame_skip(BaseWrapper):
     def __init__(self, env, frame_skip, seed=None):
         super().__init__(env)

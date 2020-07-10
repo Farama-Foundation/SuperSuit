@@ -122,22 +122,6 @@ class frame_stack(ObservationWrapper):
         self.stack = stack_obs(self.stack, observation, self.env.observation_space, self.stack_size)
         return self.stack
 
-class frame_decay(ObservationWrapper):
-    def __init__(self, env, decay_rate=0.5):
-        super().__init__(env)
-        assert 0 < decay_rate <= 1., "decay rate must be between 0 and 1"
-        assert isinstance(env.observation_space, Box), "observation space for frame_decay must be Box"
-        self.decay_rate = decay_rate
-        self.observation_space.low = np.minimum(0, self.observation_space.low)
-
-    def reset(self):
-        self.old_obs = np.zeros_like(self.observation_space.low)
-        return super().reset()
-
-    def _modify_observation(self, observation):
-        self.old_obs = (self.old_obs * self.decay_rate + (1 - self.decay_rate) * observation).astype(self.observation_space.dtype)
-        return self.old_obs
-
 class frame_skip(gym.Wrapper):
     def __init__(self, env, frame_skip, seed=None):
         super().__init__(env)
