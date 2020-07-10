@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="SuperSuit",
-    version="0.1.12",
+    version="0.1.13",
     author="PettingZoo Team",
     author_email="justinkterry@gmail.com",
     description="Wrappers for Gym and PettingZoo",
