@@ -32,6 +32,7 @@ clip_reward = WrapperFactory("clip_reward")
 action_lambda = WrapperFactory("action_lambda")
 observation_lambda = WrapperFactory("observation_lambda")
 reward_lambda = WrapperFactory("reward_lambda")
+frame_skip = WrapperFactory("frame_skip")
 
 from .vector_constructors import gym_vec_env
 from .vector_constructors import stable_baselines_vec_env
