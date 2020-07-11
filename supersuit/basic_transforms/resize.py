@@ -1,7 +1,6 @@
 from gym.spaces import Box
 import numpy as np
 from . import convert_box
-from PIL import Image
 import lycon
 
 def check_param(obs_space, resize):
