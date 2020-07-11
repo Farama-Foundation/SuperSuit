@@ -1,2 +1,2 @@
 pettingzoo>=0.1.9
-pillow
+lycon

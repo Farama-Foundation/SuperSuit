@@ -21,6 +21,7 @@ def test_change_observation():
     cur_val = cur_val.astype(np.uint8)
     #print(cur_val)
     new_obs = change_observation(cur_val,test_obs_space,(3,2,False))
+    new_obs = change_observation(cur_val,test_obs_space,(3,2,True))
     test_obs = np.array(
     [[[0.6666667, 0.6666667, 0.6666667],
       [2.       , 2.       , 2.       ],
@@ -36,3 +37,4 @@ def test_change_observation():
     high_val = np.ones(test_shape).astype(np.uint8)
     obs_spae = Box(low=high_val-1,high=high_val)
     new_obs = change_observation(high_val-0.5,obs_spae,(3,2,False))
+    assert new_obs.shape == (2,3)
