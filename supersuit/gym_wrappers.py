@@ -70,14 +70,10 @@ class color_reduction(BasicObservationWrapper):
     def __init__(self,env,mode='full'):
         super().__init__(env,basic_transforms.color_reduction,mode)
 
-class down_scale(BasicObservationWrapper):
-    def __init__(self,env,x_scale=1,y_scale=1):
-        old_obs_shape = env.observation_space.shape
-        scale_list = [1]*len(old_obs_shape)
-        scale_list[0] = y_scale
-        scale_list[1] = x_scale
-        scale_tuple = tuple(scale_list)
-        super().__init__(env,basic_transforms.down_scale,scale_tuple)
+class resize(BasicObservationWrapper):
+    def __init__(self,env,x_size,y_size,linear_interp=False):
+        scale_tuple = (x_size, y_size, linear_interp)
+        super().__init__(env,basic_transforms.resize,scale_tuple)
 
 class dtype(BasicObservationWrapper):
     def __init__(self,env,dtype):

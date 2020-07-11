@@ -15,7 +15,7 @@ setuptools.setup(
     keywords=["Reinforcement Learning", "gym"],
     packages=setuptools.find_packages(),
     python_requires='>=3.6',
-    install_requires=["pettingzoo>=0.1.9", "scikit-image"],
+    install_requires=["pettingzoo>=0.1.9", "pillow"],
     classifiers=[
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
