@@ -31,7 +31,7 @@ env = frame_stack(color_reduction(env, 'full'), 4)
 
 `color_reduction(env, mode='full')` simplifies color information in graphical ((x,y,3) shaped) environments. `mode='full'` fully greyscales of the observation. This can be computationally intensive. Arguments of 'R', 'G' or 'B' just take the corresponding R, G or B color channel from observation. This is much faster and is generally sufficient.
 
-`resize(env, x_size, y_size, linear_interp=False)` Performs interpolation to up-size or down-size observation image. This is only available for 2D or 3D observations (3D observations must have 1 or 3 channels). Set `linear_interp` to true for linear interpolation rather than nearest neighbor (to remove the artifacts present in the default nearest neighbor interpolation), but note that it is much slower (~8x slower).
+`resize(env, x_size, y_size, linear_interp=False)` Performs interpolation to up-size or down-size observation image. This is only available for 2D or 3D observations with (3D observations must have 1 or 3 channels) and for np.uint8 dtypes. If you still want to use this wrapper use the `dtype` and `normalize_obs` wrappers to convert to and from the `np.uint8` dtype. Set `linear_interp` to true for linear interpolation rather than nearest neighbor (to remove the artifacts present in the default nearest neighbor interpolation), but note that it is much slower (~8x slower).
 
 `dtype(env, dtype)` recasts your observation as a certain dtype. Many graphical games return `uint8` observations, while neural networks generally want `float16` or `float32`.
 
