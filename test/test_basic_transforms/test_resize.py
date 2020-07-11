@@ -31,10 +31,19 @@ def test_change_observation():
       [2.       , 2.       , 2.       ],
       [3.3333335, 3.3333335, 3.3333335]]]
     ).astype(np.uint8)
+    assert new_obs.dtype == np.uint8
     assert np.all(np.equal(new_obs,test_obs))
 
     test_shape = (6,4)
-    high_val = np.ones(test_shape).astype(np.uint8)
+    high_val = np.ones(test_shape).astype(np.float64)
     obs_spae = Box(low=high_val-1,high=high_val)
     new_obs = change_observation(high_val-0.5,obs_spae,(3,2,False))
     assert new_obs.shape == (2,3)
+    assert new_obs.dtype == np.float64
+
+    test_shape = (6,5,4)
+    high_val = np.ones(test_shape).astype(np.uint8)
+    obs_spae = Box(low=high_val-1,high=high_val,dtype=np.uint8)
+    new_obs = change_observation(high_val,obs_spae,(5,2,False))
+    assert new_obs.shape == (2,5,4)
+    assert new_obs.dtype == np.uint8
