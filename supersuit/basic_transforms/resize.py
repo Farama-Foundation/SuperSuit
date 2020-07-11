@@ -1,4 +1,3 @@
-from skimage import transform
 from gym.spaces import Box
 import numpy as np
 from . import convert_box
