@@ -19,7 +19,7 @@ class WrapperFactory:
             return wrap_class(env, *args, **kwargs)
 
 color_reduction = WrapperFactory("color_reduction")
-down_scale = WrapperFactory("down_scale")
+resize = WrapperFactory("resize")
 dtype = WrapperFactory("dtype")
 flatten = WrapperFactory("flatten")
 frame_stack = WrapperFactory("frame_stack")

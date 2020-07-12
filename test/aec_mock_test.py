@@ -1,7 +1,7 @@
 from gym.spaces import Box, Discrete
 from .dummy_aec_env import DummyEnv
 import numpy as np
-from supersuit import frame_stack,reshape,observation_lambda,action_lambda,pad_action_space,pad_observations
+from supersuit import frame_stack,reshape,observation_lambda,action_lambda,pad_action_space,pad_observations,dtype
 import supersuit
 import pytest
 
@@ -78,7 +78,8 @@ def new_dummy():
 
 wrappers = [
     supersuit.color_reduction(new_dummy(),"R"),
-    supersuit.down_scale(new_dummy(),x_scale=5,y_scale=10),
+    supersuit.resize(dtype(new_dummy(),np.uint8),x_size=5,y_size=10),
+    supersuit.resize(dtype(new_dummy(),np.uint8),x_size=5,y_size=10,linear_interp=True),
     supersuit.dtype(new_dummy(),np.int32),
     supersuit.flatten(new_dummy()),
     supersuit.reshape(new_dummy(),(64,3)),
