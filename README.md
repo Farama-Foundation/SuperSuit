@@ -14,9 +14,7 @@ env = gym.make('SpaceInvaders-v0')
 env = frame_stack(color_reduction(env, 'full'), 4)
 ```
 
-You can install it via `pip install supersuit` or `conda install supersuit`
-
-Similarly, for pettingzoo,
+Similarly, using SuperSuit with PettingZoo environments looks like
 
 ```
 import pettingzoo.gamma
@@ -26,6 +24,8 @@ env = pettingzoo.gamma.pistonball_v0.env()
 
 env = frame_stack(color_reduction(env, 'full'), 4)
 ```
+
+You can install SuperSuit via `pip install supersuit` or `conda install supersuit`
 
 ## Built in Functions
 
