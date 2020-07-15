@@ -70,7 +70,7 @@ These functions turn plain Gym environments into vectorized environments, for ev
 
 #### Note on multiprocessing
 
-Multiprocessing is known to be much slower on many lightweight gym environments such as classical control. However it can be faster on very computationally intensive environments like robotics environments.
+Multiprocessing is known to be much slower on many lightweight gym environments such as classical control. However it can be faster on very computationally intensive environments like robotics environments. The only way to know for sure is to try it yourself.
 
 ## Lambda Functions
 
