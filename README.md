@@ -45,12 +45,12 @@ You can install SuperSuit via `pip install supersuit` or `conda install supersui
 
 `reshape(env, shape)` reshapes observations into given shape.
 
+`clip_reward(env, lower_bound=-1, upper_bound=1)` clips rewards to between lower_bound and upper_bound. This is a popular way of handling rewards with significant variance of magnitude, especially in Atari environments.
+
 
 ## Included Multi-Agent Only Functions
 
-`agent_indicator(env, type_only=False)` adds an indicator of the agent ID to the observation. This allows MADRL methods like parameter sharing to learn policies for heterogeneous agents since the policy can tell what agent it's acting on. This method only supports 1D, 2D, and 3D box or discrete observations, and the algorithm was first introduced in *Cooperative Multi-Agent Control Using Deep Reinforcement Learning.*
-
-The `type_only` parameter means that only the type of the agent defined in the `<type>_<n>` name specification is added to the observation. This is useful for environments with a large number of mostly homogeneous agents.
+`agent_indicator(env, type_only=False)` Adds an indicator of the agent ID to the observation, only supports discrete and 1D, 2D, and 3D box. For 1d spaces, the agent ID is added as a 1-hot vector. 2d and 3d spaces are treated as images and the 1-hot vector is added as *n* additional channels to the image. This allows MADRL methods like parameter sharing to learn policies for heterogeneous agents since the policy can tell what agent it's acting on. Set the `type_only` parameter to parse the name of the agent as `<type>_<n>` and have the appended 1-hot vector only identify the type, rather than the specific agent name. This is useful for games where there are many agents in an environment but few types of agents. The algorithm was first introduced in *Cooperative Multi-Agent Control Using Deep Reinforcement Learning.*
 
 `pad_action_space(env)` pads the action spaces of all agents to be be the same as the biggest, per the algorithm posed in *Parameter Sharing is Surprisingly Useful for Deep Reinforcement Learning*.  This enables MARL methods that require homogeneous action spaces for all agents to work with environments with heterogeneous action spaces. Discrete actions inside the padded region will be set to zero, and Box actions will be cropped down to the original space.
 
@@ -68,6 +68,10 @@ These functions turn plain Gym environments into vectorized environments, for ev
 
 `stable_baselines3_vec_env(env, num_envs, multiprocessing=False)` creates a stable_baselines vector environment with num_envs copies of the environment. If `multiprocessing` is True, SubprocVecEnv is used instead of DummyVecEnv. Needs stable_baselines3 to be installed to work.
 
+#### Note on multiprocessing
+
+Multiprocessing is known to be much slower on many lightweight gym environments such as classical control. However it can be faster on very computationally intensive environments like robotics environments.
+
 ## Lambda Functions
 
 If none of the included in micro-wrappers are suitable for your needs, you can use a lambda function (or submit a PR).
@@ -76,7 +80,7 @@ If none of the included in micro-wrappers are suitable for your needs, you can u
 
 `observation_lambda(env, observation_fn, observation_space_fn=None)` allows you to define arbitrary changes to the via `observation_fn(observation) : observation`, and `observation_space_fn(obs_space) : obs_space`. For Box-Box transformations the space transformation will be inferred from `change_observation_fn` if `change_obs_space_fn=None` by passing the `high` and `low` bounds through the `observation_space_fn`.
 
-`reward_lambda(env, change_reward_fn)` allows you to make arbitrary changes to rewards by passing in a `change_reward_fn(reward) : reward` function. For Gym environments this is called every step to transform the returned reward. For AECEnv, this function is used to change each element in the rewards dictionary every step, taking NxM time.
+`reward_lambda(env, change_reward_fn)` allows you to make arbitrary changes to rewards by passing in a `change_reward_fn(reward) : reward` function. For Gym environments this is called every step to transform the returned reward. For AECEnv, this function is used to change each element in the rewards dictionary every step.
 
 ### Lambda Function Examples
 
@@ -94,15 +98,7 @@ env = observation_lambda(env,
     lambda obs_space : gym.spaces.Box(obs_space.low-5,obs_space.high+5))
 ```
 
-If you know the inner details of the environment, you can hardcode the appropriate values. For example, if you know you have a Box space of 20x20, you can just do
-
-```
-env = observation_lambda(env,
-    lambda x : np.pad(x,pad_width=4)
-    lambda _ : gym.spaces.Box(low=0,high=1,shape=(28,28)))
-```
-
-Changing a 1d box action space to a Discrete space by mapping the discrete actions to one-hot vectors look like:
+Changing 1d box action space to a Discrete space by mapping the discrete actions to one-hot vectors.
 
 ```
 def one_hot(x,n):
