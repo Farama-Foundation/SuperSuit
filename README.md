@@ -17,10 +17,8 @@ env = frame_stack(color_reduction(env, 'full'), 4)
 Similarly, using SuperSuit with PettingZoo environments looks like
 
 ```
-import pettingzoo.gamma
-from supersuit import color_reduction, frame_stack
-
-env = pettingzoo.gamma.pistonball_v0.env()
+from pettingzoo.butterfly import pistonball_v0
+env = pistonball_v0.env()
 
 env = frame_stack(color_reduction(env, 'full'), 4)
 ```
