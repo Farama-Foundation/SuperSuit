@@ -1,4 +1,4 @@
-# SuperSuit
+<img src="SuperSuit_Text.png" width="500px"/>
 
 [![Build Status](https://travis-ci.com/PettingZoo-Team/SuperSuit.svg?branch=master)](https://travis-ci.com/PettingZoo-Team/SuperSuit)
 
