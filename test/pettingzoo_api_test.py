@@ -12,12 +12,8 @@ def test_pettinzoo_frame_stack():
 
 def test_pettinzoo_frame_skip():
     # this is the actual frame_skip test
-    _env = simple_push_v0.env()
-    wrapped_env = frame_skip(_env, (1,4))
-    api_test.api_test(wrapped_env)
-
     env = simple_push_v0.raw_env()
-    env = frame_skip(env,(3,3))
+    env = frame_skip(env, 3)
     env.reset()
     for x in range(10):
         assert env.env.steps == (x//2)*3
