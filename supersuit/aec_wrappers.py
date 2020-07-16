@@ -168,6 +168,7 @@ class frame_stack(BaseWrapper):
 class frame_skip(BaseWrapper):
     def __init__(self, env, frame_skip, seed=None):
         super().__init__(env)
+        assert isinstance(frame_skip, int), "multi-agent frame skip only takes in an integer"
         self.frame_skip = check_transform_frameskip(frame_skip)
         self.np_random, seed = gym.utils.seeding.np_random(seed)
 

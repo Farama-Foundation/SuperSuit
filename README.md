@@ -35,7 +35,7 @@ You can install SuperSuit via `pip install supersuit` or `conda install supersui
 
 `flatten(env)` flattens observations into a 1D array.
 
-`frame_skip(env, num_frames, seed=None)` skips `num_frames` number of frames by reapplying old actions over and over. Observations skipped over are ignored. Like Gym Atari's frameskip parameter, `num_frames` can also be a tuple `(min_skip, max_skip)`, which indicates a range of possible skip lengths which are randomly chosen from. In multiplayer games, the number of actions to skip is tracked separately per agent, so agent order is non-deterministic when random frame_skip is selected.
+`frame_skip(env, num_frames, seed=None)` skips `num_frames` number of frames by reapplying old actions over and over. Observations skipped over are ignored.  Like Gym Atari's frameskip parameter, `num_frames` can also be a tuple `(min_skip, max_skip)`, which indicates a range of possible skip lengths which are randomly chosen from (in single agent environments only).
 
 `frame_stack(env, num_frames=4)` stacks the most recent frames. For vector games observed via plain vectors (1D arrays), the output is just concatenated to a longer 1D array. 2D or 3D arrays are stacked to be taller 3D arrays. At the start of the game, frames that don't yet exist are filled with 0s. `num_frames=1` is analogous to not using this function.
 
