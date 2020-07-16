@@ -65,8 +65,7 @@ These functions turn plain Gym environments into vectorized environments, for ev
 `stable_baselines3_vec_env(env, num_envs, multiprocessing=False)` creates a stable_baselines vector environment with num_envs copies of the environment. If `multiprocessing` is True, SubprocVecEnv is used instead of DummyVecEnv. Needs stable_baselines3 to be installed to work.
 
 #### Note on multiprocessing
-
-Multiprocessing is known to be much slower on many lightweight gym environments such as classical control. However it can be faster on very computationally intensive environments like robotics environments. The only way to know for sure is to try it yourself.
+Turning on multiprocessing runs each environment in it's own process. Turning this on is typically much slower for fast environments (like card games), but much faster for slow environments (like robotics simulations). Determining which case you are will require testing. 
 
 ## Lambda Functions
 
