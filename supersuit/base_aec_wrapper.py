@@ -3,10 +3,10 @@ import copy
 from gym.spaces import Box
 from gym import spaces
 import warnings
-from pettingzoo import AECEnv
+from pettingzoo.utils.wrappers import BaseWrapper as PettingzooWrap
 
 
-class BaseWrapper(AECEnv):
+class BaseWrapper(PettingzooWrap):
 
     metadata = {'render.modes': ['human']}
 
@@ -14,13 +14,7 @@ class BaseWrapper(AECEnv):
         '''
         Creates a wrapper around `env`. Extend this class to create changes to the space.
         '''
-        super().__init__()
-        self.env = env
-
-        self.num_agents = self.env.num_agents
-        self.agents = self.env.agents
-        self.observation_spaces = copy.copy(self.env.observation_spaces)
-        self.action_spaces = copy.copy(self.env.action_spaces)
+        super().__init__(env)
 
         self._check_wrapper_params()
 
@@ -48,13 +42,8 @@ class BaseWrapper(AECEnv):
         self.env.render(mode)
 
     def reset(self, observe=True):
-        observation = self.env.reset(observe)
+        observation = super().reset(observe)
         agent = self.env.agent_selection
-
-        self.agent_selection = self.env.agent_selection
-        self.rewards = self.env.rewards
-        self.dones = self.env.dones
-        self.infos = self.env.infos
 
         self._update_step(agent,observation)
         if observe:
@@ -64,7 +53,7 @@ class BaseWrapper(AECEnv):
             return None
 
     def observe(self, agent):
-        obs = self.env.observe(agent)
+        obs = super().observe(agent)
         observation = self._modify_observation(agent, obs)
         return observation
 
@@ -73,13 +62,10 @@ class BaseWrapper(AECEnv):
         cur_act_space = self.action_spaces[agent]
         assert not isinstance(cur_act_space,Box) or cur_act_space.shape == action.shape, "the shape of the action {} is not equal to the shape of the action space {}".format(action.shape,cur_act_space.shape)
         action = self._modify_action(agent, action)
-        next_obs = self.env.step(action, observe=observe)
+        next_obs = super().step(action, observe=observe)
+
         new_agent = self.env.agent_selection
 
-        self.agent_selection = self.env.agent_selection
-        self.rewards = self.env.rewards
-        self.dones = self.env.dones
-        self.infos = self.env.infos
         self._update_step(new_agent,next_obs)
 
         if observe:
