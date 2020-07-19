@@ -25,7 +25,7 @@ env = pistonball_v0.env()
 env = frame_stack(color_reduction(env, 'full'), 4)
 ```
 
-You can install SuperSuit via `pip install supersuit` or `conda install supersuit`
+You can install SuperSuit via `pip install supersuit`
 
 ## Included Functions
 
