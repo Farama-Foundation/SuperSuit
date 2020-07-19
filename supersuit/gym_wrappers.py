@@ -137,6 +137,23 @@ class frame_skip(gym.Wrapper):
 
         return obs, total_reward, done, info
 
+class sticky_actions(gym.Wrapper):
+    def __init__(self, env, repeat_action_probability, seed=None):
+        super().__init__(env)
+        assert 0 <= repeat_action_probability < 1
+        self.repeat_action_probability = repeat_action_probability
+        self.np_random, seed = gym.utils.seeding.np_random(seed)
+
+    def reset(self):
+        self.old_action = None
+        return super().reset()
+
+    def step(self, action):
+        if self.old_action is not None and self.np_random.uniform() < self.repeat_action_probability:
+            action = self.old_action
+
+        return super().step(action)
+
 class ActionWrapper(gym.Wrapper):
     def __init__(self, env):
         super().__init__(env)

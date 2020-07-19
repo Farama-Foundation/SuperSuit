@@ -25,15 +25,12 @@ flatten = WrapperFactory("flatten")
 frame_stack = WrapperFactory("frame_stack")
 normalize_obs = WrapperFactory("normalize_obs")
 reshape = WrapperFactory("reshape")
-agent_indicator = WrapperFactory("agent_indicator")
-pad_action_space = WrapperFactory("pad_action_space")
-pad_observations = WrapperFactory("pad_observations")
 clip_reward = WrapperFactory("clip_reward")
 action_lambda = WrapperFactory("action_lambda")
 observation_lambda = WrapperFactory("observation_lambda")
 reward_lambda = WrapperFactory("reward_lambda")
 frame_skip = WrapperFactory("frame_skip")
+sticky_actions = WrapperFactory("sticky_actions")
 
-from .vector_constructors import gym_vec_env
-from .vector_constructors import stable_baselines_vec_env
-from .vector_constructors import stable_baselines3_vec_env
+from .aec_wrappers import agent_indicator, pad_action_space, pad_observations
+from .vector_constructors import gym_vec_env, stable_baselines_vec_env, stable_baselines3_vec_env
