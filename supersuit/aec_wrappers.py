@@ -184,8 +184,9 @@ class StepAltWrapper(BaseWrapper):
 class frame_skip(StepAltWrapper):
     def __init__(self, env, frame_skip, seed=None):
         super().__init__(env)
-        self.frame_skip = check_transform_frameskip(frame_skip)
-        self.np_random, seed = gym.utils.seeding.np_random(seed)
+        assert isinstance(frame_skip, int), "multi-agent frame skip only takes in an integer"
+        check_transform_frameskip(frame_skip)
+        self.frame_skip = frame_skip
 
     def reset(self, observe=True):
         self.skip_num = {agent: 0 for agent in self.agents}
@@ -196,7 +197,7 @@ class frame_skip(StepAltWrapper):
     def step(self, action, observe=True):
         cur_agent = self.agent_selection
         super().step(action, observe=False)
-        self.skip_num[cur_agent] = self.np_random.randint(self.frame_skip[0]-1,self.frame_skip[1])
+        self.skip_num[cur_agent] = self.frame_skip-1
         if self.skip_num[cur_agent] != 0:
             self.old_actions[cur_agent] = action
         while self.old_actions[self.agent_selection] is not None:

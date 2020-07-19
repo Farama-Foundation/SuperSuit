@@ -37,7 +37,7 @@ You can install SuperSuit via `pip install supersuit` or `conda install supersui
 
 `flatten(env)` flattens observations into a 1D array.
 
-`frame_skip(env, num_frames, seed=None)` skips `num_frames` number of frames by reapplying old actions over and over. Observations skipped over are ignored. Like Gym Atari's frameskip parameter, `num_frames` can also be a tuple `(min_skip, max_skip)`, which indicates a range of possible skip lengths which are randomly chosen from. In multiplayer games, the number of actions to skip is tracked separately per agent, so agent order is non-deterministic when random frame_skip is selected.
+`frame_skip(env, num_frames, seed=None)` skips `num_frames` number of frames by reapplying old actions over and over. Observations skipped over are ignored.  Like Gym Atari's frameskip parameter, `num_frames` can also be a tuple `(min_skip, max_skip)`, which indicates a range of possible skip lengths which are randomly chosen from (in single agent environments only).
 
 `sticky_actions(env, repeat_action_probability, seed=None)` assigns a probability of an old action "sticking" to the environment and not updating as requested. This is to prevent agents from achieving supernatural performance in high frame-rate games like Atari. Note that the stickiness is cumulative, so an action has a repeat_action_probability^2 chance of an action sticking for two turns in a row, etc. This is the recommended way of adding randomness to Atari by *"Machado et al. (2018), "Revisiting the Arcade Learning Environment: Evaluation Protocols and Open Problems for General Agents"*
 
