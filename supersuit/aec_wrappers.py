@@ -165,13 +165,7 @@ class frame_stack(BaseWrapper):
             observation = self.observe(agent)
         self.stacks[agent] = stack_obs(self.stacks[agent], observation, self.env.observation_spaces[agent], self.stack_size)
 
-class frame_skip(BaseWrapper):
-    def __init__(self, env, frame_skip, seed=None):
-        super().__init__(env)
-        assert isinstance(frame_skip, int), "multi-agent frame skip only takes in an integer"
-        check_transform_frameskip(frame_skip)
-        self.frame_skip = frame_skip
-
+class StepAltWrapper(BaseWrapper):
     def _check_wrapper_params(self):
         pass
 
@@ -186,6 +180,13 @@ class frame_skip(BaseWrapper):
 
     def _modify_observation(self, agent, observation):
         return observation
+
+class frame_skip(StepAltWrapper):
+    def __init__(self, env, frame_skip, seed=None):
+        super().__init__(env)
+        assert isinstance(frame_skip, int), "multi-agent frame skip only takes in an integer"
+        check_transform_frameskip(frame_skip)
+        self.frame_skip = frame_skip
 
     def reset(self, observe=True):
         self.skip_num = {agent: 0 for agent in self.agents}
@@ -208,6 +209,23 @@ class frame_skip(BaseWrapper):
                 self.old_actions[step_agent] = None
 
         return self.observe(self.agent_selection) if observe else None
+
+class sticky_actions(StepAltWrapper):
+    def __init__(self, env, repeat_action_probability, seed=None):
+        super().__init__(env)
+        assert 0 <= repeat_action_probability < 1
+        self.repeat_action_probability = repeat_action_probability
+        self.np_random, seed = gym.utils.seeding.np_random(seed)
+
+    def reset(self, observe=True):
+        self.old_action = None
+        return super().reset(observe)
+
+    def step(self, action, observe=True):
+        if self.old_action is not None and self.np_random.uniform() < self.repeat_action_probability:
+            action = self.old_action
+
+        return super().step(action, observe)
 
 class ActionWrapper(BaseWrapper):
     def __init__(self, env):
