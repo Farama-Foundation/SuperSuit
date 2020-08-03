@@ -31,6 +31,7 @@ observation_lambda = WrapperFactory("observation_lambda")
 reward_lambda = WrapperFactory("reward_lambda")
 frame_skip = WrapperFactory("frame_skip")
 sticky_actions = WrapperFactory("sticky_actions")
+delay_observations = WrapperFactory("delay_observations")
 
 from .aec_wrappers import agent_indicator, pad_action_space, pad_observations
 from .vector_constructors import gym_vec_env, stable_baselines_vec_env, stable_baselines3_vec_env

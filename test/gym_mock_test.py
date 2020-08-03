@@ -35,6 +35,7 @@ wrappers = [
     supersuit.frame_skip(new_dummy(), 4),
     supersuit.frame_skip(new_dummy(), (4,6)),
     supersuit.sticky_actions(new_dummy(), 0.75),
+    supersuit.delay_observations(new_dummy(), 1),
 ]
 @pytest.mark.parametrize("env", wrappers)
 def test_basic_wrappers(env):
@@ -43,7 +44,8 @@ def test_basic_wrappers(env):
     obs_space = env.observation_space
     assert obs_space.contains(obs)
     assert obs.dtype == obs_space.dtype
-    env.step(act_space.sample())
+    for i in range(10):
+        env.step(act_space.sample())
 
 def test_lambda():
     def add1(obs):
