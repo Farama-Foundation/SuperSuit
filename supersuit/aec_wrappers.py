@@ -5,6 +5,7 @@ from .adv_transforms.frame_stack import stack_obs_space,stack_init,stack_obs
 from .action_transforms import homogenize_ops
 from .adv_transforms import agent_indicator as agent_ider
 from .adv_transforms.frame_skip import check_transform_frameskip
+from .adv_transforms.obs_delay import Delayer
 import numpy as np
 import gym
 
@@ -131,6 +132,28 @@ class pad_observations(ObservationWrapper):
     def _modify_observation(self, agent, observation):
         new_obs = homogenize_ops.homogenize_observations(self._obs_space,observation)
         return new_obs
+
+class delay_observations(ObservationWrapper):
+    def __init__(self, env, delay):
+        self.delay = delay
+        super().__init__(env)
+
+    def _check_wrapper_params(self):
+        int(self.delay)  # delay must be an int
+
+    def _modify_spaces(self):
+        return
+
+    def reset(self):
+        self._delayers = {agent: Delayer(obs_space, self.delay) for agent, obs_space in self.observation_spaces.items()}
+        self._observes = {agent: None for agent in self.agents}
+        return super().reset()
+
+    def _update_step(self, agent, observation):
+        self._observes[agent] = self._delayers[agent].add(observation)
+
+    def _modify_observation(self, agent, observation):
+        return self._observes[agent]
 
 class frame_stack(BaseWrapper):
     def __init__(self,env,num_frames=4):

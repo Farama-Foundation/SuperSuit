@@ -94,6 +94,7 @@ wrappers = [
     supersuit.clip_reward(new_dummy()),
     supersuit.frame_skip(new_dummy(), 4),
     supersuit.sticky_actions(new_dummy(), 0.75),
+    supersuit.delay_observations(new_dummy(), 3),
 ]
 @pytest.mark.parametrize("env", wrappers)
 def test_basic_wrappers(env):
@@ -104,6 +105,9 @@ def test_basic_wrappers(env):
     assert obs_space.contains(first_obs)
     assert first_obs.dtype == obs_space.dtype
     env.step(act_space.sample())
+    for i in env.agent_iter(20):
+        act_space = env.action_spaces[env.agent_selection]
+        env.step(act_space.sample())
 
 
 def test_rew_lambda():

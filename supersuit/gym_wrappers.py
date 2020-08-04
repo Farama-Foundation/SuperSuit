@@ -3,6 +3,7 @@ from gym.spaces import Box,Space,Discrete
 from . import basic_transforms
 from .adv_transforms.frame_stack import stack_obs_space,stack_init,stack_obs
 from .adv_transforms.frame_skip import check_transform_frameskip
+from .adv_transforms.obs_delay import Delayer
 import numpy as np
 import gym
 
@@ -117,6 +118,18 @@ class frame_stack(ObservationWrapper):
     def _modify_observation(self, observation):
         self.stack = stack_obs(self.stack, observation, self.env.observation_space, self.stack_size)
         return self.stack
+
+class delay_observations(ObservationWrapper):
+    def __init__(self, env, delay):
+        super().__init__(env)
+        self.delay = delay
+
+    def _modify_observation(self, obs):
+        return self.delayer.add(obs)
+
+    def reset(self):
+        self.delayer = Delayer(self.observation_space, self.delay)
+        return super().reset()
 
 class frame_skip(gym.Wrapper):
     def __init__(self, env, frame_skip, seed=None):
