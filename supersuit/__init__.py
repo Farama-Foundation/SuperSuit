@@ -6,7 +6,6 @@ class WrapperFactory:
         self.wrapper_name = wrapper_name
 
     def __call__(self, env, *args, **kwargs):
-        print(type(env))
         if isinstance(env, gym.Env):
             from . import gym_wrappers
             wrap_class = getattr(gym_wrappers, self.wrapper_name)
