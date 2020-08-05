@@ -3,7 +3,7 @@ import copy
 from gym.spaces import Box
 from gym import spaces
 import warnings
-from pettingzoo.utils.wrappers import BaseWrapper as PettingzooWrap
+from pettingzoo.utils.wrappers import AgentIterWrapper as PettingzooWrap
 
 
 class BaseWrapper(PettingzooWrap):
