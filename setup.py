@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="SuperSuit",
-    version="0.2.1",
+    version="0.2.3",
     author="PettingZoo Team",
     author_email="justinkterry@gmail.com",
     description="Wrappers for Gym and PettingZoo",
@@ -15,7 +15,7 @@ setuptools.setup(
     keywords=["Reinforcement Learning", "gym"],
     packages=setuptools.find_packages(),
     python_requires='>=3.6',
-    install_requires=["pettingzoo>=0.1.13", "lycon"],
+    install_requires=["pettingzoo>=0.1.14", "lycon"],
     classifiers=[
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",

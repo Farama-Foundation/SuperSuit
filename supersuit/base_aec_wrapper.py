@@ -35,12 +35,6 @@ class BaseWrapper(PettingzooWrap):
     def _update_step(self, agent, observation):
         raise NotImplementedError()
 
-    def close(self):
-        self.env.close()
-
-    def render(self, mode='human'):
-        self.env.render(mode)
-
     def reset(self, observe=True):
         observation = super().reset(observe)
         agent = self.env.agent_selection
