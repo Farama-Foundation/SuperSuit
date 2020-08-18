@@ -1,11 +1,12 @@
 import setuptools
+import supersuit
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name="SuperSuit",
-    version="1.0.0",
+    version=supersuit.__version__,
     author="PettingZoo Team",
     author_email="justinkterry@gmail.com",
     description="Wrappers for Gym and PettingZoo",

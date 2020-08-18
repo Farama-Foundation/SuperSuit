@@ -1,6 +1,8 @@
 import gym
 import importlib
 
+__version__ = "1.1.0"
+
 class WrapperFactory:
     def __init__(self, wrapper_name):
         self.wrapper_name = wrapper_name
