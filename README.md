@@ -116,6 +116,10 @@ env = action_lambda(env,
 
 ## Release History
 
+Version 1.1.0 (August 17th, 2020):
+
+Adds action clipping
+
 Version 1.0.0 (August 5th, 2020):
 
 This is the first official stable release of SuperSuit. We don't have any further features planned at this time, but we're going to keep maintaining it and adding functionality as new things become standard.
