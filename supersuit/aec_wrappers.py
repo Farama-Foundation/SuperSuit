@@ -296,6 +296,19 @@ class pad_action_space(ActionWrapper):
         new_action = homogenize_ops.dehomogenize_actions(self.env.action_spaces[agent], action)
         return new_action
 
+class clip_actions(ActionWrapper):
+    def _check_wrapper_params(self):
+        for space in self.env.action_spaces.values():
+            assert isinstance(space, Box), "clip_actions only works for Box action spaces"
+
+    def _modify_spaces(self):
+        pass
+
+    def _modify_action(self, agent, action):
+        act_space = self.action_spaces[agent]
+        action = np.clip(action, act_space.low, act_space.high)
+        return action
+
 class RewardWrapper(ActionWrapper,ObservationWrapper):
     def _check_wrapper_params(self):
         pass

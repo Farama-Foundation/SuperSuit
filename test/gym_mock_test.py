@@ -17,6 +17,11 @@ def test_reshape():
     first_obs,_,_,_ = env.step(5)
     assert np.all(np.equal(first_obs,base_obs.reshape([64,3])))
 
+
+def new_continuous_dummy():
+    base_act_spaces = Box(low=np.float32(0.),high=np.float32(10.),shape=[3])
+    return  DummyEnv(base_obs, base_obs_space, base_act_spaces)
+
 def new_dummy():
     return  DummyEnv(base_obs, base_obs_space, base_act_spaces)
 
@@ -32,6 +37,7 @@ wrappers = [
     #supersuit.normalize_reward(new_dummy()),
     supersuit.reward_lambda(new_dummy(),lambda x: x/10),
     supersuit.clip_reward(new_dummy()),
+    supersuit.clip_actions(new_continuous_dummy()),
     supersuit.frame_skip(new_dummy(), 4),
     supersuit.frame_skip(new_dummy(), (4,6)),
     supersuit.sticky_actions(new_dummy(), 0.75),

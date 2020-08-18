@@ -192,6 +192,14 @@ class action_lambda(ActionWrapper):
     def _modify_action(self, action):
         return self.change_action_fn(action, self.env.action_space)
 
+class clip_actions(ActionWrapper):
+    def __init__(self, env):
+        super().__init__(env)
+        assert isinstance(self.action_space, Box), "clip_actions only works for Box action spaces"
+
+    def _modify_action(self, action):
+        action = np.clip(action, self.action_space.low, self.action_space.high)
+
 class RewardWrapper(gym.Wrapper):
     def step(self, action):
         obs, rew, done, info = super().step(action)
