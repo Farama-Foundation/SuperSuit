@@ -4,9 +4,19 @@ import supersuit
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+def get_version():
+    path = "supersuit/__init__.py"
+    with open(path) as file:
+        lines = file.readlines()
+
+    for line in lines:
+        if line.startswith("__version__"):
+            return line.strip().split()[-1].strip().strip('"')
+    raise RuntimeError("bad version data in __init__.py")
+
 setuptools.setup(
     name="SuperSuit",
-    version=supersuit.__version__,
+    version=get_version(),
     author="PettingZoo Team",
     author_email="justinkterry@gmail.com",
     description="Wrappers for Gym and PettingZoo",
