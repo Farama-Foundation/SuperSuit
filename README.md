@@ -116,6 +116,10 @@ env = action_lambda(env,
 
 ## Release History
 
+Version 1.1.2 (August 19th, 2020):
+
+Fix pip installation bug
+
 Version 1.1.0 (August 17th, 2020):
 
 Adds action clipping
