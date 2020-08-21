@@ -128,7 +128,20 @@ Version 1.0.0 (August 5th, 2020):
 
 This is the first official stable release of SuperSuit. We don't have any further features planned at this time, but we're going to keep maintaining it and adding functionality as new things become standard.
 
+## Citation
+
+If you use this in your research, please cite:
+
+```
+@article{SuperSuit,
+  Title = {SuperSuit: Simple Microwrappers for Reinforcement Learning Environments},
+  Author = {Terry, Justin K and Black, Benjamin and Hari, Ananth},
+  journal={arXiv preprint arXiv:2008.08932},
+  year={2020}
+}
+```
 
 ## Reward Program
 
 We have a sort bug/documentation error bounty program, inspired by [Donald Knuth's reward checks](https://en.wikipedia.org/wiki/Knuth_reward_check). People who make mergable PRs which properly address meaningful problems in the code, or which make meaningful improvements to the documentation, can recieve a negotiable check for "hexadecimal dollar" ($2.56) mailed to them, or sent to them via PayPal. To redeem this, just send an email to justinkterry@gmail.com with your mailing adress or PayPal adress. We also pay out 32 cents for small fixes.
+
