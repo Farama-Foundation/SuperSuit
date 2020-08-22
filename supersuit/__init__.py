@@ -5,7 +5,7 @@ from pettingzoo.utils.env import AECEnv
 from . import aec_wrappers
 from . import gym_wrappers
 
-__version__ = "1.1.2"
+__version__ = "1.2.0"
 
 class WrapperFactory:
     def __init__(self, wrapper_name, gym_avaliable=True):
