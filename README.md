@@ -116,10 +116,6 @@ env = action_lambda(env,
 
 ## Release History
 
-Version 1.2.0 (August 21, 2020):
-
-Added support for pettingzoo ParallelEnv. Fixed delay_observations API issue. 
-
 Version 1.1.2 (August 19th, 2020):
 
 Fix pip installation bug
@@ -148,3 +144,4 @@ If you use this in your research, please cite:
 ## Reward Program
 
 We have a sort bug/documentation error bounty program, inspired by [Donald Knuth's reward checks](https://en.wikipedia.org/wiki/Knuth_reward_check). People who make mergable PRs which properly address meaningful problems in the code, or which make meaningful improvements to the documentation, can recieve a negotiable check for "hexadecimal dollar" ($2.56) mailed to them, or sent to them via PayPal. To redeem this, just send an email to justinkterry@gmail.com with your mailing adress or PayPal adress. We also pay out 32 cents for small fixes.
+
