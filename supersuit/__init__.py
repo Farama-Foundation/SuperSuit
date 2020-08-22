@@ -4,6 +4,7 @@ from pettingzoo.utils.to_parallel import to_parallel, ParallelEnv, from_parallel
 from pettingzoo.utils.env import AECEnv
 from . import aec_wrappers
 from . import gym_wrappers
+from . import parallel_wrappers
 
 __version__ = "1.2.0"
 
@@ -22,8 +23,12 @@ class WrapperFactory:
             wrap_class = getattr(aec_wrappers, self.wrapper_name)
             return wrap_class(env, *args, **kwargs)
         elif isinstance(env, ParallelEnv):
-            wrap_class = getattr(aec_wrappers, self.wrapper_name)
-            return to_parallel(wrap_class(from_parallel(env), *args, **kwargs))
+            wrap_class = getattr(parallel_wrappers, self.wrapper_name, None)
+            if wrap_class is not None:
+                return wrap_class(env, *args, **kwargs)
+            else:
+                wrap_class = getattr(aec_wrappers, self.wrapper_name)
+                return to_parallel(wrap_class(from_parallel(env), *args, **kwargs))
         else:
             raise ValueError("environment passed to supersuit wrapper must either be a gym environment or a pettingzoo environment")
 
