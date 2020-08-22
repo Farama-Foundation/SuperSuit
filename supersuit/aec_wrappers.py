@@ -144,7 +144,7 @@ class delay_observations(ObservationWrapper):
     def _modify_spaces(self):
         return
 
-    def reset(self, observe=True):
+    def reset(self):
         self._delayers = {agent: Delayer(obs_space, self.delay) for agent, obs_space in self.observation_spaces.items()}
         self._observes = {agent: None for agent in self.agents}
         return super().reset()
