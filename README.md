@@ -31,6 +31,8 @@ You can install SuperSuit via `pip install supersuit`
 
 `clip_reward(env, lower_bound=-1, upper_bound=1)` clips rewards to between lower_bound and upper_bound. This is a popular way of handling rewards with significant variance of magnitude, especially in Atari environments.
 
+`clip_actions(env)` clips Box actions to be within the high and low bounds of the action space. This is a standard transformation applied to environments with continuous action spaces to keep the action passed to the environment within the specified bounds.
+
 `color_reduction(env, mode='full')` simplifies color information in graphical ((x,y,3) shaped) environments. `mode='full'` fully greyscales of the observation. This can be computationally intensive. Arguments of 'R', 'G' or 'B' just take the corresponding R, G or B color channel from observation. This is much faster and is generally sufficient.
 
 `dtype(env, dtype)` recasts your observation as a certain dtype. Many graphical games return `uint8` observations, while neural networks generally want `float16` or `float32`.
@@ -114,11 +116,32 @@ env = action_lambda(env,
 
 ## Release History
 
+Version 1.1.2 (August 19th, 2020):
+
+Fix pip installation bug
+
+Version 1.1.0 (August 17th, 2020):
+
+Adds action clipping
+
 Version 1.0.0 (August 5th, 2020):
 
 This is the first official stable release of SuperSuit. We don't have any further features planned at this time, but we're going to keep maintaining it and adding functionality as new things become standard.
 
+## Citation
+
+If you use this in your research, please cite:
+
+```
+@article{SuperSuit,
+  Title = {SuperSuit: Simple Microwrappers for Reinforcement Learning Environments},
+  Author = {Terry, Justin K and Black, Benjamin and Hari, Ananth},
+  journal={arXiv preprint arXiv:2008.08932},
+  year={2020}
+}
+```
 
 ## Reward Program
 
 We have a sort bug/documentation error bounty program, inspired by [Donald Knuth's reward checks](https://en.wikipedia.org/wiki/Knuth_reward_check). People who make mergable PRs which properly address meaningful problems in the code, or which make meaningful improvements to the documentation, can recieve a negotiable check for "hexadecimal dollar" ($2.56) mailed to them, or sent to them via PayPal. To redeem this, just send an email to justinkterry@gmail.com with your mailing adress or PayPal adress. We also pay out 32 cents for small fixes.
+

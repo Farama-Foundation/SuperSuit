@@ -5,6 +5,8 @@ from pettingzoo.utils.env import AECEnv
 from . import aec_wrappers
 from . import gym_wrappers
 
+__version__ = "1.1.2"
+
 class WrapperFactory:
     def __init__(self, wrapper_name, gym_avaliable=True):
         self.wrapper_name = wrapper_name
@@ -34,6 +36,7 @@ normalize_obs = WrapperFactory("normalize_obs")
 reshape = WrapperFactory("reshape")
 clip_reward = WrapperFactory("clip_reward")
 action_lambda = WrapperFactory("action_lambda")
+clip_actions = WrapperFactory("clip_actions")
 observation_lambda = WrapperFactory("observation_lambda")
 reward_lambda = WrapperFactory("reward_lambda")
 frame_skip = WrapperFactory("frame_skip")
