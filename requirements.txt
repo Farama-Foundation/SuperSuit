@@ -1,2 +1,2 @@
-pettingzoo>=0.1.12
+pettingzoo>=1.1.0
 lycon
