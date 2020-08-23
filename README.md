@@ -5,7 +5,7 @@
 [![Build Status](https://travis-ci.com/PettingZoo-Team/SuperSuit.svg?branch=master)](https://travis-ci.com/PettingZoo-Team/SuperSuit)
 
 SuperSuit introduces a collection of small functions which can wrap reinforcement learning environments to do preprocessing ('microwrappers').
-We support Gym for single agent environments and PettingZoo for multi-agent environments. Using it to convert space invaders to have a grey scale observation space and stack the last 4 frames looks like:
+We support Gym for single agent environments and PettingZoo for multi-agent environments (both AECEnv and ParallelEnv environments). Using it to convert space invaders to have a grey scale observation space and stack the last 4 frames looks like:
 
 ```
 import gym
@@ -118,7 +118,7 @@ env = action_lambda(env,
 
 Version 1.2.0 (August 21, 2020):
 
-Added support for pettingzoo ParallelEnv. Fixed delay_observations API issue. 
+Added support for pettingzoo ParallelEnv. Fixed delay_observations API issue.
 
 Version 1.1.2 (August 19th, 2020):
 
