@@ -1,7 +1,7 @@
 from gym.spaces import Box
 import numpy as np
 from . import convert_box
-import lycon
+import cv2
 
 def check_param(obs_space, resize):
     xsize,ysize,linear_interp = resize
@@ -16,8 +16,8 @@ def change_observation(obs, obs_space, resize):
     xsize,ysize,linear_interp = resize
     if len(obs.shape) == 2:
         obs = obs.reshape(obs.shape+(1,))
-    interp_method = lycon.Interpolation.LINEAR if linear_interp else lycon.Interpolation.AREA
-    obs = lycon.resize(obs, width=xsize, height=ysize, interpolation=interp_method)
+    interp_method = cv2.INTER_LINEAR if linear_interp else cv2.INTER_AREA
+    obs = lycon.resize(obs, (xsize, ysize), interpolation=interp_method)
     if len(obs_space.shape) == 2:
         obs = obs.reshape(obs.shape[:2])
     return obs
