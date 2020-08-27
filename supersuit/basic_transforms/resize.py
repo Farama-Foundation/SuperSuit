@@ -17,7 +17,7 @@ def change_observation(obs, obs_space, resize):
     if len(obs.shape) == 2:
         obs = obs.reshape(obs.shape+(1,))
     interp_method = cv2.INTER_LINEAR if linear_interp else cv2.INTER_AREA
-    obs = lycon.resize(obs, (xsize, ysize), interpolation=interp_method)
+    obs = cv2.resize(obs, (xsize, ysize), interpolation=interp_method)
     if len(obs_space.shape) == 2:
         obs = obs.reshape(obs.shape[:2])
     return obs
