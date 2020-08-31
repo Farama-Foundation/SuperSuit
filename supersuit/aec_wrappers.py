@@ -220,6 +220,7 @@ class frame_skip(StepAltWrapper):
 
     def step(self, action, observe=True):
         cur_agent = self.agent_selection
+        self.combined_rewards[cur_agent] += self.env.rewards[cur_agent]
         super().step(action, observe=False)
         self.skip_num[cur_agent] = self.frame_skip-1
         if self.skip_num[cur_agent] != 0:
