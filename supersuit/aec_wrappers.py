@@ -213,6 +213,7 @@ class frame_skip(StepAltWrapper):
 
     def reset(self, observe=True):
         self.skip_num = {agent: 0 for agent in self.agents}
+        self.combined_rewards = {agent: 0 for agent in self.agents}
         self.old_actions = {agent: None for agent in self.agents}
         #self.skips = {agent: 0 for agent,space in self.env.observation_spaces.items()}
         return super().reset(observe)
@@ -225,12 +226,15 @@ class frame_skip(StepAltWrapper):
             self.old_actions[cur_agent] = action
         while self.old_actions[self.agent_selection] is not None:
             step_agent = self.agent_selection
+            self.combined_rewards[step_agent] += self.env.rewards[step_agent]
             super().step(self.old_actions[step_agent], observe=False)
 
             self.skip_num[step_agent] -= 1
             if self.skip_num[step_agent] == 0:
                 self.old_actions[step_agent] = None
 
+        self.rewards[self.agent_selection] = self.combined_rewards[self.agent_selection]
+        self.combined_rewards[self.agent_selection] = 0.
         return self.observe(self.agent_selection) if observe else None
 
 class sticky_actions(StepAltWrapper):
