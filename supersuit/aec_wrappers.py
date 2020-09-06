@@ -1,4 +1,4 @@
-from .base_aec_wrapper import BaseWrapper
+from .base_aec_wrapper import BaseWrapper, PettingzooWrap
 from gym.spaces import Box,Space,Discrete
 from . import basic_transforms
 from .adv_transforms.frame_stack import stack_obs_space,stack_init,stack_obs
@@ -204,34 +204,41 @@ class StepAltWrapper(BaseWrapper):
     def _modify_observation(self, agent, observation):
         return observation
 
-class frame_skip(StepAltWrapper):
+class frame_skip_help(StepAltWrapper):
     def __init__(self, env, frame_skip, seed=None):
         super().__init__(env)
         assert isinstance(frame_skip, int), "multi-agent frame skip only takes in an integer"
+        assert frame_skip > 0
         check_transform_frameskip(frame_skip)
         self.frame_skip = frame_skip
 
     def reset(self, observe=True):
         self.skip_num = {agent: 0 for agent in self.agents}
+        self.combined_rewards = {agent: 0 for agent in self.agents}
         self.old_actions = {agent: None for agent in self.agents}
-        #self.skips = {agent: 0 for agent,space in self.env.observation_spaces.items()}
         return super().reset(observe)
 
     def step(self, action, observe=True):
         cur_agent = self.agent_selection
-        super().step(action, observe=False)
-        self.skip_num[cur_agent] = self.frame_skip-1
-        if self.skip_num[cur_agent] != 0:
-            self.old_actions[cur_agent] = action
+        self.combined_rewards[self.agent_selection] = 0.
+        self.skip_num[cur_agent] = self.frame_skip
+        self.old_actions[cur_agent] = action
         while self.old_actions[self.agent_selection] is not None:
             step_agent = self.agent_selection
             super().step(self.old_actions[step_agent], observe=False)
+            self.combined_rewards[self.agent_selection] += self.env.rewards[self.agent_selection]
 
             self.skip_num[step_agent] -= 1
             if self.skip_num[step_agent] == 0:
                 self.old_actions[step_agent] = None
 
+        self.rewards = {agent: rew for agent, rew in self.combined_rewards.items()}
         return self.observe(self.agent_selection) if observe else None
+
+def frame_skip(env, frame_skip, seed=None):
+    env = frame_skip_help(env, frame_skip, seed)
+    env = PettingzooWrap(env)
+    return env
 
 class sticky_actions(StepAltWrapper):
     def __init__(self, env, repeat_action_probability, seed=None):
