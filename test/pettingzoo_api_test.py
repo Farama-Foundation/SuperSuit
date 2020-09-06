@@ -16,7 +16,7 @@ def test_pettinzoo_frame_skip():
     env = frame_skip(env, 3)
     env.reset()
     for x in range(10):
-        assert env.env.steps == (x//2)*3
+        assert env.env.env.steps == (x//2)*3
         action = env.action_spaces[env.agent_selection].sample()
         next_obs = env.step(action)
 
