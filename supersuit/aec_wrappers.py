@@ -205,7 +205,7 @@ class StepAltWrapper(BaseWrapper):
         return observation
 
 class frame_skip_help(StepAltWrapper):
-    def __init__(self, env, frame_skip, seed=None):
+    def __init__(self, env, frame_skip):
         super().__init__(env)
         assert isinstance(frame_skip, int), "multi-agent frame skip only takes in an integer"
         assert frame_skip > 0
@@ -235,17 +235,21 @@ class frame_skip_help(StepAltWrapper):
         self.rewards = {agent: rew for agent, rew in self.combined_rewards.items()}
         return self.observe(self.agent_selection) if observe else None
 
-def frame_skip(env, frame_skip, seed=None):
-    env = frame_skip_help(env, frame_skip, seed)
+def frame_skip(env, frame_skip):
+    env = frame_skip_help(env, frame_skip)
     env = PettingzooWrap(env)
     return env
 
 class sticky_actions(StepAltWrapper):
-    def __init__(self, env, repeat_action_probability, seed=None):
+    def __init__(self, env, repeat_action_probability):
         super().__init__(env)
         assert 0 <= repeat_action_probability < 1
         self.repeat_action_probability = repeat_action_probability
+        self.np_random, seed = gym.utils.seeding.np_random(None)
+
+    def seed(self, seed=None):
         self.np_random, seed = gym.utils.seeding.np_random(seed)
+        super().seed(seed)
 
     def reset(self, observe=True):
         self.old_action = None

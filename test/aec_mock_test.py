@@ -1,7 +1,7 @@
 from gym.spaces import Box, Discrete
 from .dummy_aec_env import DummyEnv
 import numpy as np
-from supersuit import frame_stack,reshape,observation_lambda,action_lambda,pad_action_space,pad_observations,dtype
+from supersuit import frame_stack_v0,reshape_v0,observation_lambda_v0,action_lambda_v0,pad_action_space_v0,pad_observations_v0,dtype_v0
 import supersuit
 import pytest
 
@@ -14,7 +14,7 @@ def test_frame_stack():
     base_obs_space = {"a{}".format(idx): Box(low=np.float32(0.),high=np.float32(10.),shape=[2,3]) for idx in range(2)}
     base_obs = {"a{}".format(idx): np.zeros([2,3]) + np.arange(3) + idx for idx in range(2)}
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
-    env = frame_stack(base_env, 4)
+    env = frame_stack_v0(base_env, 4)
     obs = env.reset()
     assert obs.shape == (2,3,4)
     first_obs = env.step(2)
@@ -24,7 +24,7 @@ def test_frame_stack():
 
     base_obs = {"a{}".format(idx): idx+3 for idx in range(2)}
     base_env = DummyEnv(base_obs, base_act_spaces, base_act_spaces)
-    env = frame_stack(base_env, 4)
+    env = frame_stack_v0(base_env, 4)
     obs = env.reset()
     assert env.observation_spaces[env.agent_selection].n == 5**4
     first_obs = env.step(2)
@@ -37,7 +37,7 @@ def test_frame_stack():
 
 def test_frame_skip():
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
-    env = supersuit.frame_skip(base_env, 3)
+    env = supersuit.frame_skip_v0(base_env, 3)
     env.reset()
     for i in range(10):
         env.step(0)
@@ -49,13 +49,13 @@ def test_agent_indicator():
     base_act_spaces = {"{}_{}".format(let[idx],idx): Discrete(5) for idx in range(3)}
 
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
-    env = supersuit.agent_indicator(base_env,type_only=True)
+    env = supersuit.agent_indicator_v0(base_env,type_only=True)
     obs = env.reset()
     assert obs.shape == (2,3,3)
     assert env.observation_spaces["a_0"].shape == (2,3,3)
     first_obs = env.step(2)
 
-    env = supersuit.agent_indicator(base_env,type_only=False)
+    env = supersuit.agent_indicator_v0(base_env,type_only=False)
     obs = env.reset()
     assert obs.shape == (2,3,4)
     assert env.observation_spaces["a_0"].shape == (2,3,4)
@@ -63,7 +63,7 @@ def test_agent_indicator():
 
 def test_reshape():
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
-    env = reshape(base_env, (64, 3))
+    env = reshape_v0(base_env, (64, 3))
     obs = env.reset()
     assert obs.shape == (64,3)
     first_obs = env.step(5)
@@ -87,28 +87,29 @@ def new_dummy():
     return  DummyEnv(base_obs, base_obs_space, base_act_spaces)
 
 wrappers = [
-    supersuit.color_reduction(new_dummy(),"R"),
-    supersuit.resize(dtype(new_dummy(),np.uint8),x_size=5,y_size=10),
-    supersuit.resize(dtype(new_dummy(),np.uint8),x_size=5,y_size=10,linear_interp=True),
-    supersuit.dtype(new_dummy(),np.int32),
-    supersuit.flatten(new_dummy()),
-    supersuit.reshape(new_dummy(),(64,3)),
-    supersuit.normalize_obs(new_dummy(),env_min=-1,env_max=5.),
-    supersuit.frame_stack(new_dummy(),8),
-    supersuit.pad_observations(new_dummy()),
-    supersuit.pad_action_space(new_dummy()),
-    supersuit.agent_indicator(new_dummy(),True),
-    supersuit.agent_indicator(new_dummy(),False),
+    supersuit.color_reduction_v0(new_dummy(),"R"),
+    supersuit.resize_v0(dtype_v0(new_dummy(),np.uint8),x_size=5,y_size=10),
+    supersuit.resize_v0(dtype_v0(new_dummy(),np.uint8),x_size=5,y_size=10,linear_interp=True),
+    supersuit.dtype_v0(new_dummy(),np.int32),
+    supersuit.flatten_v0(new_dummy()),
+    supersuit.reshape_v0(new_dummy(),(64,3)),
+    supersuit.normalize_obs_v0(new_dummy(),env_min=-1,env_max=5.),
+    supersuit.frame_stack_v0(new_dummy(),8),
+    supersuit.pad_observations_v0(new_dummy()),
+    supersuit.pad_action_space_v0(new_dummy()),
+    supersuit.agent_indicator_v0(new_dummy(),True),
+    supersuit.agent_indicator_v0(new_dummy(),False),
     #supersuit.normalize_reward(new_dummy()),
-    supersuit.reward_lambda(new_dummy(), lambda x:x/10),
-    supersuit.clip_reward(new_dummy()),
-    supersuit.clip_actions(new_continuous_dummy()),
-    supersuit.frame_skip(new_dummy(), 4),
-    supersuit.sticky_actions(new_dummy(), 0.75),
-    supersuit.delay_observations(new_dummy(), 3),
+    supersuit.reward_lambda_v0(new_dummy(), lambda x:x/10),
+    supersuit.clip_reward_v0(new_dummy()),
+    supersuit.clip_actions_v0(new_continuous_dummy()),
+    supersuit.frame_skip_v0(new_dummy(), 4),
+    supersuit.sticky_actions_v0(new_dummy(), 0.75),
+    supersuit.delay_observations_v0(new_dummy(), 3),
 ]
 @pytest.mark.parametrize("env", wrappers)
 def test_basic_wrappers(env):
+    env.seed(5)
     obs = env.reset()
     act_space = env.action_spaces[env.agent_selection]
     obs_space = env.observation_spaces[env.agent_selection]
@@ -122,7 +123,7 @@ def test_basic_wrappers(env):
 
 
 def test_rew_lambda():
-    env = supersuit.reward_lambda(new_dummy(), lambda x:x/10)
+    env = supersuit.reward_lambda_v0(new_dummy(), lambda x:x/10)
     env.reset()
     assert env.rewards[env.agent_selection] == 1./10
 
@@ -130,10 +131,10 @@ def test_lambda():
     def add1(obs):
         return obs+1
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
-    env = observation_lambda(base_env, add1)
+    env = observation_lambda_v0(base_env, add1)
     obs0 = env.reset()
     assert int(obs0[0][0][0]) == 1
-    env = observation_lambda(env, add1)
+    env = observation_lambda_v0(env, add1)
     obs0 = env.reset()
     assert int(obs0[0][0][0]) == 2
 
@@ -143,12 +144,12 @@ def test_lambda():
         tile_shape[0] *= 2
         return np.tile(obs,tile_shape)
 
-    env = observation_lambda(env, tile_obs)
+    env = observation_lambda_v0(env, tile_obs)
     obs0 = env.reset()
     assert env.observation_spaces[env.agent_selection].shape == (16,8,3)
     def change_shape_fn(obs_space):
         return Box(low=0,high=1,shape=(32,8,3))
-    env = observation_lambda(env, tile_obs)
+    env = observation_lambda_v0(env, tile_obs)
     obs0 = env.reset()
     assert env.observation_spaces[env.agent_selection].shape == (32,8,3)
     assert obs0.shape == (32,8,3)
@@ -159,7 +160,7 @@ def test_action_lambda():
     def change_space_fn(space):
         return Discrete(space.n+1)
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
-    env = action_lambda(base_env, inc1, change_space_fn)
+    env = action_lambda_v0(base_env, inc1, change_space_fn)
     env.reset()
     env.step(5)
 
@@ -170,7 +171,7 @@ def test_action_lambda():
 
     act_spaces = {"a{}".format(idx): Box(low=0,high=1,shape=(15,)) for idx in range(2)}
     base_env = DummyEnv(base_obs, base_obs_space, act_spaces)
-    env = action_lambda(base_env,
+    env = action_lambda_v0(base_env,
         lambda action, act_space : one_hot(action, act_space.shape[0]),
         lambda act_space : Discrete(act_space.shape[0]))
 
@@ -181,7 +182,7 @@ def test_dehomogenize():
     base_act_spaces = {"a{}".format(idx): Discrete(5+idx) for idx in range(2)}
 
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
-    env = pad_action_space(base_env)
+    env = pad_action_space_v0(base_env)
     env.reset()
     assert all([s.n == 6 for s in env.action_spaces.values()])
     env.step(5)

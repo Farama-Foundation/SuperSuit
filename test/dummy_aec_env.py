@@ -18,6 +18,9 @@ class DummyEnv(AECEnv):
         self.dones = {a:False for a in self.agents}
         self.infos = {a:{} for a in self.agents}
 
+    def seed(self, seed=None):
+        pass
+
     def observe(self, agent):
         return self._observations[agent]
 
