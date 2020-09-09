@@ -6,7 +6,7 @@ from . import aec_wrappers
 from . import gym_wrappers
 from . import parallel_wrappers
 
-__version__ = "1.2.0" 
+__version__ = "1.2.0"
 
 class WrapperFactory:
     def __init__(self, wrapper_name, gym_avaliable=True):
@@ -32,24 +32,24 @@ class WrapperFactory:
         else:
             raise ValueError("environment passed to supersuit wrapper must either be a gym environment or a pettingzoo environment")
 
-color_reduction = WrapperFactory("color_reduction")
-resize = WrapperFactory("resize")
-dtype = WrapperFactory("dtype")
-flatten = WrapperFactory("flatten")
-frame_stack = WrapperFactory("frame_stack")
-normalize_obs = WrapperFactory("normalize_obs")
-reshape = WrapperFactory("reshape")
-clip_reward = WrapperFactory("clip_reward")
-action_lambda = WrapperFactory("action_lambda")
-clip_actions = WrapperFactory("clip_actions")
-observation_lambda = WrapperFactory("observation_lambda")
-reward_lambda = WrapperFactory("reward_lambda")
-frame_skip = WrapperFactory("frame_skip")
-sticky_actions = WrapperFactory("sticky_actions")
-delay_observations = WrapperFactory("delay_observations")
+color_reduction_v0 = WrapperFactory("color_reduction")
+resize_v0 = WrapperFactory("resize")
+dtype_v0 = WrapperFactory("dtype")
+flatten_v0 = WrapperFactory("flatten")
+frame_stack_v0 = WrapperFactory("frame_stack")
+normalize_obs_v0 = WrapperFactory("normalize_obs")
+reshape_v0 = WrapperFactory("reshape")
+clip_reward_v0 = WrapperFactory("clip_reward")
+action_lambda_v0 = WrapperFactory("action_lambda")
+clip_actions_v0 = WrapperFactory("clip_actions")
+observation_lambda_v0 = WrapperFactory("observation_lambda")
+reward_lambda_v0 = WrapperFactory("reward_lambda")
+frame_skip_v0 = WrapperFactory("frame_skip")
+sticky_actions_v0 = WrapperFactory("sticky_actions")
+delay_observations_v0 = WrapperFactory("delay_observations")
 
-agent_indicator = WrapperFactory("agent_indicator", False)
-pad_action_space = WrapperFactory("pad_action_space", False)
-pad_observations = WrapperFactory("pad_observations", False)
+agent_indicator_v0 = WrapperFactory("agent_indicator", False)
+pad_action_space_v0 = WrapperFactory("pad_action_space", False)
+pad_observations_v0 = WrapperFactory("pad_observations", False)
 
 from .vector_constructors import gym_vec_env, stable_baselines_vec_env, stable_baselines3_vec_env
