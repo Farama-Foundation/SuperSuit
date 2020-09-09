@@ -35,7 +35,7 @@ base_act_spaces = {"a{}".format(idx): Discrete(5) for idx in range(2)}
 
 def basic_test():
     env = DummyParEnv(base_obs,base_obs_space,base_act_spaces)
-    env = supersuit.delay_observations(env, 4)
+    env = supersuit.delay_observations_v0(env, 4)
     env = supersuit.aec_wrappers.dtype(env,np.uint8)
     orig_obs = env.reset()
     for i in range(10):

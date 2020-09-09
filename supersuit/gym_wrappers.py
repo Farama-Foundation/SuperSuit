@@ -159,7 +159,7 @@ class sticky_actions(gym.Wrapper):
         super().__init__(env)
         assert 0 <= repeat_action_probability < 1
         self.repeat_action_probability = repeat_action_probability
-        self.np_random, seed = gym.utils.seeding.np_random(seed)
+        self.np_random, seed = gym.utils.seeding.np_random(None)
 
     def seed(self, seed=None):
         self.np_random, seed = gym.utils.seeding.np_random(seed)
