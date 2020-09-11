@@ -116,6 +116,10 @@ env = action_lambda_v0(env,
 
 ## Release History
 
+Version 2.0.1 (September 11, 2020):
+
+Switched image resizing backend from lycon to opencv.
+
 Version 2.0.0 (September 8, 2020):
 
 Added versioning to wrappers. Wrappers are now named `<wrapper>_v0`, for example `frame_skip_v0`. Note that this will break all imports!
