@@ -116,6 +116,11 @@ env = action_lambda_v0(env,
 
 ## Release History
 
+Version 2.0.0 (September 8, 2020):
+
+Added versioning to wrappers. Wrappers are now named `<wrapper>_v0`, for example `frame_skip_v0`. Note that this will break all imports!
+Fixed `frame_skip` wrapper. Bumped required PettingZoo version to upstream fixes in PettingZoo's AgentIterWrapper.
+
 Version 1.2.0 (August 21, 2020):
 
 Added support for pettingzoo ParallelEnv. Fixed delay_observations API issue.
