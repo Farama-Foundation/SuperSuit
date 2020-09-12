@@ -116,6 +116,10 @@ env = action_lambda_v0(env,
 
 ## Release History
 
+Version 2.0.2 (September 12, 2020):
+
+Fixed installation issue in setup.py.
+
 Version 2.0.1 (September 11, 2020):
 
 Switched image resizing backend from lycon to opencv.

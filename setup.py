@@ -25,7 +25,7 @@ setuptools.setup(
     keywords=["Reinforcement Learning", "gym"],
     packages=setuptools.find_packages(),
     python_requires='>=3.6',
-    install_requires=[line.strip() for line in open("requirements.txt").readlines()],
+    install_requires=["pettingzoo>=1.3.0", "opencv-python"],
     classifiers=[
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
