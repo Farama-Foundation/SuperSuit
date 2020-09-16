@@ -4,8 +4,10 @@ python:
   - "3.7"
   - "3.8"
 
-install:  
+install:
   - pip3 install -r requirements.txt
 
 script:
+  - python setup.py sdist
+  - pip install dist/*.tar.gz --user
   - pytest
