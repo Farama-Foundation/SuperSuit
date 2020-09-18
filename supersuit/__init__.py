@@ -6,7 +6,7 @@ from . import aec_wrappers
 from . import gym_wrappers
 from . import parallel_wrappers
 
-__version__ = "2.0.2"
+__version__ = "2.1.0"
 
 class WrapperFactory:
     def __init__(self, wrapper_name, gym_avaliable=True):
@@ -32,11 +32,22 @@ class WrapperFactory:
         else:
             raise ValueError("environment passed to supersuit wrapper must either be a gym environment or a pettingzoo environment")
 
+class DeprecatedWrapper(ImportError):
+    pass
+
+class Depreciated:
+    def __init__(self, wrapper_name, orig_version, new_version):
+        self.name = wrapper_name
+        self.old_version, self.new_version = orig_version, new_version
+    def __call__(self, env, *args, **kwargs):
+        raise DeprecatedWrapper(f"{self.name}_{self.old_version} is now depreciated, use {self.name}_{self.new_version} instead")
+
 color_reduction_v0 = WrapperFactory("color_reduction")
 resize_v0 = WrapperFactory("resize")
 dtype_v0 = WrapperFactory("dtype")
 flatten_v0 = WrapperFactory("flatten")
-frame_stack_v0 = WrapperFactory("frame_stack")
+frame_stack_v0 = Depreciated("frame_stack","v0","v1")
+frame_stack_v1 = WrapperFactory("frame_stack")
 normalize_obs_v0 = WrapperFactory("normalize_obs")
 reshape_v0 = WrapperFactory("reshape")
 clip_reward_v0 = WrapperFactory("clip_reward")
