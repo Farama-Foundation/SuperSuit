@@ -2,12 +2,12 @@ from pettingzoo.tests import api_test,seed_test,error_tests,parallel_test
 from pettingzoo.mpe import simple_push_v0,simple_world_comm_v0
 #from pettingzoo.sisl import multiwalker
 
-from supersuit import frame_stack_v0, pad_action_space_v0, frame_skip_v0, sticky_actions_v0
+from supersuit import frame_stack_v1, pad_action_space_v0, frame_skip_v0, sticky_actions_v0
 import numpy as np
 
 def test_pettinzoo_frame_stack():
     _env = simple_push_v0.env()
-    wrapped_env = frame_stack_v0(_env)
+    wrapped_env = frame_stack_v1(_env)
     api_test.api_test(wrapped_env)
 
 def test_pettinzoo_frame_skip():

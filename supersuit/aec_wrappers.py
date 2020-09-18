@@ -185,7 +185,7 @@ class frame_stack(BaseWrapper):
 
     def _update_step(self, agent, observation):
         if observation is None:
-            observation = self.observe(agent)
+            observation = self.env.observe(agent)
         self.stacks[agent] = stack_obs(self.stacks[agent], observation, self.env.observation_spaces[agent], self.stack_size)
 
 class StepAltWrapper(BaseWrapper):

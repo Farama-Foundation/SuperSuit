@@ -1,7 +1,7 @@
 from .dummy_gym_env import DummyEnv
 from gym.spaces import Box, Discrete
 import numpy as np
-from supersuit import frame_stack_v0,reshape_v0,observation_lambda_v0,action_lambda_v0,dtype_v0
+from supersuit import frame_stack_v1,reshape_v0,observation_lambda_v0,action_lambda_v0,dtype_v0
 import supersuit
 import pytest
 
@@ -33,7 +33,7 @@ wrappers = [
     supersuit.flatten_v0(new_dummy()),
     supersuit.reshape_v0(new_dummy(),(64,3)),
     supersuit.normalize_obs_v0(new_dummy(),env_min=-1,env_max=5.),
-    supersuit.frame_stack_v0(new_dummy(),8),
+    supersuit.frame_stack_v1(new_dummy(),8),
     #supersuit.normalize_reward(new_dummy()),
     supersuit.reward_lambda_v0(new_dummy(),lambda x: x/10),
     supersuit.clip_reward_v0(new_dummy()),

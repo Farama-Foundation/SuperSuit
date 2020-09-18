@@ -1,7 +1,7 @@
 from gym.spaces import Box, Discrete
 from .dummy_aec_env import DummyEnv
 import numpy as np
-from supersuit import frame_stack_v0,reshape_v0,observation_lambda_v0,action_lambda_v0,pad_action_space_v0,pad_observations_v0,dtype_v0
+from supersuit import frame_stack_v1,reshape_v0,observation_lambda_v0,action_lambda_v0,pad_action_space_v0,pad_observations_v0,dtype_v0
 import supersuit
 import pytest
 
@@ -14,7 +14,7 @@ def test_frame_stack():
     base_obs_space = {"a{}".format(idx): Box(low=np.float32(0.),high=np.float32(10.),shape=[2,3]) for idx in range(2)}
     base_obs = {"a{}".format(idx): np.zeros([2,3]) + np.arange(3) + idx for idx in range(2)}
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
-    env = frame_stack_v0(base_env, 4)
+    env = frame_stack_v1(base_env, 4)
     obs = env.reset()
     assert obs.shape == (2,3,4)
     first_obs = env.step(2)
@@ -24,7 +24,7 @@ def test_frame_stack():
 
     base_obs = {"a{}".format(idx): idx+3 for idx in range(2)}
     base_env = DummyEnv(base_obs, base_act_spaces, base_act_spaces)
-    env = frame_stack_v0(base_env, 4)
+    env = frame_stack_v1(base_env, 4)
     obs = env.reset()
     assert env.observation_spaces[env.agent_selection].n == 5**4
     first_obs = env.step(2)
@@ -94,7 +94,7 @@ wrappers = [
     supersuit.flatten_v0(new_dummy()),
     supersuit.reshape_v0(new_dummy(),(64,3)),
     supersuit.normalize_obs_v0(new_dummy(),env_min=-1,env_max=5.),
-    supersuit.frame_stack_v0(new_dummy(),8),
+    supersuit.frame_stack_v1(new_dummy(),8),
     supersuit.pad_observations_v0(new_dummy()),
     supersuit.pad_action_space_v0(new_dummy()),
     supersuit.agent_indicator_v0(new_dummy(),True),
