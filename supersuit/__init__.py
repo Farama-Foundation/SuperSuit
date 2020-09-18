@@ -6,7 +6,7 @@ from . import aec_wrappers
 from . import gym_wrappers
 from . import parallel_wrappers
 
-__version__ = "2.0.2"
+__version__ = "2.1.0"
 
 class WrapperFactory:
     def __init__(self, wrapper_name, gym_avaliable=True):
