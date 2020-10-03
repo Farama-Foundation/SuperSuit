@@ -47,7 +47,7 @@ You can install SuperSuit via `pip install supersuit`
 
 `frame_stack_v0(env, num_frames=4)` stacks the most recent frames. For vector games observed via plain vectors (1D arrays), the output is just concatenated to a longer 1D array. 2D or 3D arrays are stacked to be taller 3D arrays. At the start of the game, frames that don't yet exist are filled with 0s. `num_frames=1` is analogous to not using this function.
 
-`normalize_obs_v0(env, env_min=0, env_max=1)` linearly scales observations to be 0 to 1, given known minimum and maximum observation values. Only works on Box observations with finite bounds.
+`normalize_obs_v0(env, env_min=0, env_max=1)` linearly scales observations to the range `env_min` (default 1) to `env_max` (default 0), given the known minimum and maximum observation values defined in the observation space. Only works on Box observations with float32 or float64 dtypes and finite bounds. If you wish to normalize another type, you can first apply the dtype wrapper to convert your type to float32 or float64.
 
 `reshape_v0(env, shape)` reshapes observations into given shape.
 
