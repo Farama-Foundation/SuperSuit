@@ -207,7 +207,7 @@ class StepAltWrapper(BaseWrapper):
 
 
 class frame_skip_help(StepAltWrapper):
-    def __init__(self, env, num_frames, seed):
+    def __init__(self, env, num_frames):
         super().__init__(env)
         assert isinstance(frame_skip, int), "multi-agent frame skip only takes in an integer"
         assert frame_skip > 0
@@ -238,8 +238,8 @@ class frame_skip_help(StepAltWrapper):
         return self.observe(self.agent_selection) if observe else None
 
 
-def frame_skip(env, frame_skip):
-    env = frame_skip_help(env, frame_skip)
+def frame_skip(env, num_frames):
+    env = frame_skip_help(env, num_frames)
     env = PettingzooWrap(env)
     return env
 
