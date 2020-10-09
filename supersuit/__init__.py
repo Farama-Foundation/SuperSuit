@@ -55,7 +55,7 @@ action_lambda_v0 = WrapperFactory("action_lambda")
 clip_actions_v0 = WrapperFactory("clip_actions")
 observation_lambda_v0 = WrapperFactory("observation_lambda")
 reward_lambda_v0 = WrapperFactory("reward_lambda")
-frame_skip_v0 = WrapperFactory("frame_skip")
+frame_skip_v1 = WrapperFactory("frame_skip")
 sticky_actions_v0 = WrapperFactory("sticky_actions")
 delay_observations_v0 = WrapperFactory("delay_observations")
 

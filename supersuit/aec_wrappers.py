@@ -164,18 +164,18 @@ class frame_stack(BaseWrapper):
         assert isinstance(self.stack_size, int), "stack size of frame_stack must be an int"
         for space in self.observation_spaces.values():
             if isinstance(space, Box):
-                assert 1 <= len(space.shape) <= 3, "frame_stack only works for 1,2 or 3 dimentional observations"
+                assert 1 <= len(space.shape) <= 3, "frame_stack only works for 1, 2 or 3 dimensional observations"
             elif isinstance(space, Discrete):
                 pass
             else:
                 assert False, "Stacking is currently only allowed for Box and Discrete observation spaces. The given observation space is {}".format(obs_space)
 
     def reset(self, observe=True):
-        self.stacks = {agent: stack_init(space, self.stack_size) for agent,space in self.env.observation_spaces.items()}
+        self.stacks = {agent: stack_init(space, self.stack_size) for agent, space in self.env.observation_spaces.items()}
         return super().reset(observe)
 
     def _modify_spaces(self):
-        self.observation_spaces = {agent: stack_obs_space(space, self.stack_size)  for agent,space in self.observation_spaces.items()}
+        self.observation_spaces = {agent: stack_obs_space(space, self.stack_size) for agent,space in self.observation_spaces.items()}
 
     def _modify_action(self, agent, action):
         return action
@@ -187,6 +187,7 @@ class frame_stack(BaseWrapper):
         if observation is None:
             observation = self.env.observe(agent)
         self.stacks[agent] = stack_obs(self.stacks[agent], observation, self.env.observation_spaces[agent], self.stack_size)
+
 
 class StepAltWrapper(BaseWrapper):
     def _check_wrapper_params(self):
@@ -204,8 +205,9 @@ class StepAltWrapper(BaseWrapper):
     def _modify_observation(self, agent, observation):
         return observation
 
+
 class frame_skip_help(StepAltWrapper):
-    def __init__(self, env, frame_skip):
+    def __init__(self, env, num_frames, seed):
         super().__init__(env)
         assert isinstance(frame_skip, int), "multi-agent frame skip only takes in an integer"
         assert frame_skip > 0
@@ -235,10 +237,12 @@ class frame_skip_help(StepAltWrapper):
         self.rewards = {agent: rew for agent, rew in self.combined_rewards.items()}
         return self.observe(self.agent_selection) if observe else None
 
+
 def frame_skip(env, frame_skip):
     env = frame_skip_help(env, frame_skip)
     env = PettingzooWrap(env)
     return env
+
 
 class sticky_actions(StepAltWrapper):
     def __init__(self, env, repeat_action_probability):

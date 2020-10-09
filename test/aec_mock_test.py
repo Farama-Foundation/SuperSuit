@@ -37,7 +37,7 @@ def test_frame_stack():
 
 def test_frame_skip():
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
-    env = supersuit.frame_skip_v0(base_env, 3)
+    env = supersuit.frame_skip_v1(base_env, 3)
     env.reset()
     for i in range(10):
         env.step(0)
@@ -99,12 +99,11 @@ wrappers = [
     supersuit.pad_action_space_v0(new_dummy()),
     supersuit.agent_indicator_v0(new_dummy(),True),
     supersuit.agent_indicator_v0(new_dummy(),False),
-    #supersuit.normalize_reward(new_dummy()),
     supersuit.reward_lambda_v0(new_dummy(), lambda x:x/10),
     supersuit.clip_reward_v0(new_dummy()),
     supersuit.clip_actions_v0(new_continuous_dummy()),
     supersuit.frame_skip_v0(new_dummy(), 4),
-    supersuit.sticky_actions_v0(new_dummy(), 0.75),
+    supersuit.sticky_actions_v1(new_dummy(), 0.75),
     supersuit.delay_observations_v0(new_dummy(), 3),
 ]
 @pytest.mark.parametrize("env", wrappers)

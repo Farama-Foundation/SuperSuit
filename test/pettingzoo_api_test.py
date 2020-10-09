@@ -1,8 +1,8 @@
 from pettingzoo.tests import api_test, seed_test, error_tests, parallel_test
 from pettingzoo.mpe import simple_push_v0, simple_world_comm_v0
-#from pettingzoo.sisl import multiwalker
+# from pettingzoo.sisl import multiwalker
 
-from supersuit import frame_stack_v1, pad_action_space_v0, frame_skip_v0, sticky_actions_v0
+from supersuit import frame_stack_v1, pad_action_space_v0, frame_skip_v1, sticky_actions_v0
 import numpy as np
 
 
@@ -13,9 +13,8 @@ def test_pettinzoo_frame_stack():
 
 
 def test_pettinzoo_frame_skip():
-    # this is the actual frame_skip_v0 test
     env = simple_push_v0.raw_env()
-    env = frame_skip_v0(env, 3)
+    env = frame_skip_v1(env, 3)
     env.reset()
     for x in range(10):
         assert env.env.env.steps == (x//2)*3

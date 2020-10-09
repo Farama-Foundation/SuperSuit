@@ -131,8 +131,9 @@ class delay_observations(ObservationWrapper):
         self.delayer = Delayer(self.observation_space, self.delay)
         return super().reset()
 
+
 class frame_skip(gym.Wrapper):
-    def __init__(self, env, frame_skip):
+    def __init__(self, env, num_frames):
         super().__init__(env)
         self.frame_skip = check_transform_frameskip(frame_skip)
         self.np_random, seed = gym.utils.seeding.np_random(None)
