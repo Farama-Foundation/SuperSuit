@@ -223,7 +223,7 @@ class frame_skip_help(StepAltWrapper):
     def step(self, action, observe=True):
         cur_agent = self.agent_selection
         self.combined_rewards[self.agent_selection] = 0.
-        self.skip_num[cur_agent] = self.frame_skip
+        self.skip_num[cur_agent] = self.num_frames
         self.old_actions[cur_agent] = action
         while self.old_actions[self.agent_selection] is not None:
             step_agent = self.agent_selection
