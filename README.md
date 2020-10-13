@@ -39,7 +39,7 @@ You can install SuperSuit via `pip install supersuit`
 
 `flatten_v0(env)` flattens observations into a 1D array.
 
-`frame_skip_v1(env, num_frames)` skips `num_frames` number of frames by reapplying old actions over and over. Observations skipped over are ignored. Rewards skipped over are accumulated. Like Gym Atari's frameskip parameter, `num_frames` can also be a tuple `(min_skip, max_skip)`, which indicates a range of possible skip lengths which are randomly chosen from (in single agent environments only).
+`frame_skip_v0(env, num_frames)` skips `num_frames` number of frames by reapplying old actions over and over. Observations skipped over are ignored. Rewards skipped over are accumulated. Like Gym Atari's frameskip parameter, `num_frames` can also be a tuple `(min_skip, max_skip)`, which indicates a range of possible skip lengths which are randomly chosen from (in single agent environments only).
 
 `delay_observations_v0(env, delay)` Delays observation by `delay` frames. Before `delay` frames have been executed, the observation is all zeros. Along with frame_skip, this is the preferred way to implement reaction time for high FPS games.
 
