@@ -39,11 +39,11 @@ You can install SuperSuit via `pip install supersuit`
 
 `flatten_v0(env)` flattens observations into a 1D array.
 
-`frame_skip_v0(env, num_frames, seed=None)` skips `num_frames` number of frames by reapplying old actions over and over. Observations skipped over are ignored. Rewards skipped over are accumulated. Like Gym Atari's frameskip parameter, `num_frames` can also be a tuple `(min_skip, max_skip)`, which indicates a range of possible skip lengths which are randomly chosen from (in single agent environments only).
+`frame_skip_v0(env, num_frames)` skips `num_frames` number of frames by reapplying old actions over and over. Observations skipped over are ignored. Rewards skipped over are accumulated. Like Gym Atari's frameskip parameter, `num_frames` can also be a tuple `(min_skip, max_skip)`, which indicates a range of possible skip lengths which are randomly chosen from (in single agent environments only).
 
-`delay_observations_v0(env, delay, seed=None)` Delays observation by `delay` frames. Before `delay` frames have been executed, the observation is all zeros. Along with frame_skip, this is the preferred way to implement reaction time for high FPS games.
+`delay_observations_v0(env, delay)` Delays observation by `delay` frames. Before `delay` frames have been executed, the observation is all zeros. Along with frame_skip, this is the preferred way to implement reaction time for high FPS games.
 
-`sticky_actions_v0(env, repeat_action_probability, seed=None)` assigns a probability of an old action "sticking" to the environment and not updating as requested. This is to prevent agents from learning predefined action patterns in highly deterministic games like Atari. Note that the stickiness is cumulative, so an action has a repeat_action_probability^2 chance of an action sticking for two turns in a row, etc. This is the recommended way of adding randomness to Atari by *"Machado et al. (2018), "Revisiting the Arcade Learning Environment: Evaluation Protocols and Open Problems for General Agents"*
+`sticky_actions_v0(env, repeat_action_probability)` assigns a probability of an old action "sticking" to the environment and not updating as requested. This is to prevent agents from learning predefined action patterns in highly deterministic games like Atari. Note that the stickiness is cumulative, so an action has a repeat_action_probability^2 chance of an action sticking for two turns in a row, etc. This is the recommended way of adding randomness to Atari by *"Machado et al. (2018), "Revisiting the Arcade Learning Environment: Evaluation Protocols and Open Problems for General Agents"*
 
 `frame_stack_v0(env, num_frames=4)` stacks the most recent frames. For vector games observed via plain vectors (1D arrays), the output is just concatenated to a longer 1D array. 2D or 3D arrays are stacked to be taller 3D arrays. At the start of the game, frames that don't yet exist are filled with 0s. `num_frames=1` is analogous to not using this function.
 
@@ -130,7 +130,7 @@ Switched image resizing backend from lycon to opencv.
 
 Version 2.0.0 (September 8, 2020):
 
-Added versioning to wrappers. Wrappers are now named `<wrapper>_v0`, for example `frame_skip_v0`. Note that this will break all imports!
+Added versioning to wrappers. Wrappers are now named `<wrapper>_v0`, for example `dtype_v0`. Note that this will break all imports!
 Fixed `frame_skip` wrapper. Bumped required PettingZoo version to upstream fixes in PettingZoo's AgentIterWrapper.
 
 Version 1.2.0 (August 21, 2020):

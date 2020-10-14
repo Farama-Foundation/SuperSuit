@@ -99,7 +99,6 @@ wrappers = [
     supersuit.pad_action_space_v0(new_dummy()),
     supersuit.agent_indicator_v0(new_dummy(),True),
     supersuit.agent_indicator_v0(new_dummy(),False),
-    #supersuit.normalize_reward(new_dummy()),
     supersuit.reward_lambda_v0(new_dummy(), lambda x:x/10),
     supersuit.clip_reward_v0(new_dummy()),
     supersuit.clip_actions_v0(new_continuous_dummy()),

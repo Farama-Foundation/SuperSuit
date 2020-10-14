@@ -1,10 +1,11 @@
 from pettingzoo.utils.to_parallel import ParallelEnv
 import gym
-from gym.spaces import Box,Space,Discrete
-from .adv_transforms.frame_stack import stack_obs_space,stack_init,stack_obs
+from gym.spaces import Box, Space, Discrete
+from .adv_transforms.frame_stack import stack_obs_space, stack_init, stack_obs
 from .adv_transforms.frame_skip import check_transform_frameskip
 from .adv_transforms.obs_delay import Delayer
 import numpy as np
+
 
 class ParallelWraper(ParallelEnv):
     def __init__(self, env):
@@ -47,7 +48,7 @@ class frame_stack(ObservationWrapper):
         assert isinstance(self.stack_size, int), "stack size of frame_stack must be an int"
         for space in self.observation_spaces.values():
             if isinstance(space, Box):
-                assert 1 <= len(space.shape) <= 3, "frame_stack only works for 1,2 or 3 dimentional observations"
+                assert 1 <= len(space.shape) <= 3, "frame_stack only works for 1,2 or 3 dimensional observations"
             elif isinstance(space, Discrete):
                 pass
             else:
@@ -75,9 +76,9 @@ class delay_observations(ObservationWrapper):
         return super().reset()
 
 class frame_skip(ParallelWraper):
-    def __init__(self, env, frame_skip):
+    def __init__(self, env, num_frames):
         super().__init__(env)
-        self.frame_skip = check_transform_frameskip(frame_skip)
+        self.num_frames = check_transform_frameskip(num_frames)
         self.np_random, seed = gym.utils.seeding.np_random(None)
 
     def seed(self, seed=None):
@@ -85,7 +86,7 @@ class frame_skip(ParallelWraper):
         super().seed(seed)
 
     def step(self, action):
-        low, high = self.frame_skip
+        low, high = self.num_frames
         num_skips = int(self.np_random.randint(low, high+1))
         total_reward = {agent: 0. for agent in self.agents}
 
