@@ -3,6 +3,7 @@ import setuptools
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+
 def get_version():
     path = "supersuit/__init__.py"
     with open(path) as file:
@@ -12,6 +13,7 @@ def get_version():
         if line.startswith("__version__"):
             return line.strip().split()[-1].strip().strip('"')
     raise RuntimeError("bad version data in __init__.py")
+
 
 setuptools.setup(
     name="SuperSuit",
@@ -24,7 +26,7 @@ setuptools.setup(
     url="https://github.com/PettingZoo-Team/SuperSuit",
     keywords=["Reinforcement Learning", "gym"],
     packages=setuptools.find_packages(),
-    python_requires='>=3.6',
+    python_requires=">=3.6",
     install_requires=["pettingzoo>=1.3.0", "opencv-python"],
     classifiers=[
         "Programming Language :: Python :: 3.6",

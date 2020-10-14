@@ -1,10 +1,9 @@
 from pettingzoo.utils.to_parallel import ParallelEnv
 import gym
-from gym.spaces import Box, Space, Discrete
+from gym.spaces import Box, Discrete
 from .adv_transforms.frame_stack import stack_obs_space, stack_init, stack_obs
 from .adv_transforms.frame_skip import check_transform_frameskip
 from .adv_transforms.obs_delay import Delayer
-import numpy as np
 
 
 class ParallelWraper(ParallelEnv):
@@ -27,6 +26,7 @@ class ParallelWraper(ParallelEnv):
     def close(self):
         return self.env.close()
 
+
 class ObservationWrapper(ParallelWraper):
     def reset(self):
         obss = self.env.reset()
@@ -37,8 +37,9 @@ class ObservationWrapper(ParallelWraper):
         obss = {agent: self._modify_observation(agent, obs) for agent, obs in obss.items()}
         return obss, rew, done, info
 
+
 class frame_stack(ObservationWrapper):
-    def __init__(self,env,num_frames=4):
+    def __init__(self, env, num_frames=4):
         self.stack_size = num_frames
         super().__init__(env)
         self._check_wrapper_params()
@@ -52,7 +53,7 @@ class frame_stack(ObservationWrapper):
             elif isinstance(space, Discrete):
                 pass
             else:
-                assert False, "Stacking is currently only allowed for Box and Discrete observation spaces. The given observation space is {}".format(obs_space)
+                assert False, "Stacking is currently only allowed for Box and Discrete observation spaces. The given observation space is {}".format(space)
 
     def reset(self):
         self.stack = {agent: stack_init(space, self.stack_size) for agent, space in self.env.observation_spaces.items()}
@@ -62,6 +63,7 @@ class frame_stack(ObservationWrapper):
         space = self.env.observation_spaces[agent]
         self.stack[agent] = stack_obs(self.stack[agent], observation, space, self.stack_size)
         return self.stack[agent]
+
 
 class delay_observations(ObservationWrapper):
     def __init__(self, env, delay):
@@ -75,6 +77,7 @@ class delay_observations(ObservationWrapper):
         self.delayers = {agent: Delayer(space, self.delay) for agent, space in self.observation_spaces.items()}
         return super().reset()
 
+
 class frame_skip(ParallelWraper):
     def __init__(self, env, num_frames):
         super().__init__(env)
@@ -87,8 +90,8 @@ class frame_skip(ParallelWraper):
 
     def step(self, action):
         low, high = self.num_frames
-        num_skips = int(self.np_random.randint(low, high+1))
-        total_reward = {agent: 0. for agent in self.agents}
+        num_skips = int(self.np_random.randint(low, high + 1))
+        total_reward = {agent: 0.0 for agent in self.agents}
 
         for x in range(num_skips):
             obs, rews, done, info = super().step(action)
