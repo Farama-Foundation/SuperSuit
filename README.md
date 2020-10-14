@@ -116,6 +116,10 @@ env = action_lambda_v0(env,
 
 ## Release History
 
+Version 2.1.1 (October 14, 2020):
+
+Fixed argument name to frame_skip.
+
 Version 2.1.0 (September 12, 2020):
 
 Fixed bug in AEC frame_stack wrapper, bumped version of frame_stack.
