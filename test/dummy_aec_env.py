@@ -2,8 +2,9 @@ from pettingzoo import AECEnv
 import copy
 from pettingzoo.utils.agent_selector import agent_selector
 
+
 class DummyEnv(AECEnv):
-    def __init__(self,observations,observation_spaces,action_spaces):
+    def __init__(self, observations, observation_spaces, action_spaces):
         super().__init__()
         self._observations = observations
         self.observation_spaces = observation_spaces
@@ -14,9 +15,9 @@ class DummyEnv(AECEnv):
         self.agent_selection = self._agent_selector.reset()
         self.action_spaces = action_spaces
 
-        self.rewards = {a:1 for a in self.agents}
-        self.dones = {a:False for a in self.agents}
-        self.infos = {a:{} for a in self.agents}
+        self.rewards = {a: 1 for a in self.agents}
+        self.dones = {a: False for a in self.agents}
+        self.infos = {a: {} for a in self.agents}
 
     def seed(self, seed=None):
         pass

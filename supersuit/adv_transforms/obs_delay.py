@@ -1,6 +1,7 @@
 from collections import deque
 import numpy as np
 
+
 class Delayer:
     def __init__(self, obs_space, delay):
         self.delay = delay

@@ -1,22 +1,24 @@
 from .base_aec_wrapper import BaseWrapper
-from gym.spaces import Box,Space,Discrete
+from gym.spaces import Box, Space, Discrete
 from . import basic_transforms
-from .adv_transforms.frame_stack import stack_obs_space,stack_init,stack_obs
+from .adv_transforms.frame_stack import stack_obs_space, stack_init, stack_obs
 from .adv_transforms.frame_skip import check_transform_frameskip
 from .adv_transforms.obs_delay import Delayer
 import numpy as np
 import gym
 
+
 class ObservationWrapper(gym.Wrapper):
     def step(self, action):
-        observation,rew,done,info = self.env.step(action)
+        observation, rew, done, info = self.env.step(action)
         observation = self._modify_observation(observation)
-        return observation,rew,done,info
+        return observation, rew, done, info
 
     def reset(self):
         observation = self.env.reset()
         observation = self._modify_observation(observation)
         return observation
+
 
 class observation_lambda(ObservationWrapper):
     def __init__(self, env, change_observation_fn, change_obs_space_fn=None):
@@ -49,16 +51,17 @@ class observation_lambda(ObservationWrapper):
     def _modify_observation(self, observation):
         return self.change_observation_fn(observation)
 
+
 class BasicObservationWrapper(ObservationWrapper):
-    '''
+    """
     For internal use only
-    '''
-    def __init__(self,env,module,param):
+    """
+
+    def __init__(self, env, module, param):
         self._module = module
         self._param = param
         super().__init__(env)
-        assert isinstance(self.env.observation_space, Box), \
-            "Observation space is not Box, is {}.".format(self.observation_space)
+        assert isinstance(self.env.observation_space, Box), "Observation space is not Box, is {}.".format(self.observation_space)
         module.check_param(self.env.observation_space, param)
         self.observation_space = module.change_obs_space(self.env.observation_space, param)
 
@@ -67,34 +70,41 @@ class BasicObservationWrapper(ObservationWrapper):
         observation = self._module.change_observation(observation, obs_space, self._param)
         return observation
 
+
 class color_reduction(BasicObservationWrapper):
-    def __init__(self,env,mode='full'):
-        super().__init__(env,basic_transforms.color_reduction,mode)
+    def __init__(self, env, mode="full"):
+        super().__init__(env, basic_transforms.color_reduction, mode)
+
 
 class resize(BasicObservationWrapper):
-    def __init__(self,env,x_size,y_size,linear_interp=False):
+    def __init__(self, env, x_size, y_size, linear_interp=False):
         scale_tuple = (x_size, y_size, linear_interp)
-        super().__init__(env,basic_transforms.resize,scale_tuple)
+        super().__init__(env, basic_transforms.resize, scale_tuple)
+
 
 class dtype(BasicObservationWrapper):
-    def __init__(self,env,dtype):
-        super().__init__(env,basic_transforms.dtype,dtype)
+    def __init__(self, env, dtype):
+        super().__init__(env, basic_transforms.dtype, dtype)
+
 
 class flatten(BasicObservationWrapper):
-    def __init__(self,env):
-        super().__init__(env,basic_transforms.flatten,True)
+    def __init__(self, env):
+        super().__init__(env, basic_transforms.flatten, True)
+
 
 class reshape(BasicObservationWrapper):
-    def __init__(self,env,shape):
-        super().__init__(env,basic_transforms.reshape,shape)
+    def __init__(self, env, shape):
+        super().__init__(env, basic_transforms.reshape, shape)
+
 
 class normalize_obs(BasicObservationWrapper):
-    def __init__(self,env,env_min=0.,env_max=1.):
+    def __init__(self, env, env_min=0.0, env_max=1.0):
         shape = (env_min, env_max)
-        super().__init__(env,basic_transforms.normalize_obs,shape)
+        super().__init__(env, basic_transforms.normalize_obs, shape)
+
 
 class frame_stack(ObservationWrapper):
-    def __init__(self,env,num_frames=4):
+    def __init__(self, env, num_frames=4):
         self.stack_size = num_frames
         super().__init__(env)
         self._check_wrapper_params()
@@ -118,6 +128,7 @@ class frame_stack(ObservationWrapper):
     def _modify_observation(self, observation):
         self.stack = stack_obs(self.stack, observation, self.env.observation_space, self.stack_size)
         return self.stack
+
 
 class delay_observations(ObservationWrapper):
     def __init__(self, env, delay):
@@ -144,8 +155,8 @@ class frame_skip(gym.Wrapper):
 
     def step(self, action):
         low, high = self.num_frames
-        num_skips = int(self.np_random.randint(low, high+1))
-        total_reward = 0.
+        num_skips = int(self.np_random.randint(low, high + 1))
+        total_reward = 0.0
 
         for x in range(num_skips):
             obs, rew, done, info = super().step(action)
@@ -154,6 +165,7 @@ class frame_skip(gym.Wrapper):
                 break
 
         return obs, total_reward, done, info
+
 
 class sticky_actions(gym.Wrapper):
     def __init__(self, env, repeat_action_probability):
@@ -176,12 +188,14 @@ class sticky_actions(gym.Wrapper):
 
         return super().step(action)
 
+
 class ActionWrapper(gym.Wrapper):
     def __init__(self, env):
         super().__init__(env)
 
     def step(self, action):
         return super().step(self._modify_action(action))
+
 
 class action_lambda(ActionWrapper):
     def __init__(self, env, change_action_fn, change_space_fn):
@@ -201,6 +215,7 @@ class action_lambda(ActionWrapper):
     def _modify_action(self, action):
         return self.change_action_fn(action, self.env.action_space)
 
+
 class clip_actions(ActionWrapper):
     def __init__(self, env):
         super().__init__(env)
@@ -208,6 +223,7 @@ class clip_actions(ActionWrapper):
 
     def _modify_action(self, action):
         action = np.clip(action, self.action_space.low, self.action_space.high)
+
 
 class RewardWrapper(gym.Wrapper):
     def step(self, action):
@@ -221,6 +237,7 @@ class reward_lambda(RewardWrapper):
         self._change_reward_fn = change_reward_fn
 
         super().__init__(env)
+
 
 class clip_reward(RewardWrapper):
     def __init__(self, env, lower_bound=-1, upper_bound=1):

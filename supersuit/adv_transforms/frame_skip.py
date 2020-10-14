@@ -1,4 +1,3 @@
-
 def check_transform_frameskip(frame_skip):
     if isinstance(frame_skip, tuple) and len(frame_skip) == 2 and isinstance(frame_skip[0], int) and isinstance(frame_skip[1], int) and 1 <= frame_skip[0] <= frame_skip[1]:
         return frame_skip

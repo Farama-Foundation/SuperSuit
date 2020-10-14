@@ -27,6 +27,7 @@ class ParallelWraper(ParallelEnv):
     def close(self):
         return self.env.close()
 
+
 class ObservationWrapper(ParallelWraper):
     def reset(self):
         obss = self.env.reset()
@@ -37,8 +38,9 @@ class ObservationWrapper(ParallelWraper):
         obss = {agent: self._modify_observation(agent, obs) for agent, obs in obss.items()}
         return obss, rew, done, info
 
+
 class frame_stack(ObservationWrapper):
-    def __init__(self,env,num_frames=4):
+    def __init__(self, env, num_frames=4):
         self.stack_size = num_frames
         super().__init__(env)
         self._check_wrapper_params()
@@ -63,6 +65,7 @@ class frame_stack(ObservationWrapper):
         self.stack[agent] = stack_obs(self.stack[agent], observation, space, self.stack_size)
         return self.stack[agent]
 
+
 class delay_observations(ObservationWrapper):
     def __init__(self, env, delay):
         super().__init__(env)
@@ -74,6 +77,7 @@ class delay_observations(ObservationWrapper):
     def reset(self):
         self.delayers = {agent: Delayer(space, self.delay) for agent, space in self.observation_spaces.items()}
         return super().reset()
+
 
 class frame_skip(ParallelWraper):
     def __init__(self, env, num_frames):
@@ -87,8 +91,8 @@ class frame_skip(ParallelWraper):
 
     def step(self, action):
         low, high = self.num_frames
-        num_skips = int(self.np_random.randint(low, high+1))
-        total_reward = {agent: 0. for agent in self.agents}
+        num_skips = int(self.np_random.randint(low, high + 1))
+        total_reward = {agent: 0.0 for agent in self.agents}
 
         for x in range(num_skips):
             obs, rews, done, info = super().step(action)
