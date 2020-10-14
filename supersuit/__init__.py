@@ -1,10 +1,10 @@
 import gym
-import importlib
 from pettingzoo.utils.to_parallel import to_parallel, ParallelEnv, from_parallel
 from pettingzoo.utils.env import AECEnv
 from . import aec_wrappers
 from . import gym_wrappers
 from . import parallel_wrappers
+from . import vector_constructors
 
 __version__ = "2.1.0"
 
@@ -68,8 +68,6 @@ agent_indicator_v0 = WrapperFactory("agent_indicator", False)
 pad_action_space_v0 = WrapperFactory("pad_action_space", False)
 pad_observations_v0 = WrapperFactory("pad_observations", False)
 
-from .vector_constructors import (
-    gym_vec_env,
-    stable_baselines_vec_env,
-    stable_baselines3_vec_env,
-)
+gym_vec_env = vector_constructors.gym_vec_env
+stable_baselines_vec_env = vector_constructors.stable_baselines_vec_env
+stable_baselines3_vec_env = vector_constructors.stable_baselines3_vec_env

@@ -1,4 +1,3 @@
-import warnings
 import numpy as np
 from gym.spaces import Box, Discrete
 from gym import spaces

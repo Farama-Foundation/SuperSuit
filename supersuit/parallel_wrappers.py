@@ -1,10 +1,9 @@
 from pettingzoo.utils.to_parallel import ParallelEnv
 import gym
-from gym.spaces import Box, Space, Discrete
+from gym.spaces import Box, Discrete
 from .adv_transforms.frame_stack import stack_obs_space, stack_init, stack_obs
 from .adv_transforms.frame_skip import check_transform_frameskip
 from .adv_transforms.obs_delay import Delayer
-import numpy as np
 
 
 class ParallelWraper(ParallelEnv):
@@ -54,7 +53,7 @@ class frame_stack(ObservationWrapper):
             elif isinstance(space, Discrete):
                 pass
             else:
-                assert False, "Stacking is currently only allowed for Box and Discrete observation spaces. The given observation space is {}".format(obs_space)
+                assert False, "Stacking is currently only allowed for Box and Discrete observation spaces. The given observation space is {}".format(space)
 
     def reset(self):
         self.stack = {agent: stack_init(space, self.stack_size) for agent, space in self.env.observation_spaces.items()}

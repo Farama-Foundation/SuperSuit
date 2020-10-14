@@ -1,6 +1,7 @@
 from pettingzoo.utils.to_parallel import ParallelEnv
 from gym.spaces import Box, Discrete
 import numpy as np
+import supersuit
 
 
 class DummyParEnv(ParallelEnv):
@@ -11,8 +12,7 @@ class DummyParEnv(ParallelEnv):
 
         self.agents = [x for x in observation_spaces.keys()]
         self.num_agents = len(self.agents)
-        self._agent_selector = agent_selector(self.agents)
-        self.agent_selection = self._agent_selector.reset()
+        self.agent_selection = self.agents[0]
         self.action_spaces = action_spaces
 
         self.rewards = {a: 1 for a in self.agents}
@@ -36,10 +36,10 @@ base_obs_space = {"a{}".format(idx): Box(low=np.float32(0.0), high=np.float32(10
 base_act_spaces = {"a{}".format(idx): Discrete(5) for idx in range(2)}
 
 
-def basic_test():
+def test_basic():
     env = DummyParEnv(base_obs, base_obs_space, base_act_spaces)
     env = supersuit.delay_observations_v0(env, 4)
-    env = supersuit.aec_wrappers.dtype(env, np.uint8)
+    env = supersuit.dtype_v0(env, np.uint8)
     orig_obs = env.reset()
     for i in range(10):
         action = {agent: env.action_spaces[agent].sample() for agent in env.agents}

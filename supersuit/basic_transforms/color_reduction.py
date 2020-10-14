@@ -1,7 +1,4 @@
-import warnings
 import numpy as np
-from gym.spaces import Box
-from gym import spaces
 from . import convert_box
 
 COLOR_RED_LIST = ["full", "R", "G", "B"]

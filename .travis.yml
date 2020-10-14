@@ -11,3 +11,5 @@ script:
   - python setup.py sdist
   - pip install dist/*.tar.gz
   - pytest
+  - flake8 supersuit/ --ignore E501,E402,F401
+  - flake8 test/ --ignore E501,E402,F401,F841

@@ -30,7 +30,6 @@ def stack_obs_space(obs_space, stack_size):
     """
     if isinstance(obs_space, Box):
         dtype = obs_space.dtype
-        obs_dim = obs_space.low.ndim
         # stack 1-D frames and 3-D frames
         tile_shape, new_shape = get_tile_shape(obs_space.low.shape, stack_size)
 
