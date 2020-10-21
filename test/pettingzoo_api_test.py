@@ -21,10 +21,12 @@ def test_pettinzoo_frame_skip():
     env = simple_push_v1.raw_env()
     env = frame_skip_v0(env, 3)
     env.reset()
-    for x in range(10):
-        assert env.env.env.steps == (x // 2) * 3
+    x = 0
+    for agent in env.agent_iter():
+        assert env.env.steps == (x // 2) * 3
         action = env.action_spaces[env.agent_selection].sample()
         next_obs = env.step(action)
+        x += 1
 
 
 def test_pettinzoo_pad_actino_space():

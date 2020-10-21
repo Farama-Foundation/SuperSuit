@@ -1,11 +1,8 @@
 from gym.spaces import Box
-from pettingzoo.utils.wrappers import AgentIterWrapper as PettingzooWrap
+from pettingzoo.utils.wrappers import OrderEnforcingWrapper as PettingzooWrap
 
 
 class BaseWrapper(PettingzooWrap):
-
-    metadata = {"render.modes": ["human"]}
-
     def __init__(self, env):
         """
         Creates a wrapper around `env`. Extend this class to create changes to the space.
@@ -28,40 +25,31 @@ class BaseWrapper(PettingzooWrap):
     def _modify_observation(self, agent, observation):
         raise NotImplementedError()
 
-    def _update_step(self, agent, observation):
+    def _update_step(self, agent):
         raise NotImplementedError()
 
-    def reset(self, observe=True):
-        observation = super().reset(observe)
-        agent = self.env.agent_selection
-
-        self._update_step(agent, observation)
-        if observe:
-            observation = self._modify_observation(agent, observation)
-            return observation
-        else:
-            return None
+    def reset(self):
+        super().reset()
+        self._update_step(self.agent_selection)
 
     def observe(self, agent):
         obs = super().observe(agent)
         observation = self._modify_observation(agent, obs)
         return observation
 
-    def step(self, action, observe=True):
-        agent = self.env.agent_selection
-        cur_act_space = self.action_spaces[agent]
-        assert not isinstance(cur_act_space, Box) or cur_act_space.shape == action.shape, "the shape of the action {} is not equal to the shape of the action space {}".format(
-            action.shape, cur_act_space.shape
-        )
-        action = self._modify_action(agent, action)
-        next_obs = super().step(action, observe=observe)
-
-        new_agent = self.env.agent_selection
-
-        self._update_step(new_agent, next_obs)
-
-        if observe:
-            next_obs = self._modify_observation(new_agent, next_obs)
-            return next_obs
+    def step(self, action):
+        if self.dones[self.agent_selection]:
+            self._was_done_step(action)
         else:
-            return None
+            agent = self.env.agent_selection
+            cur_act_space = self.action_spaces[agent]
+            if not self.dones[agent]:
+                assert not isinstance(cur_act_space, Box) or cur_act_space.shape == action.shape, "the shape of the action {} is not equal to the shape of the action space {}".format(
+                    action.shape, cur_act_space.shape
+                )
+                action = self._modify_action(agent, action)
+
+            super().step(action)
+
+            self._update_step(self.agent_selection)
+            self._dones_step_first()
