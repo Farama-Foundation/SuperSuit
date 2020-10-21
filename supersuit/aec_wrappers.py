@@ -235,35 +235,53 @@ class frame_skip(StepAltWrapper):
 
     def reset(self):
         super().reset()
+        self.agents = self.env.agents[:]
+        self.dones = {agent: False for agent in self.agents}
+        self.rewards = {agent: 0. for agent in self.agents}
+        self.infos = {agent: {} for agent in self.agents}
         self.skip_num = {agent: 0 for agent in self.agents}
-        self.rewards = {agent: 0 for agent in self.agents}
         self.old_actions = {agent: None for agent in self.agents}
+        self._final_observations = {agent: None for agent in self.agents}
+
+    def observe(self, agent):
+        fin_observe = self._final_observations[agent]
+        return fin_observe if fin_observe is not None else super().observe(agent)
 
     def step(self, action):
         if self.dones[self.agent_selection]:
+            print(self.env.agent_selection)
+            print(self.env.agents)
+            if self.env.agents and self.agent_selection == self.env.agent_selection:
+                self.env.step(None)
             self._was_done_step(action)
             return
         cur_agent = self.agent_selection
         self.rewards[self.agent_selection] = 0.0
         self.skip_num[cur_agent] = self.num_frames
         self.old_actions[cur_agent] = action
-        self.dones = dict(**self.env.dones)
-        self.infos = dict(**self.env.infos)
-        print(self.dones)
         while self.old_actions[self.env.agent_selection] is not None:
             step_agent = self.env.agent_selection
             if step_agent in self.env.dones:
+                reward = self.env.rewards[step_agent]
+                done = self.env.dones[step_agent]
+                info = self.env.infos[step_agent]
                 observe, reward, done, info = self.env.last()
                 action = self.old_actions[step_agent] if not done else None
                 self.rewards[step_agent] += reward
                 self.dones[step_agent] = done
                 self.infos[step_agent] = info
+                if done:
+                    self._final_observations[step_agent] = self.env.observe(step_agent)
                 self.env.step(action)
+                step_agent = self.env.agent_selection
 
             self.skip_num[step_agent] -= 1
             if self.skip_num[step_agent] == 0:
                 self.old_actions[step_agent] = None
 
+        for agent in self.env.agents:
+            self.dones[agent] = self.env.dones[agent]
+            self.infos[agent] = self.env.infos[agent]
         self.agent_selection = self.env.agent_selection
         self._dones_step_first()
 

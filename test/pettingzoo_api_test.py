@@ -18,11 +18,11 @@ def test_pettinzoo_frame_stack():
 
 
 def test_pettinzoo_frame_skip():
-    env = simple_push_v1.raw_env()
+    env = simple_push_v1.raw_env(max_frames=100)
     env = frame_skip_v0(env, 3)
     env.reset()
     x = 0
-    for agent in env.agent_iter():
+    for agent in env.agent_iter(25):
         assert env.env.steps == (x // 2) * 3
         action = env.action_spaces[env.agent_selection].sample()
         next_obs = env.step(action)

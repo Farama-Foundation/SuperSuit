@@ -38,18 +38,18 @@ class BaseWrapper(PettingzooWrap):
         return observation
 
     def step(self, action):
-        if self.dones[self.agent_selection]:
-            self._was_done_step(action)
-        else:
-            agent = self.env.agent_selection
-            cur_act_space = self.action_spaces[agent]
-            if not self.dones[agent]:
-                assert not isinstance(cur_act_space, Box) or cur_act_space.shape == action.shape, "the shape of the action {} is not equal to the shape of the action space {}".format(
-                    action.shape, cur_act_space.shape
-                )
-                action = self._modify_action(agent, action)
+        # if self.dones[self.agent_selection]:
+        #     self._was_done_step(action)
+        # else:
+        agent = self.env.agent_selection
+        cur_act_space = self.action_spaces[agent]
+        if not self.dones[agent]:
+            assert not isinstance(cur_act_space, Box) or cur_act_space.shape == action.shape, "the shape of the action {} is not equal to the shape of the action space {}".format(
+                action.shape, cur_act_space.shape
+            )
+            action = self._modify_action(agent, action)
 
-            super().step(action)
+        super().step(action)
 
-            self._update_step(self.agent_selection)
-            self._dones_step_first()
+        self._update_step(self.agent_selection)
+        #self._dones_step_first()
