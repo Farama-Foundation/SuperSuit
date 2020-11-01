@@ -18,7 +18,7 @@ def test_pettinzoo_frame_stack():
 
 
 def test_pettinzoo_frame_skip():
-    env = simple_push_v1.raw_env(max_frames=100)
+    env = simple_push_v1.raw_env(max_cycles=100)
     env = frame_skip_v0(env, 3)
     env.reset()
     x = 0
