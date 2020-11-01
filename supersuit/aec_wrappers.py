@@ -1,4 +1,4 @@
-from .base_aec_wrapper import BaseWrapper
+from .base_aec_wrapper import BaseWrapper, PettingzooWrap
 from gym.spaces import Box, Space, Discrete
 from . import basic_transforms
 from .adv_transforms.frame_stack import stack_obs_space, stack_init, stack_obs
@@ -238,6 +238,7 @@ class frame_skip(StepAltWrapper):
         self.agents = self.env.agents[:]
         self.dones = {agent: False for agent in self.agents}
         self.rewards = {agent: 0. for agent in self.agents}
+        self._cumulative_rewards = {agent: 0. for agent in self.agents}
         self.infos = {agent: {} for agent in self.agents}
         self.skip_num = {agent: 0 for agent in self.agents}
         self.old_actions = {agent: None for agent in self.agents}
@@ -256,23 +257,28 @@ class frame_skip(StepAltWrapper):
             self._was_done_step(action)
             return
         cur_agent = self.agent_selection
-        self.rewards[self.agent_selection] = 0.0
+        self._cumulative_rewards[cur_agent] = 0
+        self.rewards = {a: 0. for a in self.agents}
         self.skip_num[cur_agent] = self.num_frames
         self.old_actions[cur_agent] = action
         while self.old_actions[self.env.agent_selection] is not None:
             step_agent = self.env.agent_selection
             if step_agent in self.env.dones:
-                reward = self.env.rewards[step_agent]
-                done = self.env.dones[step_agent]
-                info = self.env.infos[step_agent]
-                observe, reward, done, info = self.env.last()
-                action = self.old_actions[step_agent] if not done else None
-                self.rewards[step_agent] += reward
-                self.dones[step_agent] = done
-                self.infos[step_agent] = info
-                if done:
-                    self._final_observations[step_agent] = self.env.observe(step_agent)
+                # reward = self.env.rewards[step_agent]
+                # done = self.env.dones[step_agent]
+                # info = self.env.infos[step_agent]
+                observe, reward, done, info = self.env.last(observe=False)
+                action = self.old_actions[step_agent] #if not done else None
                 self.env.step(action)
+
+                for agent in self.env.agents:
+                    self.rewards[agent] += self.env.rewards[agent]
+                self.infos[self.env.agent_selection] = info
+                while not self.env.env_done and self.env.dones[self.env.agent_selection]:
+                    done_agent = self.env.agent_selection
+                    self.dones[done_agent] = True
+                    self._final_observations[done_agent] = self.env.observe(done_agent)
+                    self.env.step(None)
                 step_agent = self.env.agent_selection
 
             self.skip_num[step_agent] -= 1
@@ -283,6 +289,7 @@ class frame_skip(StepAltWrapper):
             self.dones[agent] = self.env.dones[agent]
             self.infos[agent] = self.env.infos[agent]
         self.agent_selection = self.env.agent_selection
+        self._accumulate_rewards()
         self._dones_step_first()
 
 
@@ -371,15 +378,27 @@ class clip_actions(ActionWrapper):
         return action
 
 
-class RewardWrapper(ActionWrapper, ObservationWrapper):
+class RewardWrapper(PettingzooWrap):
     def _check_wrapper_params(self):
         pass
 
     def _modify_spaces(self):
         pass
 
-    def _update_step(self, agent):
+    def reset(self):
+        super().reset()
         self.rewards = {agent: self._change_reward_fn(reward) for agent, reward in self.rewards.items()}
+        self.__cumulative_rewards = {a: 0 for a in self.agents}
+        self._accumulate_rewards()
+
+    def step(self, action):
+        agent = self.env.agent_selection
+        cur_act_space = self.action_spaces[agent]
+        super().step(action)
+        self.rewards = {agent: self._change_reward_fn(reward) for agent, reward in self.rewards.items()}
+        self.__cumulative_rewards[agent] = 0
+        self._cumulative_rewards = self.__cumulative_rewards
+        self._accumulate_rewards()
 
 
 class reward_lambda(RewardWrapper):

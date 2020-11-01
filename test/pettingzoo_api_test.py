@@ -29,7 +29,7 @@ def test_pettinzoo_frame_skip():
         x += 1
 
 
-def test_pettinzoo_pad_actino_space():
+def test_pettinzoo_pad_action_space():
     _env = simple_world_comm_v1.env()
     wrapped_env = pad_action_space_v0(_env)
     api_test.api_test(wrapped_env)
