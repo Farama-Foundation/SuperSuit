@@ -21,8 +21,16 @@ class ObservationWrapper(gym.Wrapper):
 
 class observation_lambda(ObservationWrapper):
     def __init__(self, env, change_observation_fn, change_obs_space_fn=None):
-        assert callable(change_observation_fn), "change_observation_fn needs to be a function. It is {}".format(change_observation_fn)
-        assert change_obs_space_fn is None or callable(change_obs_space_fn), "change_obs_space_fn needs to be a function. It is {}".format(change_obs_space_fn)
+        assert callable(
+            change_observation_fn
+        ), "change_observation_fn needs to be a function. It is {}".format(
+            change_observation_fn
+        )
+        assert change_obs_space_fn is None or callable(
+            change_obs_space_fn
+        ), "change_obs_space_fn needs to be a function. It is {}".format(
+            change_obs_space_fn
+        )
         self.change_observation_fn = change_observation_fn
         self.change_obs_space_fn = change_obs_space_fn
 
@@ -33,7 +41,9 @@ class observation_lambda(ObservationWrapper):
     def _check_wrapper_params(self):
         if self.change_obs_space_fn is None:
             space = self.observation_space
-            assert isinstance(space, Box), "the observation_lambda_wrapper only allows the change_obs_space_fn argument to be optional for Box observation spaces"
+            assert isinstance(
+                space, Box
+            ), "the observation_lambda_wrapper only allows the change_obs_space_fn argument to be optional for Box observation spaces"
 
     def _modify_spaces(self):
         space = self.observation_space
@@ -44,7 +54,9 @@ class observation_lambda(ObservationWrapper):
             new_space = Box(low=new_low, high=new_high, dtype=new_low.dtype)
         else:
             new_space = self.change_obs_space_fn(space)
-            assert isinstance(new_space, Space), "output of change_obs_space_fn to observation_lambda_wrapper must be a gym space"
+            assert isinstance(
+                new_space, Space
+            ), "output of change_obs_space_fn to observation_lambda_wrapper must be a gym space"
         self.observation_space = new_space
 
     def _modify_observation(self, observation):
@@ -60,13 +72,19 @@ class BasicObservationWrapper(ObservationWrapper):
         self._module = module
         self._param = param
         super().__init__(env)
-        assert isinstance(self.env.observation_space, Box), "Observation space is not Box, is {}.".format(self.observation_space)
+        assert isinstance(
+            self.env.observation_space, Box
+        ), "Observation space is not Box, is {}.".format(self.observation_space)
         module.check_param(self.env.observation_space, param)
-        self.observation_space = module.change_obs_space(self.env.observation_space, param)
+        self.observation_space = module.change_obs_space(
+            self.env.observation_space, param
+        )
 
     def _modify_observation(self, observation):
         obs_space = self.env.observation_space
-        observation = self._module.change_observation(observation, obs_space, self._param)
+        observation = self._module.change_observation(
+            observation, obs_space, self._param
+        )
         return observation
 
 
@@ -107,17 +125,27 @@ class frame_stack(ObservationWrapper):
         self.stack_size = num_frames
         super().__init__(env)
         self._check_wrapper_params()
-        self.observation_space = stack_obs_space(self.env.observation_space, self.stack_size)
+        self.observation_space = stack_obs_space(
+            self.env.observation_space, self.stack_size
+        )
 
     def _check_wrapper_params(self):
-        assert isinstance(self.stack_size, int), "stack size of frame_stack must be an int"
+        assert isinstance(
+            self.stack_size, int
+        ), "stack size of frame_stack must be an int"
         space = self.env.observation_space
         if isinstance(space, Box):
-            assert 1 <= len(space.shape) <= 3, "frame_stack only works for 1,2 or 3 dimentional observations"
+            assert (
+                1 <= len(space.shape) <= 3
+            ), "frame_stack only works for 1,2 or 3 dimentional observations"
         elif isinstance(space, Discrete):
             pass
         else:
-            assert False, "Stacking is currently only allowed for Box and Discrete observation spaces. The given observation space is {}".format(space)
+            assert (
+                False
+            ), "Stacking is currently only allowed for Box and Discrete observation spaces. The given observation space is {}".format(
+                space
+            )
 
     def reset(self):
         space = self.env.observation_space
@@ -125,7 +153,9 @@ class frame_stack(ObservationWrapper):
         return super().reset()
 
     def _modify_observation(self, observation):
-        self.stack = stack_obs(self.stack, observation, self.env.observation_space, self.stack_size)
+        self.stack = stack_obs(
+            self.stack, observation, self.env.observation_space, self.stack_size
+        )
         return self.stack
 
 
@@ -182,7 +212,10 @@ class sticky_actions(gym.Wrapper):
         return super().reset()
 
     def step(self, action):
-        if self.old_action is not None and self.np_random.uniform() < self.repeat_action_probability:
+        if (
+            self.old_action is not None
+            and self.np_random.uniform() < self.repeat_action_probability
+        ):
             action = self.old_action
 
         return super().step(action)
@@ -198,8 +231,12 @@ class ActionWrapper(gym.Wrapper):
 
 class action_lambda(ActionWrapper):
     def __init__(self, env, change_action_fn, change_space_fn):
-        assert callable(change_action_fn), "change_action_fn needs to be a function. It is {}".format(change_action_fn)
-        assert callable(change_space_fn), "change_space_fn needs to be a function. It is {}".format(change_space_fn)
+        assert callable(
+            change_action_fn
+        ), "change_action_fn needs to be a function. It is {}".format(change_action_fn)
+        assert callable(
+            change_space_fn
+        ), "change_space_fn needs to be a function. It is {}".format(change_space_fn)
         self.change_action_fn = change_action_fn
         self.change_space_fn = change_space_fn
 
@@ -208,7 +245,9 @@ class action_lambda(ActionWrapper):
 
     def _modify_spaces(self):
         new_space = self.change_space_fn(self.action_space)
-        assert isinstance(new_space, Space), "output of change_space_fn argument to action_lambda_wrapper must be a gym space"
+        assert isinstance(
+            new_space, Space
+        ), "output of change_space_fn argument to action_lambda_wrapper must be a gym space"
         self.action_spaces = new_space
 
     def _modify_action(self, action):
@@ -218,7 +257,9 @@ class action_lambda(ActionWrapper):
 class clip_actions(ActionWrapper):
     def __init__(self, env):
         super().__init__(env)
-        assert isinstance(self.action_space, Box), "clip_actions only works for Box action spaces"
+        assert isinstance(
+            self.action_space, Box
+        ), "clip_actions only works for Box action spaces"
 
     def _modify_action(self, action):
         action = np.clip(action, self.action_space.low, self.action_space.high)
@@ -232,7 +273,9 @@ class RewardWrapper(gym.Wrapper):
 
 class reward_lambda(RewardWrapper):
     def __init__(self, env, change_reward_fn):
-        assert callable(change_reward_fn), "change_reward_fn needs to be a function. It is {}".format(change_reward_fn)
+        assert callable(
+            change_reward_fn
+        ), "change_reward_fn needs to be a function. It is {}".format(change_reward_fn)
         self._change_reward_fn = change_reward_fn
 
         super().__init__(env)

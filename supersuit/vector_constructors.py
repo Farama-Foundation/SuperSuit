@@ -11,7 +11,9 @@ def vec_env_args(env, num_envs):
 
 def gym_vec_env(env, num_envs, multiprocessing=False):
     args = vec_env_args(env, num_envs)
-    constructor = gym.vector.AsyncVectorEnv if multiprocessing else gym.vector.SyncVectorEnv
+    constructor = (
+        gym.vector.AsyncVectorEnv if multiprocessing else gym.vector.SyncVectorEnv
+    )
     return constructor(*args)
 
 
@@ -19,7 +21,11 @@ def stable_baselines_vec_env(env, num_envs, multiprocessing=False):
     import stable_baselines
 
     args = vec_env_args(env, num_envs)[:1]
-    constructor = stable_baselines.common.vec_env.SubprocVecEnv if multiprocessing else stable_baselines.common.vec_env.DummyVecEnv
+    constructor = (
+        stable_baselines.common.vec_env.SubprocVecEnv
+        if multiprocessing
+        else stable_baselines.common.vec_env.DummyVecEnv
+    )
     return constructor(*args)
 
 
@@ -27,5 +33,9 @@ def stable_baselines3_vec_env(env, num_envs, multiprocessing=False):
     import stable_baselines3
 
     args = vec_env_args(env, num_envs)[:1]
-    constructor = stable_baselines3.common.vec_env.SubprocVecEnv if multiprocessing else stable_baselines3.common.vec_env.DummyVecEnv
+    constructor = (
+        stable_baselines3.common.vec_env.SubprocVecEnv
+        if multiprocessing
+        else stable_baselines3.common.vec_env.DummyVecEnv
+    )
     return constructor(*args)

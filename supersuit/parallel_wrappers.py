@@ -30,11 +30,15 @@ class ParallelWraper(ParallelEnv):
 class ObservationWrapper(ParallelWraper):
     def reset(self):
         obss = self.env.reset()
-        return {agent: self._modify_observation(agent, obs) for agent, obs in obss.items()}
+        return {
+            agent: self._modify_observation(agent, obs) for agent, obs in obss.items()
+        }
 
     def step(self, actions):
         obss, rew, done, info = self.env.step(actions)
-        obss = {agent: self._modify_observation(agent, obs) for agent, obs in obss.items()}
+        obss = {
+            agent: self._modify_observation(agent, obs) for agent, obs in obss.items()
+        }
         return obss, rew, done, info
 
 
@@ -43,25 +47,41 @@ class frame_stack(ObservationWrapper):
         self.stack_size = num_frames
         super().__init__(env)
         self._check_wrapper_params()
-        self.observation_spaces = {agent: stack_obs_space(space, self.stack_size) for agent, space in self.observation_spaces.items()}
+        self.observation_spaces = {
+            agent: stack_obs_space(space, self.stack_size)
+            for agent, space in self.observation_spaces.items()
+        }
 
     def _check_wrapper_params(self):
-        assert isinstance(self.stack_size, int), "stack size of frame_stack must be an int"
+        assert isinstance(
+            self.stack_size, int
+        ), "stack size of frame_stack must be an int"
         for space in self.observation_spaces.values():
             if isinstance(space, Box):
-                assert 1 <= len(space.shape) <= 3, "frame_stack only works for 1,2 or 3 dimensional observations"
+                assert (
+                    1 <= len(space.shape) <= 3
+                ), "frame_stack only works for 1,2 or 3 dimensional observations"
             elif isinstance(space, Discrete):
                 pass
             else:
-                assert False, "Stacking is currently only allowed for Box and Discrete observation spaces. The given observation space is {}".format(space)
+                assert (
+                    False
+                ), "Stacking is currently only allowed for Box and Discrete observation spaces. The given observation space is {}".format(
+                    space
+                )
 
     def reset(self):
-        self.stack = {agent: stack_init(space, self.stack_size) for agent, space in self.env.observation_spaces.items()}
+        self.stack = {
+            agent: stack_init(space, self.stack_size)
+            for agent, space in self.env.observation_spaces.items()
+        }
         return super().reset()
 
     def _modify_observation(self, agent, observation):
         space = self.env.observation_spaces[agent]
-        self.stack[agent] = stack_obs(self.stack[agent], observation, space, self.stack_size)
+        self.stack[agent] = stack_obs(
+            self.stack[agent], observation, space, self.stack_size
+        )
         return self.stack[agent]
 
 
@@ -74,7 +94,10 @@ class delay_observations(ObservationWrapper):
         return self.delayers[agent].add(obs)
 
     def reset(self):
-        self.delayers = {agent: Delayer(space, self.delay) for agent, space in self.observation_spaces.items()}
+        self.delayers = {
+            agent: Delayer(space, self.delay)
+            for agent, space in self.observation_spaces.items()
+        }
         return super().reset()
 
 

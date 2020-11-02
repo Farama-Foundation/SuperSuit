@@ -20,8 +20,16 @@ class ObservationWrapper(BaseWrapper):
 
 class observation_lambda(ObservationWrapper):
     def __init__(self, env, change_observation_fn, change_obs_space_fn=None):
-        assert callable(change_observation_fn), "change_observation_fn needs to be a function. It is {}".format(change_observation_fn)
-        assert change_obs_space_fn is None or callable(change_obs_space_fn), "change_obs_space_fn needs to be a function. It is {}".format(change_obs_space_fn)
+        assert callable(
+            change_observation_fn
+        ), "change_observation_fn needs to be a function. It is {}".format(
+            change_observation_fn
+        )
+        assert change_obs_space_fn is None or callable(
+            change_obs_space_fn
+        ), "change_obs_space_fn needs to be a function. It is {}".format(
+            change_obs_space_fn
+        )
         self.change_observation_fn = change_observation_fn
         self.change_obs_space_fn = change_obs_space_fn
 
@@ -31,7 +39,9 @@ class observation_lambda(ObservationWrapper):
         if self.change_obs_space_fn is None:
             spaces = self.observation_spaces.values()
             for space in spaces:
-                assert isinstance(space, Box), "the observation_lambda_wrapper only allows the change_obs_space_fn argument to be optional for Box observation spaces"
+                assert isinstance(
+                    space, Box
+                ), "the observation_lambda_wrapper only allows the change_obs_space_fn argument to be optional for Box observation spaces"
 
     def _modify_spaces(self):
         new_spaces = {}
@@ -42,7 +52,9 @@ class observation_lambda(ObservationWrapper):
                 new_spaces[agent] = Box(low=new_low, high=new_high, dtype=new_low.dtype)
             else:
                 new_space = self.change_obs_space_fn(space)
-                assert isinstance(new_space, Space), "output of change_obs_space_fn to observation_lambda_wrapper must be a gym space"
+                assert isinstance(
+                    new_space, Space
+                ), "output of change_obs_space_fn to observation_lambda_wrapper must be a gym space"
                 new_spaces[agent] = new_space
         self.observation_spaces = new_spaces
 
@@ -61,7 +73,14 @@ class BasicObservationWrapper(ObservationWrapper):
         super().__init__(env)
 
     def _check_wrapper_params(self):
-        assert all([isinstance(obs_space, Box) for obs_space in self.observation_spaces.values()]), "All agents' observation spaces are not Box, they are: {}.".format(self.observation_spaces)
+        assert all(
+            [
+                isinstance(obs_space, Box)
+                for obs_space in self.observation_spaces.values()
+            ]
+        ), "All agents' observation spaces are not Box, they are: {}.".format(
+            self.observation_spaces
+        )
         for obs_space in self.env.observation_spaces.values():
             self.module.check_param(obs_space, self.param)
 
@@ -119,7 +138,10 @@ class agent_indicator(ObservationWrapper):
         agent_ider.check_params(self.observation_spaces.values())
 
     def _modify_spaces(self):
-        self.observation_spaces = {agent: agent_ider.change_obs_space(space, self.num_indicators) for agent, space in self.observation_spaces.items()}
+        self.observation_spaces = {
+            agent: agent_ider.change_obs_space(space, self.num_indicators)
+            for agent, space in self.observation_spaces.items()
+        }
 
     def _modify_observation(self, agent, observation):
         new_obs = agent_ider.change_observation(
@@ -139,7 +161,9 @@ class pad_observations(ObservationWrapper):
         spaces = list(self.observation_spaces.values())
 
         self._obs_space = homogenize_ops.homogenize_spaces(spaces)
-        self.observation_spaces = {agent: self._obs_space for agent in self.observation_spaces}
+        self.observation_spaces = {
+            agent: self._obs_space for agent in self.observation_spaces
+        }
 
     def _modify_observation(self, agent, observation):
         new_obs = homogenize_ops.homogenize_observations(self._obs_space, observation)
@@ -158,7 +182,10 @@ class delay_observations(ObservationWrapper):
         return
 
     def reset(self, observe=True):
-        self._delayers = {agent: Delayer(obs_space, self.delay) for agent, obs_space in self.observation_spaces.items()}
+        self._delayers = {
+            agent: Delayer(obs_space, self.delay)
+            for agent, obs_space in self.observation_spaces.items()
+        }
         self._observes = {agent: None for agent in self.agents}
         return super().reset()
 
@@ -175,21 +202,35 @@ class frame_stack(BaseWrapper):
         super().__init__(env)
 
     def _check_wrapper_params(self):
-        assert isinstance(self.stack_size, int), "stack size of frame_stack must be an int"
+        assert isinstance(
+            self.stack_size, int
+        ), "stack size of frame_stack must be an int"
         for space in self.observation_spaces.values():
             if isinstance(space, Box):
-                assert 1 <= len(space.shape) <= 3, "frame_stack only works for 1, 2 or 3 dimensional observations"
+                assert (
+                    1 <= len(space.shape) <= 3
+                ), "frame_stack only works for 1, 2 or 3 dimensional observations"
             elif isinstance(space, Discrete):
                 pass
             else:
-                assert False, "Stacking is currently only allowed for Box and Discrete observation spaces. The given observation space is {}".format(space)
+                assert (
+                    False
+                ), "Stacking is currently only allowed for Box and Discrete observation spaces. The given observation space is {}".format(
+                    space
+                )
 
     def reset(self, observe=True):
-        self.stacks = {agent: stack_init(space, self.stack_size) for agent, space in self.env.observation_spaces.items()}
+        self.stacks = {
+            agent: stack_init(space, self.stack_size)
+            for agent, space in self.env.observation_spaces.items()
+        }
         return super().reset(observe)
 
     def _modify_spaces(self):
-        self.observation_spaces = {agent: stack_obs_space(space, self.stack_size) for agent, space in self.observation_spaces.items()}
+        self.observation_spaces = {
+            agent: stack_obs_space(space, self.stack_size)
+            for agent, space in self.observation_spaces.items()
+        }
 
     def _modify_action(self, agent, action):
         return action
@@ -228,7 +269,9 @@ class StepAltWrapper(BaseWrapper):
 class frame_skip_help(StepAltWrapper):
     def __init__(self, env, num_frames):
         super().__init__(env)
-        assert isinstance(num_frames, int), "multi-agent frame skip only takes in an integer"
+        assert isinstance(
+            num_frames, int
+        ), "multi-agent frame skip only takes in an integer"
         assert num_frames > 0
         check_transform_frameskip(num_frames)
         self.num_frames = num_frames
@@ -247,7 +290,9 @@ class frame_skip_help(StepAltWrapper):
         while self.old_actions[self.agent_selection] is not None:
             step_agent = self.agent_selection
             super().step(self.old_actions[step_agent], observe=False)
-            self.combined_rewards[self.agent_selection] += self.env.rewards[self.agent_selection]
+            self.combined_rewards[self.agent_selection] += self.env.rewards[
+                self.agent_selection
+            ]
 
             self.skip_num[step_agent] -= 1
             if self.skip_num[step_agent] == 0:
@@ -279,7 +324,10 @@ class sticky_actions(StepAltWrapper):
         return super().reset(observe)
 
     def step(self, action, observe=True):
-        if self.old_action is not None and self.np_random.uniform() < self.repeat_action_probability:
+        if (
+            self.old_action is not None
+            and self.np_random.uniform() < self.repeat_action_probability
+        ):
             action = self.old_action
 
         return super().step(action, observe)
@@ -298,8 +346,12 @@ class ActionWrapper(BaseWrapper):
 
 class action_lambda(ActionWrapper):
     def __init__(self, env, change_action_fn, change_space_fn):
-        assert callable(change_action_fn), "change_action_fn needs to be a function. It is {}".format(change_action_fn)
-        assert callable(change_space_fn), "change_space_fn needs to be a function. It is {}".format(change_space_fn)
+        assert callable(
+            change_action_fn
+        ), "change_action_fn needs to be a function. It is {}".format(change_action_fn)
+        assert callable(
+            change_space_fn
+        ), "change_space_fn needs to be a function. It is {}".format(change_space_fn)
         self.change_action_fn = change_action_fn
         self.change_space_fn = change_space_fn
 
@@ -312,7 +364,9 @@ class action_lambda(ActionWrapper):
         new_spaces = {}
         for agent, space in self.action_spaces.items():
             new_spaces[agent] = self.change_space_fn(space)
-            assert isinstance(new_spaces[agent], Space), "output of change_space_fn argument to action_lambda_wrapper must be a gym space"
+            assert isinstance(
+                new_spaces[agent], Space
+            ), "output of change_space_fn argument to action_lambda_wrapper must be a gym space"
 
         self.action_spaces = new_spaces
 
@@ -330,14 +384,18 @@ class pad_action_space(ActionWrapper):
         self.action_spaces = {agent: space for agent in self.action_spaces}
 
     def _modify_action(self, agent, action):
-        new_action = homogenize_ops.dehomogenize_actions(self.env.action_spaces[agent], action)
+        new_action = homogenize_ops.dehomogenize_actions(
+            self.env.action_spaces[agent], action
+        )
         return new_action
 
 
 class clip_actions(ActionWrapper):
     def _check_wrapper_params(self):
         for space in self.env.action_spaces.values():
-            assert isinstance(space, Box), "clip_actions only works for Box action spaces"
+            assert isinstance(
+                space, Box
+            ), "clip_actions only works for Box action spaces"
 
     def _modify_spaces(self):
         pass
@@ -356,12 +414,17 @@ class RewardWrapper(ActionWrapper, ObservationWrapper):
         pass
 
     def _update_step(self, agent, obs):
-        self.rewards = {agent: self._change_reward_fn(reward) for agent, reward in self.rewards.items()}
+        self.rewards = {
+            agent: self._change_reward_fn(reward)
+            for agent, reward in self.rewards.items()
+        }
 
 
 class reward_lambda(RewardWrapper):
     def __init__(self, env, change_reward_fn):
-        assert callable(change_reward_fn), "change_reward_fn needs to be a function. It is {}".format(change_reward_fn)
+        assert callable(
+            change_reward_fn
+        ), "change_reward_fn needs to be a function. It is {}".format(change_reward_fn)
         self._change_reward_fn = change_reward_fn
 
         super().__init__(env)

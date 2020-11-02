@@ -14,14 +14,25 @@ import supersuit
 import pytest
 
 
-base_obs = {"a{}".format(idx): np.zeros([8, 8, 3], dtype=np.float32) + np.arange(3) + idx for idx in range(2)}
-base_obs_space = {"a{}".format(idx): Box(low=np.float32(0.0), high=np.float32(10.0), shape=[8, 8, 3]) for idx in range(2)}
+base_obs = {
+    "a{}".format(idx): np.zeros([8, 8, 3], dtype=np.float32) + np.arange(3) + idx
+    for idx in range(2)
+}
+base_obs_space = {
+    "a{}".format(idx): Box(low=np.float32(0.0), high=np.float32(10.0), shape=[8, 8, 3])
+    for idx in range(2)
+}
 base_act_spaces = {"a{}".format(idx): Discrete(5) for idx in range(2)}
 
 
 def test_frame_stack():
-    base_obs_space = {"a{}".format(idx): Box(low=np.float32(0.0), high=np.float32(10.0), shape=[2, 3]) for idx in range(2)}
-    base_obs = {"a{}".format(idx): np.zeros([2, 3]) + np.arange(3) + idx for idx in range(2)}
+    base_obs_space = {
+        "a{}".format(idx): Box(low=np.float32(0.0), high=np.float32(10.0), shape=[2, 3])
+        for idx in range(2)
+    }
+    base_obs = {
+        "a{}".format(idx): np.zeros([2, 3]) + np.arange(3) + idx for idx in range(2)
+    }
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
     env = frame_stack_v1(base_env, 4)
     obs = env.reset()
@@ -56,7 +67,12 @@ def test_frame_skip():
 def test_agent_indicator():
     let = ["a", "a", "b"]
     base_obs = {"{}_{}".format(let[idx], idx): np.zeros([2, 3]) for idx in range(3)}
-    base_obs_space = {"{}_{}".format(let[idx], idx): Box(low=np.float32(0.0), high=np.float32(10.0), shape=[2, 3]) for idx in range(3)}
+    base_obs_space = {
+        "{}_{}".format(let[idx], idx): Box(
+            low=np.float32(0.0), high=np.float32(10.0), shape=[2, 3]
+        )
+        for idx in range(3)
+    }
     base_act_spaces = {"{}_{}".format(let[idx], idx): Discrete(5) for idx in range(3)}
 
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
@@ -84,17 +100,40 @@ def test_reshape():
 
 def new_continuous_dummy():
 
-    base_obs = {"a_{}".format(idx): (np.zeros([8, 8, 3], dtype=np.float32) + np.arange(3) + idx).astype(np.float32) for idx in range(2)}
-    base_obs_space = {"a_{}".format(idx): Box(low=np.float32(0.0), high=np.float32(10.0), shape=[8, 8, 3]) for idx in range(2)}
-    base_act_spaces = {"a_{}".format(idx): Box(low=np.float32(0.0), high=np.float32(10.0), shape=[3]) for idx in range(2)}
+    base_obs = {
+        "a_{}".format(idx): (
+            np.zeros([8, 8, 3], dtype=np.float32) + np.arange(3) + idx
+        ).astype(np.float32)
+        for idx in range(2)
+    }
+    base_obs_space = {
+        "a_{}".format(idx): Box(
+            low=np.float32(0.0), high=np.float32(10.0), shape=[8, 8, 3]
+        )
+        for idx in range(2)
+    }
+    base_act_spaces = {
+        "a_{}".format(idx): Box(low=np.float32(0.0), high=np.float32(10.0), shape=[3])
+        for idx in range(2)
+    }
 
     return DummyEnv(base_obs, base_obs_space, base_act_spaces)
 
 
 def new_dummy():
 
-    base_obs = {"a_{}".format(idx): (np.zeros([8, 8, 3], dtype=np.float32) + np.arange(3) + idx).astype(np.float32) for idx in range(2)}
-    base_obs_space = {"a_{}".format(idx): Box(low=np.float32(0.0), high=np.float32(10.0), shape=[8, 8, 3]) for idx in range(2)}
+    base_obs = {
+        "a_{}".format(idx): (
+            np.zeros([8, 8, 3], dtype=np.float32) + np.arange(3) + idx
+        ).astype(np.float32)
+        for idx in range(2)
+    }
+    base_obs_space = {
+        "a_{}".format(idx): Box(
+            low=np.float32(0.0), high=np.float32(10.0), shape=[8, 8, 3]
+        )
+        for idx in range(2)
+    }
     base_act_spaces = {"a_{}".format(idx): Discrete(5) for idx in range(2)}
 
     return DummyEnv(base_obs, base_obs_space, base_act_spaces)
@@ -103,7 +142,9 @@ def new_dummy():
 wrappers = [
     supersuit.color_reduction_v0(new_dummy(), "R"),
     supersuit.resize_v0(dtype_v0(new_dummy(), np.uint8), x_size=5, y_size=10),
-    supersuit.resize_v0(dtype_v0(new_dummy(), np.uint8), x_size=5, y_size=10, linear_interp=True),
+    supersuit.resize_v0(
+        dtype_v0(new_dummy(), np.uint8), x_size=5, y_size=10, linear_interp=True
+    ),
     supersuit.dtype_v0(new_dummy(), np.int32),
     supersuit.flatten_v0(new_dummy()),
     supersuit.reshape_v0(new_dummy(), (64, 3)),
@@ -191,7 +232,9 @@ def test_action_lambda():
         v[x] = 1
         return v
 
-    act_spaces = {"a{}".format(idx): Box(low=0, high=1, shape=(15,)) for idx in range(2)}
+    act_spaces = {
+        "a{}".format(idx): Box(low=0, high=1, shape=(15,)) for idx in range(2)
+    }
     base_env = DummyEnv(base_obs, base_obs_space, act_spaces)
     env = action_lambda_v0(
         base_env,

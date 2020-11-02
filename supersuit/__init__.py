@@ -17,7 +17,9 @@ class WrapperFactory:
     def __call__(self, env, *args, **kwargs):
         if isinstance(env, gym.Env):
             if not self.gym_avaliable:
-                raise ValueError(f"{self.wrapper_name} does not apply to gym environments, pettingzoo environments only")
+                raise ValueError(
+                    f"{self.wrapper_name} does not apply to gym environments, pettingzoo environments only"
+                )
             wrap_class = getattr(gym_wrappers, self.wrapper_name)
             return wrap_class(env, *args, **kwargs)
         elif isinstance(env, AECEnv):
@@ -31,7 +33,9 @@ class WrapperFactory:
                 wrap_class = getattr(aec_wrappers, self.wrapper_name)
                 return to_parallel(wrap_class(from_parallel(env), *args, **kwargs))
         else:
-            raise ValueError("environment passed to supersuit wrapper must either be a gym environment or a pettingzoo environment")
+            raise ValueError(
+                "environment passed to supersuit wrapper must either be a gym environment or a pettingzoo environment"
+            )
 
 
 class DeprecatedWrapper(ImportError):
@@ -44,7 +48,9 @@ class Depreciated:
         self.old_version, self.new_version = orig_version, new_version
 
     def __call__(self, env, *args, **kwargs):
-        raise DeprecatedWrapper(f"{self.name}_{self.old_version} is now depreciated, use {self.name}_{self.new_version} instead")
+        raise DeprecatedWrapper(
+            f"{self.name}_{self.old_version} is now depreciated, use {self.name}_{self.new_version} instead"
+        )
 
 
 color_reduction_v0 = WrapperFactory("color_reduction")

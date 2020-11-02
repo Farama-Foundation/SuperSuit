@@ -37,7 +37,9 @@ def new_dummy():
 wrappers = [
     supersuit.color_reduction_v0(new_dummy(), "R"),
     supersuit.resize_v0(dtype_v0(new_dummy(), np.uint8), x_size=5, y_size=10),
-    supersuit.resize_v0(dtype_v0(new_dummy(), np.uint8), x_size=5, y_size=10, linear_interp=True),
+    supersuit.resize_v0(
+        dtype_v0(new_dummy(), np.uint8), x_size=5, y_size=10, linear_interp=True
+    ),
     supersuit.dtype_v0(new_dummy(), np.int32),
     supersuit.flatten_v0(new_dummy()),
     supersuit.reshape_v0(new_dummy(), (64, 3)),

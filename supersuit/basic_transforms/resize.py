@@ -4,8 +4,12 @@ import cv2
 
 def check_param(obs_space, resize):
     xsize, ysize, linear_interp = resize
-    assert all(isinstance(ds, int) and ds > 0 for ds in [xsize, ysize]), "resize x and y sizes must be integers greater than zero."
-    assert isinstance(linear_interp, bool), "resize linear_interp parameter must be bool."
+    assert all(
+        isinstance(ds, int) and ds > 0 for ds in [xsize, ysize]
+    ), "resize x and y sizes must be integers greater than zero."
+    assert isinstance(
+        linear_interp, bool
+    ), "resize linear_interp parameter must be bool."
     assert len(obs_space.shape) == 3 or len(obs_space.shape) == 2
 
 
