@@ -1,6 +1,5 @@
 from pettingzoo.tests import api_test, seed_test, error_tests, parallel_test
 from pettingzoo.mpe import simple_push_v1, simple_world_comm_v1
-# from pettingzoo.sisl import multiwalker
 
 from supersuit import (
     frame_stack_v1,
@@ -8,7 +7,6 @@ from supersuit import (
     frame_skip_v0,
     sticky_actions_v0,
 )
-import numpy as np
 
 
 def test_pettinzoo_frame_stack():
