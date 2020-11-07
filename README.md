@@ -116,6 +116,10 @@ env = action_lambda_v0(env,
 
 ## Release History
 
+Version 2.2.0 (November 6, 2020):
+
+Made multi-agent environments compatible with PettingZoo version 1.4.0, enforced flake8.
+
 Version 2.1.1 (October 14, 2020):
 
 Fixed argument name to frame_skip.
