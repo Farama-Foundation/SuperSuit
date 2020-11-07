@@ -268,7 +268,7 @@ class frame_skip(StepAltWrapper):
                 # done = self.env.dones[step_agent]
                 # info = self.env.infos[step_agent]
                 observe, reward, done, info = self.env.last(observe=False)
-                action = self.old_actions[step_agent] #if not done else None
+                action = self.old_actions[step_agent]
                 self.env.step(action)
 
                 for agent in self.env.agents:
@@ -393,7 +393,6 @@ class RewardWrapper(PettingzooWrap):
 
     def step(self, action):
         agent = self.env.agent_selection
-        cur_act_space = self.action_spaces[agent]
         super().step(action)
         self.rewards = {agent: self._change_reward_fn(reward) for agent, reward in self.rewards.items()}
         self.__cumulative_rewards[agent] = 0

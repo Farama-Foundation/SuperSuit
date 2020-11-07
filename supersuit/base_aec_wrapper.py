@@ -38,9 +38,6 @@ class BaseWrapper(PettingzooWrap):
         return observation
 
     def step(self, action):
-        # if self.dones[self.agent_selection]:
-        #     self._was_done_step(action)
-        # else:
         agent = self.env.agent_selection
         cur_act_space = self.action_spaces[agent]
         if not self.dones[agent]:
@@ -52,4 +49,3 @@ class BaseWrapper(PettingzooWrap):
         super().step(action)
 
         self._update_step(self.agent_selection)
-        #self._dones_step_first()
