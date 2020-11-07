@@ -12,6 +12,7 @@ from supersuit import (
 )
 import supersuit
 import pytest
+from pettingzoo.utils.wrappers import OrderEnforcingWrapper as PettingzooWrap
 
 
 base_obs = {"a{}".format(idx): np.zeros([8, 8, 3], dtype=np.float32) + np.arange(3) + idx for idx in range(2)}
@@ -25,8 +26,10 @@ def test_frame_stack():
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
     env = frame_stack_v1(base_env, 4)
     obs = env.reset()
+    obs, _, _, _ = env.last()
     assert obs.shape == (2, 3, 4)
-    first_obs = env.step(2)
+    env.step(2)
+    first_obs, _, _, _ = env.last()
     print(first_obs[:, :, -1])
     assert np.all(np.equal(first_obs[:, :, -1], base_obs["a1"]))
     assert np.all(np.equal(first_obs[:, :, :-1], 0))
@@ -35,13 +38,17 @@ def test_frame_stack():
     base_env = DummyEnv(base_obs, base_act_spaces, base_act_spaces)
     env = frame_stack_v1(base_env, 4)
     obs = env.reset()
+    obs, _, _, _ = env.last()
     assert env.observation_spaces[env.agent_selection].n == 5 ** 4
-    first_obs = env.step(2)
+    env.step(2)
+    first_obs, _, _, _ = env.last()
     assert first_obs == 4
-    second_obs = env.step(2)
+    env.step(2)
+    second_obs, _, _, _ = env.last()
     assert second_obs == 3 + 3 * 5
-    for x in range(100):
+    for x in range(8):
         nth_obs = env.step(2)
+        nth_obs, _, _, _ = env.last()
     assert nth_obs == ((3 * 5 + 3) * 5 + 3) * 5 + 3
 
 
@@ -49,8 +56,9 @@ def test_frame_skip():
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
     env = supersuit.frame_skip_v0(base_env, 3)
     env.reset()
-    for i in range(10):
-        env.step(0)
+    for a in env.agent_iter(8):
+        obs, rew, done, info = env.last()
+        env.step(0 if not done else None)
 
 
 def test_agent_indicator():
@@ -61,24 +69,28 @@ def test_agent_indicator():
 
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
     env = supersuit.agent_indicator_v0(base_env, type_only=True)
-    obs = env.reset()
+    env.reset()
+    obs, _, _, _ = env.last()
     assert obs.shape == (2, 3, 3)
     assert env.observation_spaces["a_0"].shape == (2, 3, 3)
     first_obs = env.step(2)
 
     env = supersuit.agent_indicator_v0(base_env, type_only=False)
-    obs = env.reset()
+    env.reset()
+    obs, _, _, _ = env.last()
     assert obs.shape == (2, 3, 4)
     assert env.observation_spaces["a_0"].shape == (2, 3, 4)
-    first_obs = env.step(2)
+    env.step(2)
 
 
 def test_reshape():
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
     env = reshape_v0(base_env, (64, 3))
-    obs = env.reset()
+    env.reset()
+    obs, _, _, _ = env.last()
     assert obs.shape == (64, 3)
-    first_obs = env.step(5)
+    env.step(5)
+    first_obs, _, _, _ = env.last()
     assert np.all(np.equal(first_obs, base_obs["a1"].reshape([64, 3])))
 
 
@@ -88,7 +100,7 @@ def new_continuous_dummy():
     base_obs_space = {"a_{}".format(idx): Box(low=np.float32(0.0), high=np.float32(10.0), shape=[8, 8, 3]) for idx in range(2)}
     base_act_spaces = {"a_{}".format(idx): Box(low=np.float32(0.0), high=np.float32(10.0), shape=[3]) for idx in range(2)}
 
-    return DummyEnv(base_obs, base_obs_space, base_act_spaces)
+    return PettingzooWrap(DummyEnv(base_obs, base_obs_space, base_act_spaces))
 
 
 def new_dummy():
@@ -97,7 +109,7 @@ def new_dummy():
     base_obs_space = {"a_{}".format(idx): Box(low=np.float32(0.0), high=np.float32(10.0), shape=[8, 8, 3]) for idx in range(2)}
     base_act_spaces = {"a_{}".format(idx): Discrete(5) for idx in range(2)}
 
-    return DummyEnv(base_obs, base_obs_space, base_act_spaces)
+    return PettingzooWrap(DummyEnv(base_obs, base_obs_space, base_act_spaces))
 
 
 wrappers = [
@@ -125,16 +137,17 @@ wrappers = [
 @pytest.mark.parametrize("env", wrappers)
 def test_basic_wrappers(env):
     env.seed(5)
-    obs = env.reset()
+    env.reset()
+    obs, _, _, _ = env.last()
     act_space = env.action_spaces[env.agent_selection]
     obs_space = env.observation_spaces[env.agent_selection]
     first_obs = env.observe("a_0")
     assert obs_space.contains(first_obs)
     assert first_obs.dtype == obs_space.dtype
     env.step(act_space.sample())
-    for i in env.agent_iter(20):
+    for agent in env.agent_iter():
         act_space = env.action_spaces[env.agent_selection]
-        env.step(act_space.sample())
+        env.step(act_space.sample() if not env.dones[agent] else None)
 
 
 def test_rew_lambda():
@@ -149,10 +162,12 @@ def test_lambda():
 
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
     env = observation_lambda_v0(base_env, add1)
-    obs0 = env.reset()
+    env.reset()
+    obs0, _, _, _ = env.last()
     assert int(obs0[0][0][0]) == 1
     env = observation_lambda_v0(env, add1)
-    obs0 = env.reset()
+    env.reset()
+    obs0, _, _, _ = env.last()
     assert int(obs0[0][0][0]) == 2
 
     def tile_obs(obs):
@@ -162,14 +177,16 @@ def test_lambda():
         return np.tile(obs, tile_shape)
 
     env = observation_lambda_v0(env, tile_obs)
-    obs0 = env.reset()
+    env.reset()
+    obs0, _, _, _ = env.last()
     assert env.observation_spaces[env.agent_selection].shape == (16, 8, 3)
 
     def change_shape_fn(obs_space):
         return Box(low=0, high=1, shape=(32, 8, 3))
 
     env = observation_lambda_v0(env, tile_obs)
-    obs0 = env.reset()
+    env.reset()
+    obs0, _, _, _ = env.last()
     assert env.observation_spaces[env.agent_selection].shape == (32, 8, 3)
     assert obs0.shape == (32, 8, 3)
 

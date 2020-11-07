@@ -14,7 +14,7 @@ class ObservationWrapper(BaseWrapper):
     def _modify_action(self, agent, action):
         return action
 
-    def _update_step(self, agent, observation):
+    def _update_step(self, agent):
         pass
 
 
@@ -111,7 +111,7 @@ class normalize_obs(BasicObservationWrapper):
 class agent_indicator(ObservationWrapper):
     def __init__(self, env, type_only=False):
         self.type_only = type_only
-        self.indicator_map = agent_ider.get_indicator_map(env.agents, type_only)
+        self.indicator_map = agent_ider.get_indicator_map(env.possible_agents, type_only)
         self.num_indicators = len(set(self.indicator_map.values()))
         super().__init__(env)
 
@@ -157,12 +157,13 @@ class delay_observations(ObservationWrapper):
     def _modify_spaces(self):
         return
 
-    def reset(self, observe=True):
+    def reset(self):
         self._delayers = {agent: Delayer(obs_space, self.delay) for agent, obs_space in self.observation_spaces.items()}
-        self._observes = {agent: None for agent in self.agents}
-        return super().reset()
+        self._observes = {agent: None for agent in self.possible_agents}
+        super().reset()
 
-    def _update_step(self, agent, observation):
+    def _update_step(self, agent):
+        observation = self.env.observe(agent)
         self._observes[agent] = self._delayers[agent].add(observation)
 
     def _modify_observation(self, agent, observation):
@@ -184,9 +185,9 @@ class frame_stack(BaseWrapper):
             else:
                 assert False, "Stacking is currently only allowed for Box and Discrete observation spaces. The given observation space is {}".format(space)
 
-    def reset(self, observe=True):
+    def reset(self):
         self.stacks = {agent: stack_init(space, self.stack_size) for agent, space in self.env.observation_spaces.items()}
-        return super().reset(observe)
+        super().reset()
 
     def _modify_spaces(self):
         self.observation_spaces = {agent: stack_obs_space(space, self.stack_size) for agent, space in self.observation_spaces.items()}
@@ -197,9 +198,8 @@ class frame_stack(BaseWrapper):
     def _modify_observation(self, agent, observation):
         return self.stacks[agent]
 
-    def _update_step(self, agent, observation):
-        if observation is None:
-            observation = self.env.observe(agent)
+    def _update_step(self, agent):
+        observation = self.env.observe(agent)
         self.stacks[agent] = stack_obs(
             self.stacks[agent],
             observation,
@@ -215,7 +215,7 @@ class StepAltWrapper(BaseWrapper):
     def _modify_spaces(self):
         pass
 
-    def _update_step(self, agent, obs):
+    def _update_step(self, agent):
         pass
 
     def _modify_action(self, agent, action):
@@ -225,7 +225,7 @@ class StepAltWrapper(BaseWrapper):
         return observation
 
 
-class frame_skip_help(StepAltWrapper):
+class frame_skip(StepAltWrapper):
     def __init__(self, env, num_frames):
         super().__init__(env)
         assert isinstance(num_frames, int), "multi-agent frame skip only takes in an integer"
@@ -233,34 +233,64 @@ class frame_skip_help(StepAltWrapper):
         check_transform_frameskip(num_frames)
         self.num_frames = num_frames
 
-    def reset(self, observe=True):
+    def reset(self):
+        super().reset()
+        self.agents = self.env.agents[:]
+        self.dones = {agent: False for agent in self.agents}
+        self.rewards = {agent: 0. for agent in self.agents}
+        self._cumulative_rewards = {agent: 0. for agent in self.agents}
+        self.infos = {agent: {} for agent in self.agents}
         self.skip_num = {agent: 0 for agent in self.agents}
-        self.combined_rewards = {agent: 0 for agent in self.agents}
         self.old_actions = {agent: None for agent in self.agents}
-        return super().reset(observe)
+        self._final_observations = {agent: None for agent in self.agents}
 
-    def step(self, action, observe=True):
+    def observe(self, agent):
+        fin_observe = self._final_observations[agent]
+        return fin_observe if fin_observe is not None else super().observe(agent)
+
+    def step(self, action):
+        if self.dones[self.agent_selection]:
+            print(self.env.agent_selection)
+            print(self.env.agents)
+            if self.env.agents and self.agent_selection == self.env.agent_selection:
+                self.env.step(None)
+            self._was_done_step(action)
+            return
         cur_agent = self.agent_selection
-        self.combined_rewards[self.agent_selection] = 0.0
+        self._cumulative_rewards[cur_agent] = 0
+        self.rewards = {a: 0. for a in self.agents}
         self.skip_num[cur_agent] = self.num_frames
         self.old_actions[cur_agent] = action
-        while self.old_actions[self.agent_selection] is not None:
-            step_agent = self.agent_selection
-            super().step(self.old_actions[step_agent], observe=False)
-            self.combined_rewards[self.agent_selection] += self.env.rewards[self.agent_selection]
+        while self.old_actions[self.env.agent_selection] is not None:
+            step_agent = self.env.agent_selection
+            if step_agent in self.env.dones:
+                # reward = self.env.rewards[step_agent]
+                # done = self.env.dones[step_agent]
+                # info = self.env.infos[step_agent]
+                observe, reward, done, info = self.env.last(observe=False)
+                action = self.old_actions[step_agent]
+                self.env.step(action)
+
+                for agent in self.env.agents:
+                    self.rewards[agent] += self.env.rewards[agent]
+                self.infos[self.env.agent_selection] = info
+                while not self.env.env_done and self.env.dones[self.env.agent_selection]:
+                    done_agent = self.env.agent_selection
+                    self.dones[done_agent] = True
+                    self._final_observations[done_agent] = self.env.observe(done_agent)
+                    self.env.step(None)
+                step_agent = self.env.agent_selection
 
             self.skip_num[step_agent] -= 1
             if self.skip_num[step_agent] == 0:
                 self.old_actions[step_agent] = None
 
-        self.rewards = {agent: rew for agent, rew in self.combined_rewards.items()}
-        return self.observe(self.agent_selection) if observe else None
-
-
-def frame_skip(env, num_frames):
-    env = frame_skip_help(env, num_frames)
-    env = PettingzooWrap(env)
-    return env
+        for agent in self.env.agents:
+            self.dones[agent] = self.env.dones[agent]
+            self.infos[agent] = self.env.infos[agent]
+        self.agent_selection = self.env.agent_selection
+        self._accumulate_rewards()
+        self._dones_step_first()
 
 
 class sticky_actions(StepAltWrapper):
@@ -274,15 +304,15 @@ class sticky_actions(StepAltWrapper):
         self.np_random, seed = gym.utils.seeding.np_random(seed)
         super().seed(seed)
 
-    def reset(self, observe=True):
+    def reset(self):
         self.old_action = None
-        return super().reset(observe)
+        super().reset()
 
-    def step(self, action, observe=True):
+    def step(self, action):
         if self.old_action is not None and self.np_random.uniform() < self.repeat_action_probability:
             action = self.old_action
 
-        return super().step(action, observe)
+        super().step(action)
 
 
 class ActionWrapper(BaseWrapper):
@@ -292,7 +322,7 @@ class ActionWrapper(BaseWrapper):
     def _modify_observation(self, agent, observation):
         return observation
 
-    def _update_step(self, agent, observation):
+    def _update_step(self, agent):
         pass
 
 
@@ -348,15 +378,26 @@ class clip_actions(ActionWrapper):
         return action
 
 
-class RewardWrapper(ActionWrapper, ObservationWrapper):
+class RewardWrapper(PettingzooWrap):
     def _check_wrapper_params(self):
         pass
 
     def _modify_spaces(self):
         pass
 
-    def _update_step(self, agent, obs):
+    def reset(self):
+        super().reset()
         self.rewards = {agent: self._change_reward_fn(reward) for agent, reward in self.rewards.items()}
+        self.__cumulative_rewards = {a: 0 for a in self.agents}
+        self._accumulate_rewards()
+
+    def step(self, action):
+        agent = self.env.agent_selection
+        super().step(action)
+        self.rewards = {agent: self._change_reward_fn(reward) for agent, reward in self.rewards.items()}
+        self.__cumulative_rewards[agent] = 0
+        self._cumulative_rewards = self.__cumulative_rewards
+        self._accumulate_rewards()
 
 
 class reward_lambda(RewardWrapper):

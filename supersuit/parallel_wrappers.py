@@ -11,14 +11,18 @@ class ParallelWraper(ParallelEnv):
         self.env = env
         self.observation_spaces = env.observation_spaces
         self.action_spaces = env.action_spaces
-        self.agents = env.agents
-        self.num_agents = env.num_agents
+        self.metadata = env.metadata
+        self.possible_agents = env.possible_agents
 
     def reset(self):
-        return self.env.reset()
+        res = self.env.reset()
+        self.agents = self.env.agents
+        return res
 
     def step(self, actions):
-        return self.env.step(actions)
+        res = self.env.step(actions)
+        self.agents = self.env.agents
+        return res
 
     def render(self, mode="human"):
         return self.env.render(mode)
@@ -29,11 +33,11 @@ class ParallelWraper(ParallelEnv):
 
 class ObservationWrapper(ParallelWraper):
     def reset(self):
-        obss = self.env.reset()
+        obss = super().reset()
         return {agent: self._modify_observation(agent, obs) for agent, obs in obss.items()}
 
     def step(self, actions):
-        obss, rew, done, info = self.env.step(actions)
+        obss, rew, done, info = super().step(actions)
         obss = {agent: self._modify_observation(agent, obs) for agent, obs in obss.items()}
         return obss, rew, done, info
 

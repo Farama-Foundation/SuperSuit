@@ -5,13 +5,15 @@ import supersuit
 
 
 class DummyParEnv(ParallelEnv):
+    metadata = {"render.modes": ["human"]}
+
     def __init__(self, observations, observation_spaces, action_spaces):
         super().__init__()
         self._observations = observations
         self.observation_spaces = observation_spaces
 
         self.agents = [x for x in observation_spaces.keys()]
-        self.num_agents = len(self.agents)
+        self.possible_agents = self.agents
         self.agent_selection = self.agents[0]
         self.action_spaces = action_spaces
 
