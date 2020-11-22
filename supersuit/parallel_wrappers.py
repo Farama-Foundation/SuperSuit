@@ -95,13 +95,22 @@ class frame_skip(ParallelWraper):
     def step(self, action):
         low, high = self.num_frames
         num_skips = int(self.np_random.randint(low, high + 1))
-        total_reward = {agent: 0.0 for agent in self.agents}
 
         for x in range(num_skips):
             obs, rews, done, info = super().step(action)
+            if x == 0:
+                next_agents = self.env.agents[:]
+                total_reward = {agent: 0.0 for agent in self.env.agents}
+                total_dones = {}
+                total_infos = {}
+                total_obs = {}
+
             for agent, rew in rews.items():
                 total_reward[agent] += rew
+                total_dones[agent] = done[agent]
+                total_infos[agent] = info[agent]
+                total_obs[agent] = obs[agent]
             if all(done.values()):
                 break
-
-        return obs, total_reward, done, info
+        self.agents = next_agents
+        return total_obs, total_reward, total_dones, total_infos
