@@ -41,9 +41,9 @@ class BaseWrapper(PettingzooWrap):
         agent = self.env.agent_selection
         cur_act_space = self.action_spaces[agent]
         if not self.dones[agent]:
-            assert not isinstance(cur_act_space, Box) or cur_act_space.shape == action.shape, "the shape of the action {} is not equal to the shape of the action space {}".format(
-                action.shape, cur_act_space.shape
-            )
+            # assert not isinstance(cur_act_space, Box) or cur_act_space.shape == action.shape, "the shape of the action {} is not equal to the shape of the action space {}".format(
+            #     action.shape, cur_act_space.shape
+            # )
             action = self._modify_action(agent, action)
 
         super().step(action)

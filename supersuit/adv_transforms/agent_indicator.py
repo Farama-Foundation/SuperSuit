@@ -11,7 +11,7 @@ def change_obs_space(space, num_indicators):
             pad_space = np.ones((num_indicators,), dtype=space.dtype)
             new_low = np.concatenate([space.low, pad_space * 0], axis=0)
             new_high = np.concatenate([space.high, pad_space], axis=0)
-            new_space = Box(low=new_low, high=new_high)
+            new_space = Box(low=new_low, high=new_high, dtype=space.dtype)
             return new_space
         elif ndims == 3 or ndims == 2:
             orig_low = space.low if ndims == 3 else np.expand_dims(space.low, 2)
@@ -19,7 +19,7 @@ def change_obs_space(space, num_indicators):
             pad_space = np.ones(orig_low.shape[:2] + (num_indicators,), dtype=space.dtype)
             new_low = np.concatenate([orig_low, pad_space * 0], axis=2)
             new_high = np.concatenate([orig_high, pad_space], axis=2)
-            new_space = Box(low=new_low, high=new_high)
+            new_space = Box(low=new_low, high=new_high, dtype=space.dtype)
             return new_space
     elif isinstance(space, Discrete):
         return Discrete(space.n * num_indicators)

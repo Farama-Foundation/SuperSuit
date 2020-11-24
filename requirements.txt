@@ -1,2 +1,3 @@
 pettingzoo>=1.4.0
 opencv-python
+pettingzoo[butterfly]
