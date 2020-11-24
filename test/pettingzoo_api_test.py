@@ -44,13 +44,14 @@ def test_pettingzoo_parallel_env():
     wrapped_env = pad_action_space_v0(_env)
     parallel_test.parallel_play_test(wrapped_env)
 
+
 wrappers = [
     supersuit.color_reduction_v0(knights_archers_zombies_v4.env(), "R"),
     supersuit.resize_v0(dtype_v0(knights_archers_zombies_v4.env(), np.uint8), x_size=5, y_size=10),
     supersuit.resize_v0(dtype_v0(knights_archers_zombies_v4.env(), np.uint8), x_size=5, y_size=10, linear_interp=True),
     supersuit.dtype_v0(knights_archers_zombies_v4.env(), np.int32),
     supersuit.flatten_v0(knights_archers_zombies_v4.env()),
-    supersuit.reshape_v0(knights_archers_zombies_v4.env(), (512*512, 3)),
+    supersuit.reshape_v0(knights_archers_zombies_v4.env(), (512 * 512, 3)),
     supersuit.normalize_obs_v0(dtype_v0(knights_archers_zombies_v4.env(), np.float32), env_min=-1, env_max=5.0),
     supersuit.frame_stack_v1(knights_archers_zombies_v4.env(), 8),
     supersuit.pad_observations_v0(knights_archers_zombies_v4.env()),
@@ -65,9 +66,11 @@ wrappers = [
     supersuit.delay_observations_v0(knights_archers_zombies_v4.env(), 3),
 ]
 
+
 @pytest.mark.parametrize("env", wrappers)
 def test_pettingzoo_aec_api(env):
     api_test.api_test(env)
+
 
 parallel_wrappers = [
     supersuit.frame_stack_v1(knights_archers_zombies_v4.parallel_env(), 8),
@@ -76,6 +79,8 @@ parallel_wrappers = [
     supersuit.color_reduction_v0(knights_archers_zombies_v4.parallel_env(), "R"),
     supersuit.frame_skip_v0(knights_archers_zombies_v4.parallel_env(), 4),
 ]
+
+
 @pytest.mark.parametrize("env", parallel_wrappers)
 def test_pettingzoo_parallel_api(env):
     parallel_test.parallel_play_test(env)
