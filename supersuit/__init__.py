@@ -63,6 +63,7 @@ reward_lambda_v0 = WrapperFactory("reward_lambda")
 frame_skip_v0 = WrapperFactory("frame_skip")
 sticky_actions_v0 = WrapperFactory("sticky_actions")
 delay_observations_v0 = WrapperFactory("delay_observations")
+cyclically_expansive_learning_v0 = WrapperFactory("cyclically_expansive_learning")
 
 agent_indicator_v0 = WrapperFactory("agent_indicator", False)
 pad_action_space_v0 = WrapperFactory("pad_action_space", False)
