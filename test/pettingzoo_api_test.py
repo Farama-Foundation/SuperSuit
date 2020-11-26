@@ -36,7 +36,7 @@ def test_pettinzoo_pad_action_space():
     _env = simple_world_comm_v2.env()
     wrapped_env = pad_action_space_v0(_env)
     api_test.api_test(wrapped_env)
-    seed_test.seed_test(lambda: sticky_actions_v0(simple_world_comm_v2.env(), 0.5))
+    seed_test.seed_test(lambda: sticky_actions_v0(simple_world_comm_v2.env(), 0.5), 100)
 
 
 def test_pettingzoo_parallel_env():
