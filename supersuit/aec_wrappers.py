@@ -154,7 +154,6 @@ class black_death(ObservationWrapper):
     def _modify_spaces(self):
         self.observation_spaces = {agent: Box(low=np.minimum(0, obs.low), high=np.maximum(0, obs.high), dtype=obs.dtype) for agent, obs in self.observation_spaces.items()}
 
-
     def observe(self, agent):
         return np.zeros_like(self.observation_spaces[agent].low) if agent not in self.env.dones else self.env.observe(agent)
 
