@@ -6,7 +6,7 @@ from . import gym_wrappers
 from . import parallel_wrappers
 from . import vector_constructors
 
-__version__ = "2.1.1"
+__version__ = "2.3.0"
 
 
 class WrapperFactory:
