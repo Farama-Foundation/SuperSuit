@@ -56,6 +56,7 @@ wrappers = [
     supersuit.frame_stack_v1(knights_archers_zombies_v4.env(), 8),
     supersuit.pad_observations_v0(knights_archers_zombies_v4.env()),
     supersuit.pad_action_space_v0(knights_archers_zombies_v4.env()),
+    supersuit.black_death_v0(knights_archers_zombies_v4.env()),
     supersuit.agent_indicator_v0(knights_archers_zombies_v4.env(), True),
     supersuit.agent_indicator_v0(knights_archers_zombies_v4.env(), False),
     supersuit.reward_lambda_v0(knights_archers_zombies_v4.env(), lambda x: x / 10),
