@@ -146,6 +146,56 @@ class pad_observations(ObservationWrapper):
         return new_obs
 
 
+class black_death(ObservationWrapper):
+    def _check_wrapper_params(self):
+        for space in self.observation_spaces.values():
+            assert isinstance(space, gym.spaces.Box), f"observation sapces for black death must be Box spaces, is {space}"
+
+    def _modify_spaces(self):
+        self.observation_spaces = {agent: Box(low=np.minimum(0, obs.low), high=np.maximum(0, obs.high), dtype=obs.dtype) for agent, obs in self.observation_spaces.items()}
+
+    def observe(self, agent):
+        return np.zeros_like(self.observation_spaces[agent].low) if agent not in self.env.dones else self.env.observe(agent)
+
+    def reset(self):
+        super().reset()
+        self._agent_idx = 0
+        self.agent_selection = self.possible_agents[self._agent_idx]
+        self.agents = self.possible_agents[:]
+        self._update_items()
+
+    def _update_items(self):
+        self.dones = {}
+        self.infos = {}
+        self.rewards = {}
+        self._cumulative_rewards = {}
+
+        _env_finishing = all(self.env.dones.values())
+
+        for agent in self.agents:
+            self.dones[agent] = _env_finishing
+            self.rewards[agent] = self.env.rewards.get(agent, 0)
+            self.infos[agent] = self.env.infos.get(agent, {})
+            self._cumulative_rewards[agent] = self.env._cumulative_rewards.get(agent, 0) if agent in self.env.rewards else 0
+
+    def step(self, action):
+        if self.dones[self.agent_selection]:
+            return self._was_done_step(action)
+
+        cur_agent = self.agent_selection
+        if cur_agent == self.env.agent_selection and cur_agent in self.env.dones:
+            if self.env.dones[cur_agent]:
+                action = None
+            self.env.step(action)
+
+        self._update_items()
+
+        self._agent_idx = (1 + self._agent_idx) % len(self.possible_agents)
+        self.agent_selection = self.possible_agents[self._agent_idx]
+
+        self._dones_step_first()
+
+
 class delay_observations(ObservationWrapper):
     def __init__(self, env, delay):
         self.delay = delay
