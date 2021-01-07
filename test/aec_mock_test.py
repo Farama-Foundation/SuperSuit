@@ -239,6 +239,6 @@ def test_cyclically_expansive_learning():
     for i in range(10):
         env.step(1)
         _, rew, _, _ = env.last()
-        if curriculum_step < len(curriculum)-1 and i >= curriculum[curriculum_step+1][0]:
+        if curriculum_step < len(curriculum) - 1 and i >= curriculum[curriculum_step + 1][0]:
             curriculum_step += 1
         assert rew == curriculum[curriculum_step][1]
