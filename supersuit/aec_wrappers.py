@@ -212,6 +212,8 @@ class accumulate_max(ObservationWrapper):
     def reset(self):
         self._accumulators = {agent: Accumulator(obs_space, self.memory, self.reduction) for agent, obs_space in self.observation_spaces.items()}
         super().reset()
+        for agent, accum in self._accumulators.items():
+            accum.add(self.env.observe(agent))
 
     def _update_step(self, agent):
         observation = self.env.observe(agent)
