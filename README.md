@@ -53,6 +53,7 @@ You can install SuperSuit via `pip install supersuit`
 
 `resize_v0(env, x_size, y_size, linear_interp=False)` Performs interpolation to up-size or down-size observation image using area interpolation by default. Linear interpolation is also available by setting `linear_interp=True` (it's faster and better for up-sizing). This wrapper is only available for 2D or 3D observations, and only makes sense of the observation is an image.
 
+`cyclically_expansive_learning_v0(env, curriculum)` accumulates past step rewards according to a given `curriculum` schedule. The `curriculum` is a sorted list of tuples `[(schedual_step_0, reward_steps_to_sum_0), (schedual_step_1, reward_steps_to_sum_1), ...]`. The past steps rewards include step rewards received by an agent even when other agents take action.
 
 ## Included Multi-Agent Only Functions
 

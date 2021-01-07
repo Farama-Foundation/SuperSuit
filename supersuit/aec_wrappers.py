@@ -482,15 +482,18 @@ class queuesum:
         if len(self.queue) > self.size:
             self.sum -= self.queue[0]
             self.queue.popleft()
-        return self.sum-item
+        return self.sum
 
     def resize(self, new_size):
         assert new_size >= self.size
         self.size = new_size
 
+    def __str__(self):
+        return f"{self.queue}"
+
 
 class cyclically_expansive_learning(PettingzooWrap):
-    def __init__(self, env, curriculum=[(0, 1), (10, 2), (100, 3), (1000, 8)]):
+    def __init__(self, env, curriculum):
         '''
         The curriculum is a sorted list of tuples:
         (schedual_step, reward_steps_to_sum)
@@ -513,7 +516,6 @@ class cyclically_expansive_learning(PettingzooWrap):
         for qs in self.reward_queues.values():
             qs.resize(self.curriculum[0][1])
         self._cumulative_rewards = {a: 0 for a in self.agents}
-        self._accumulate_rewards()
 
     def step(self, action):
         agent = self.env.agent_selection
@@ -524,6 +526,7 @@ class cyclically_expansive_learning(PettingzooWrap):
             for qs in self.reward_queues.values():
                 qs.resize(num_cycles_keep)
 
-        self._cumulative_rewards = {a: self.reward_queues[a].add(r) for a, r in self.rewards.items()}
-        self._accumulate_rewards()
+        self._cumulative_rewards = {a: self.reward_queues[a].add(r) for a, r in self.env.rewards.items()}
         self.env_step += 1
+
+
