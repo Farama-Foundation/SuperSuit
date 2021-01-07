@@ -3,6 +3,7 @@ from . import basic_transforms
 from .adv_transforms.frame_stack import stack_obs_space, stack_init, stack_obs
 from .adv_transforms.frame_skip import check_transform_frameskip
 from .adv_transforms.obs_delay import Delayer
+from .adv_transforms.accumulator import Accumulator
 import numpy as np
 import gym
 
@@ -164,6 +165,21 @@ class frame_skip(gym.Wrapper):
                 break
 
         return obs, total_reward, done, info
+
+
+class accumulate_max(ObservationWrapper):
+    def __init__(self, env, memory):
+        super().__init__(env)
+        self.memory = memory
+        self.reduction = np.maximum
+
+    def _modify_observation(self, obs):
+        self.accumulator.add(obs)
+        return self.accumulator.get()
+
+    def reset(self):
+        self.accumulator = Accumulator(self.observation_space, self.memory, self.reduction)
+        return super().reset()
 
 
 class sticky_actions(gym.Wrapper):
