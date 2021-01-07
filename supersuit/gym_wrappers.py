@@ -167,7 +167,7 @@ class frame_skip(gym.Wrapper):
         return obs, total_reward, done, info
 
 
-class accumulate_max(ObservationWrapper):
+class max_observation(ObservationWrapper):
     def __init__(self, env, memory):
         super().__init__(env)
         self.memory = memory

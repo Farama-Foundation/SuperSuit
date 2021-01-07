@@ -197,7 +197,7 @@ class black_death(ObservationWrapper):
         self._dones_step_first()
 
 
-class accumulate_max(ObservationWrapper):
+class max_observation(ObservationWrapper):
     def __init__(self, env, memory):
         self.memory = memory
         self.reduction = np.maximum

@@ -53,7 +53,7 @@ You can install SuperSuit via `pip install supersuit`
 
 `resize_v0(env, x_size, y_size, linear_interp=False)` Performs interpolation to up-size or down-size observation image using area interpolation by default. Linear interpolation is also available by setting `linear_interp=True` (it's faster and better for up-sizing). This wrapper is only available for 2D or 3D observations, and only makes sense of the observation is an image.
 
-`accumulate_max_v0(env, memory)` the observation is the max over `memory` number of prior frames. The OpenAI baselines MaxAndSkip uses `memory=2` and frame_skip of 4 in Atari environments.
+`max_observation_v0(env, memory)` the observation is the max over `memory` number of prior frames. This is important for Atari environments. In particular, the OpenAI baselines MaxAndSkip Atari wrapper is equivalent to doing `memory=2` and then a  `frame_skip`.
 
 
 ## Included Multi-Agent Only Functions

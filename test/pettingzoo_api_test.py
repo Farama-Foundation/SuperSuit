@@ -65,7 +65,7 @@ wrappers = [
     supersuit.frame_skip_v0(knights_archers_zombies_v5.env(), 4),
     supersuit.sticky_actions_v0(knights_archers_zombies_v5.env(), 0.75),
     supersuit.delay_observations_v0(knights_archers_zombies_v5.env(), 3),
-    supersuit.accumulate_max_v0(knights_archers_zombies_v5.env(), 3),
+    supersuit.max_observation_v0(knights_archers_zombies_v5.env(), 3),
 ]
 
 
@@ -80,7 +80,7 @@ parallel_wrappers = [
     supersuit.delay_observations_v0(knights_archers_zombies_v5.parallel_env(), 3),
     supersuit.color_reduction_v0(knights_archers_zombies_v5.parallel_env(), "R"),
     supersuit.frame_skip_v0(knights_archers_zombies_v5.parallel_env(), 4),
-    supersuit.accumulate_max_v0(knights_archers_zombies_v5.parallel_env(), 4),
+    supersuit.max_observation_v0(knights_archers_zombies_v5.parallel_env(), 4),
 ]
 
 
