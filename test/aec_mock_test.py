@@ -229,3 +229,16 @@ def test_dehomogenize():
     env.reset()
     assert all([s.n == 6 for s in env.action_spaces.values()])
     env.step(5)
+
+
+def test_cyclically_expansive_learning():
+    curriculum = [(0, 1), (2, 2), (6, 3)]
+    curriculum_step = 0
+    env = supersuit.cyclically_expansive_learning_v0(new_dummy(), curriculum=curriculum)
+    env.reset()
+    for i in range(10):
+        env.step(1)
+        _, rew, _, _ = env.last()
+        if curriculum_step < len(curriculum)-1 and i >= curriculum[curriculum_step+1][0]:
+            curriculum_step += 1
+        assert rew == curriculum[curriculum_step][1]
