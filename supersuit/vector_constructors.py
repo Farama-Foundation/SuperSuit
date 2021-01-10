@@ -1,6 +1,6 @@
 import gym
 import pickle
-from .vector import MakeCPUAsyncConstructor, MarkovVectorEnv, SB3VecEnvWrapper
+from .vector import MakeCPUAsyncConstructor, MarkovVectorEnv
 from pettingzoo.utils.env import AECEnv, ParallelEnv
 
 
@@ -39,6 +39,7 @@ def supersuit_vec_env(env, num_envs, num_cpus=0, base_class='gym'):
     if base_class == "gym":
         return vec_env
     elif base_class == "stable_baselines3":
+        from .vector.sb_vector_wrapper import SB3VecEnvWrapper
         return SB3VecEnvWrapper(vec_env)
     else:
         raise ValueError("supersuit_vec_env only supports 'gym' and 'stable_baselines3' for its base_class")

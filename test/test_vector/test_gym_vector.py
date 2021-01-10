@@ -35,13 +35,13 @@ def test_gym_supersuit_equivalency():
     check_vec_env_equivalency(venv1, venv2)
 
 
-def test_stable_baselines_supersuit_equivalency():
-    env = gym.make("Pendulum-v0")
-    num_envs = 3
-    venv1 = supersuit_vec_env(env, num_envs, base_class='stable_baselines3')
-    venv2 = stable_baselines3_vec_env(env, num_envs)
-    check_vec_env_equivalency(venv1, venv2, check_info=False)  # stable baselines does not implement info correctly
-
+# we really don't want to have a stable baselines dependency even in tests
+# def test_stable_baselines_supersuit_equivalency():
+#     env = gym.make("Pendulum-v0")
+#     num_envs = 3
+#     venv1 = supersuit_vec_env(env, num_envs, base_class='stable_baselines3')
+#     venv2 = stable_baselines3_vec_env(env, num_envs)
+#     check_vec_env_equivalency(venv1, venv2, check_info=False)  # stable baselines does not implement info correctly
 
 def test_mutliproc_single_proc_equivalency():
     env = gym.make("Pendulum-v0")
