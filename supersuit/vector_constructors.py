@@ -34,13 +34,7 @@ def stable_baselines3_vec_env(env, num_envs, multiprocessing=False):
 
 
 def supersuit_vec_env(env, num_envs, num_cpus=0, base_class='gym'):
-    if isinstance(env, AECEnv):
-        raise ValueError("supersuit_vec_env only supports PettingZoo ParallelEnv environments and gym environments. You can import pettingzoo.utils.to_parallel and convert the AEC env to a parallel env with the to_parallel(env)")
-    if isinstance(env, ParallelEnv):
-        markov_env = MarkovVectorEnv(env)
-        vec_env = MakeCPUAsyncConstructor(num_cpus)(*vec_env_args(markov_env, num_envs))
-    else:
-        vec_env = MakeCPUAsyncConstructor(num_cpus)(*vec_env_args(env, num_envs))
+    vec_env = MakeCPUAsyncConstructor(num_cpus)(*vec_env_args(env, num_envs))
 
     if base_class == "gym":
         return vec_env
@@ -48,3 +42,7 @@ def supersuit_vec_env(env, num_envs, num_cpus=0, base_class='gym'):
         return SB3VecEnvWrapper(vec_env)
     else:
         raise ValueError("supersuit_vec_env only supports 'gym' and 'stable_baselines3' for its base_class")
+
+
+def posg_env_to_vec_env(parallel_env):
+    return MarkovVectorEnv(parallel_env)

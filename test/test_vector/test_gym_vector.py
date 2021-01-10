@@ -1,4 +1,4 @@
-from supersuit import supersuit_vec_env, gym_vec_env, stable_baselines3_vec_env
+from supersuit import supersuit_vec_env, gym_vec_env, stable_baselines3_vec_env, posg_env_to_vec_env
 from pettingzoo.mpe import simple_spread_v2
 import gym
 import numpy as np
@@ -14,7 +14,7 @@ def check_vec_env_equivalency(venv1, venv2, check_info=True):
     obs1 = venv1.reset()
     obs2 = venv2.reset()
 
-    for i in range(1000):
+    for i in range(200):
         action = [venv1.action_space.sample() for env in range(venv1.num_envs)]
         assert np.all(np.equal(obs1, obs2))
 
@@ -53,6 +53,7 @@ def test_mutliproc_single_proc_equivalency():
 
 def test_multiagent_mutliproc_single_proc_equivalency():
     env = simple_spread_v2.parallel_env()
+    env = posg_env_to_vec_env(env)
     num_envs = 3
     venv1 = supersuit_vec_env(env, num_envs, num_cpus=0)  # uses single threaded vector environment
     venv2 = supersuit_vec_env(env, num_envs, num_cpus=4)  # uses multiprocessing vector environment

@@ -74,3 +74,4 @@ gym_vec_env = vector_constructors.gym_vec_env
 stable_baselines_vec_env = vector_constructors.stable_baselines_vec_env
 stable_baselines3_vec_env = vector_constructors.stable_baselines3_vec_env
 supersuit_vec_env = vector_constructors.supersuit_vec_env
+posg_env_to_vec_env = vector_constructors.posg_env_to_vec_env
