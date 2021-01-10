@@ -14,13 +14,13 @@ from supersuit import (
 )
 
 
-def test_pettinzoo_frame_stack():
+def test_pettingzoo_frame_stack():
     _env = simple_push_v2.env()
     wrapped_env = frame_stack_v1(_env)
     api_test(wrapped_env)
 
 
-def test_pettinzoo_frame_skip():
+def test_pettingzoo_frame_skip():
     env = simple_push_v2.raw_env(max_cycles=100)
     env = frame_skip_v0(env, 3)
     env.reset()
@@ -32,7 +32,7 @@ def test_pettinzoo_frame_skip():
         x += 1
 
 
-def test_pettinzoo_pad_action_space():
+def test_pettingzoo_pad_action_space():
     _env = simple_world_comm_v2.env()
     wrapped_env = pad_action_space_v0(_env)
     api_test(wrapped_env)
@@ -65,6 +65,7 @@ wrappers = [
     supersuit.frame_skip_v0(knights_archers_zombies_v5.env(), 4),
     supersuit.sticky_actions_v0(knights_archers_zombies_v5.env(), 0.75),
     supersuit.delay_observations_v0(knights_archers_zombies_v5.env(), 3),
+    supersuit.max_observation_v0(knights_archers_zombies_v5.env(), 3),
 ]
 
 
@@ -79,6 +80,7 @@ parallel_wrappers = [
     supersuit.delay_observations_v0(knights_archers_zombies_v5.parallel_env(), 3),
     supersuit.color_reduction_v0(knights_archers_zombies_v5.parallel_env(), "R"),
     supersuit.frame_skip_v0(knights_archers_zombies_v5.parallel_env(), 4),
+    supersuit.max_observation_v0(knights_archers_zombies_v5.parallel_env(), 4),
 ]
 
 

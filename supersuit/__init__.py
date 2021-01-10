@@ -21,7 +21,13 @@ class WrapperFactory:
             wrap_class = getattr(gym_wrappers, self.wrapper_name)
             return wrap_class(env, *args, **kwargs)
         elif isinstance(env, AECEnv):
-            wrap_class = getattr(aec_wrappers, self.wrapper_name)
+            wrap_class = getattr(aec_wrappers, self.wrapper_name, None)
+
+            if wrap_class is not None:
+                return wrap_class(env, *args, **kwargs)
+            else:
+                wrap_class = getattr(parallel_wrappers, self.wrapper_name)
+                return from_parallel(wrap_class(to_parallel(env), *args, **kwargs))
             return wrap_class(env, *args, **kwargs)
         elif isinstance(env, ParallelEnv):
             wrap_class = getattr(parallel_wrappers, self.wrapper_name, None)
@@ -63,6 +69,7 @@ reward_lambda_v0 = WrapperFactory("reward_lambda")
 frame_skip_v0 = WrapperFactory("frame_skip")
 sticky_actions_v0 = WrapperFactory("sticky_actions")
 delay_observations_v0 = WrapperFactory("delay_observations")
+max_observation_v0 = WrapperFactory("max_observation")
 cyclically_expansive_learning_v0 = WrapperFactory("cyclically_expansive_learning")
 
 black_death_v0 = WrapperFactory("black_death", False)

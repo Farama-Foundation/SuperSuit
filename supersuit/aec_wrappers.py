@@ -6,6 +6,7 @@ from .action_transforms import homogenize_ops
 from .adv_transforms import agent_indicator as agent_ider
 from .adv_transforms.frame_skip import check_transform_frameskip
 from .adv_transforms.obs_delay import Delayer
+from .adv_transforms.accumulator import Accumulator
 from collections import deque
 import numpy as np
 import gym
@@ -195,6 +196,32 @@ class black_death(ObservationWrapper):
         self.agent_selection = self.possible_agents[self._agent_idx]
 
         self._dones_step_first()
+
+
+class max_observation(ObservationWrapper):
+    def __init__(self, env, memory):
+        self.memory = memory
+        self.reduction = np.maximum
+        super().__init__(env)
+
+    def _check_wrapper_params(self):
+        int(self.memory)  # delay must be an int
+
+    def _modify_spaces(self):
+        return
+
+    def reset(self):
+        self._accumulators = {agent: Accumulator(obs_space, self.memory, self.reduction) for agent, obs_space in self.observation_spaces.items()}
+        super().reset()
+        for agent, accum in self._accumulators.items():
+            accum.add(self.env.observe(agent))
+
+    def _update_step(self, agent):
+        observation = self.env.observe(agent)
+        self._accumulators[agent].add(observation)
+
+    def _modify_observation(self, agent, observation):
+        return self._accumulators[agent].get()
 
 
 class delay_observations(ObservationWrapper):
