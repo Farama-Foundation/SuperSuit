@@ -35,7 +35,7 @@ You can install SuperSuit via `pip install supersuit`
 
 `color_reduction_v0(env, mode='full')` simplifies color information in graphical ((x,y,3) shaped) environments. `mode='full'` fully greyscales of the observation. This can be computationally intensive. Arguments of 'R', 'G' or 'B' just take the corresponding R, G or B color channel from observation. This is much faster and is generally sufficient.
 
-`dtype_v0(env, dtype)` recasts your observation as a certain dtype. Many graphical games return `uint8` observations, while neural networks generally want `float16` or `float32`.
+`dtype_v0(env, dtype)` recasts your observation as a certain dtype. Many graphical games return `uint8` observations, while neural networks generally want `float16` or `float32`. `dtype` can be anything NumPy would except as a dtype argument (e.g. np.dtype classes or strings).
 
 `flatten_v0(env)` flattens observations into a 1D array.
 
