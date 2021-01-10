@@ -2,8 +2,10 @@ import numpy as np
 from .single_vec_env import SingleVecEnv
 import gym.vector
 
+
 def transpose(ll):
     return [[ll[i][j] for i in range(len(ll))] for j in range(len(ll[0]))]
+
 
 class ConcatVecEnv(gym.vector.VectorEnv):
     def __init__(self, vec_env_fns, obs_space=None, act_space=None):
@@ -15,11 +17,11 @@ class ConcatVecEnv(gym.vector.VectorEnv):
         self.action_space = vec_envs[0].action_space
         tot_num_envs = sum(env.num_envs for env in vec_envs)
         self.num_envs = tot_num_envs
-        self.obs_buffer = np.empty((self.num_envs,)+self.observation_space.shape, dtype=self.observation_space.dtype)
+        self.obs_buffer = np.empty((self.num_envs,) + self.observation_space.shape, dtype=self.observation_space.dtype)
 
     def concat_obs(self, obs_list):
         idx = 0
-        for venv,obs in zip(self.vec_envs,obs_list):
+        for venv, obs in zip(self.vec_envs, obs_list):
             endidx = idx + venv.num_envs
             self.obs_buffer[idx:endidx] = obs
             idx = endidx
@@ -47,7 +49,7 @@ class ConcatVecEnv(gym.vector.VectorEnv):
         data = []
         idx = 0
         for venv in self.vec_envs:
-            data.append(venv.step(actions[idx:idx+venv.num_envs]))
+            data.append(venv.step(actions[idx: idx + venv.num_envs]))
             idx += venv.num_envs
         observations, rewards, dones, infos = transpose(data)
         observations = self.concat_obs(observations)

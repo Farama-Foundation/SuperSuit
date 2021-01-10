@@ -1,6 +1,7 @@
 import gym
 import numpy as np
 
+
 class SpaceWrapper:
     def __init__(self, space):
         if isinstance(space, gym.spaces.Discrete):

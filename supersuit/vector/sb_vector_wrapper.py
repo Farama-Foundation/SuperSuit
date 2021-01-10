@@ -1,6 +1,7 @@
 from stable_baselines3.common.vec_env.base_vec_env import VecEnv
 import warnings
 
+
 class SB3VecEnvWrapper(VecEnv):
     def __init__(self, venv):
         self.venv = venv

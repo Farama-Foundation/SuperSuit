@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class SingleVecEnv:
     def __init__(self, gym_env_fns, *args):
         assert len(gym_env_fns) == 1
@@ -9,7 +10,7 @@ class SingleVecEnv:
         self.num_envs = 1
 
     def reset(self):
-        return np.expand_dims(self.gym_env.reset(),0)
+        return np.expand_dims(self.gym_env.reset(), 0)
 
     def step_async(self, actions):
         self._saved_actions = actions
@@ -24,8 +25,8 @@ class SingleVecEnv:
         observations, reward, done, info = self.gym_env.step(actions[0])
         if done:
             observations = self.gym_env.reset()
-        observations =  np.expand_dims(observations,0)
+        observations = np.expand_dims(observations, 0)
         rewards = np.array([reward], dtype=np.float32)
         dones = np.array([done], dtype=np.uint8)
         infos = [info]
-        return observations, rewards, dones,infos
+        return observations, rewards, dones, infos

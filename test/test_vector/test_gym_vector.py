@@ -26,6 +26,7 @@ def check_vec_env_equivalency(venv1, venv2, check_info=True):
         assert np.all(np.equal(done1, done2))
         assert info1 == info2 or not check_info
 
+
 def test_gym_supersuit_equivalency():
     env = gym.make("Pendulum-v0")
     num_envs = 3
@@ -33,12 +34,14 @@ def test_gym_supersuit_equivalency():
     venv2 = gym_vec_env(env, num_envs)
     check_vec_env_equivalency(venv1, venv2)
 
+
 def test_stable_baselines_supersuit_equivalency():
     env = gym.make("Pendulum-v0")
     num_envs = 3
     venv1 = supersuit_vec_env(env, num_envs, base_class='stable_baselines3')
     venv2 = stable_baselines3_vec_env(env, num_envs)
-    check_vec_env_equivalency(venv1, venv2, check_info=False) # stable baselines does not implement info correctly
+    check_vec_env_equivalency(venv1, venv2, check_info=False)  # stable baselines does not implement info correctly
+
 
 def test_mutliproc_single_proc_equivalency():
     env = gym.make("Pendulum-v0")
@@ -46,6 +49,7 @@ def test_mutliproc_single_proc_equivalency():
     venv1 = supersuit_vec_env(env, num_envs, num_cpus=0)  # uses single threaded vector environment
     venv2 = supersuit_vec_env(env, num_envs, num_cpus=4)  # uses multiprocessing vector environment
     check_vec_env_equivalency(venv1, venv2)
+
 
 def test_multiagent_mutliproc_single_proc_equivalency():
     env = simple_spread_v2.parallel_env()
