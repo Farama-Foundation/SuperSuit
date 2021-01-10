@@ -3,7 +3,7 @@ from . import convert_box
 
 
 def check_param(obs_space, new_dtype):
-    assert isinstance(new_dtype, type) or isinstance(new_dtype, np.dtype), "new_dtype must be type. It is {}".format(new_dtype)
+    np.dtype(new_dtype)  # type argument must be convertable to a numpy dtype
 
 
 def change_obs_space(obs_space, param):

@@ -10,7 +10,7 @@ test_obs = np.zeros([4, 4, 3], dtype=np.float64) + np.arange(3)
 def test_param_check():
     check_param(test_obs_space, np.uint8)
     check_param(test_obs_space, np.dtype("uint8"))
-    with pytest.raises(AssertionError):
+    with pytest.raises(TypeError):
         check_param(test_obs_space, 6)
 
 
