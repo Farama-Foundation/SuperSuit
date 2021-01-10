@@ -75,11 +75,26 @@ These functions turn plain Gym environments into vectorized environments, for ev
 
 `stable_baselines3_vec_env(env, num_envs, multiprocessing=False)` creates a stable_baselines vector environment with num_envs copies of the environment. If `multiprocessing` is True, SubprocVecEnv is used instead of DummyVecEnv. Needs stable_baselines3 to be installed to work.
 
-`supersuit_vec_env(env, num_envs, num_cpus=0)` takes in an `env` which can either be a gym environment or a vector environment (should not have multithreading enabled). Creates num_envs copies of that environment or vector environment and runs them on num_cpus as balanced as possible between cpus. The fact that it can take in a vector environment means that it can parallelize POSG Pettingzoo envs by wrapping over the result of `posg_env_to_vec_env`.
+`supersuit_vec_env(env, num_envs, num_cpus=0, base_class='gym')` takes in an `env` which can either be a gym environment or a vector environment (should not have multithreading enabled). Creates a new vector environment with num_envs copies of that environment or vector environment and runs them on num_cpus as balanced as possible between cpus. `num_cpus=0` means to create 0 new threads, i.e. run the process in an efficient single threaded manner. The fact that it can take in a vector environment means that it can parallelize POSG Pettingzoo envs by wrapping over the result of `posg_env_to_vec_env`.
 
 ### Parallel Environment vectorization
 
 `posg_env_to_vec_env(env)`: Takes a PettingZoo ParallelEnv with POSG assumptions: no agent death or generation, homogeneous action and observation spaces. Returns a gym vector environment where each "environment" in the vector represents one agent. An arbitrary PettingZoo parallel environment can be made into a POSG environment by wrapping it with the black_death, pad_action_space and pad_observations wrappers. This mapping to a vector environment can be used to train appropriate pettingzoo environments with standard single agent RL methods such as stable baselines's A2C out of box.
+
+So you can for example train pistonball with some code like:
+
+```
+from stable_baselines3 import PPO
+from pettingzoo.butterfly import pistonball_v3
+from supersuit import posg_env_to_vec_env, supersuit_vec_env
+
+env = pistonball_v3.parallel_env()
+env = posg_env_to_vec_env(env)
+env = supersuit_vec_env(env, 4, base_class='stable_baselines3')
+
+model = PPO('CnnPolicy', env, verbose=3, n_steps=16)
+model.learn(total_timesteps=1000000)
+```
 
 #### Note on multiprocessing
 Turning on multiprocessing runs each environment in it's own process. Turning this on is typically much slower for fast environments (like card games), but much faster for slow environments (like robotics simulations). Determining which case you are will require testing.
