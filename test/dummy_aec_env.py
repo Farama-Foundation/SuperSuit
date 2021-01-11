@@ -43,7 +43,7 @@ class DummyEnv(AECEnv):
         self.agents = self.possible_agents[:]
         self._agent_selector = agent_selector(self.agents)
         self.agent_selection = self._agent_selector.reset()
-        self.rewards = {a: i for i,a in enumerate(self.agents)}
+        self.rewards = {a: 1 for a in self.agents}
         self._cumulative_rewards = {a: 0 for a in self.agents}
         self.dones = {a: False for a in self.agents}
         self.infos = {a: {} for a in self.agents}
