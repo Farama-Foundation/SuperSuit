@@ -67,7 +67,7 @@ wrappers = [
     supersuit.sticky_actions_v0(knights_archers_zombies_v5.env(), 0.75),
     supersuit.delay_observations_v0(knights_archers_zombies_v5.env(), 3),
     supersuit.max_observation_v0(knights_archers_zombies_v5.env(), 3),
-    supersuit.cyclically_expansive_learning_v0(pursuit_v3.env(), [(0, 1), (2, 2), (6, 3)]),
+    supersuit.cyclically_expansive_learning_v1(pursuit_v3.env(), [(0, 1), (2, 2), (6, 3)]),
 ]
 
 

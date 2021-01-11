@@ -242,7 +242,7 @@ def test_cyclically_expansive_learning():
 
     curriculum = [(0, 1), (2, 2), (6, 3)]
     curriculum_step = 0
-    env = supersuit.cyclically_expansive_learning_v0(new_dummy(), curriculum=curriculum)
+    env = supersuit.cyclically_expansive_learning_v1(new_dummy(), curriculum=curriculum)
     env.reset()
     populate_step = 0
     for i in range(40):
