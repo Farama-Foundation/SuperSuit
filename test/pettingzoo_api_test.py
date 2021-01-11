@@ -2,6 +2,7 @@ import numpy as np
 from pettingzoo.test import api_test, seed_test, parallel_test
 from pettingzoo.mpe import simple_push_v2, simple_world_comm_v2
 from pettingzoo.butterfly import knights_archers_zombies_v5, prison_v2
+from pettingzoo.sisl import pursuit_v3
 
 import supersuit
 import pytest
@@ -66,6 +67,7 @@ wrappers = [
     supersuit.sticky_actions_v0(knights_archers_zombies_v5.env(), 0.75),
     supersuit.delay_observations_v0(knights_archers_zombies_v5.env(), 3),
     supersuit.max_observation_v0(knights_archers_zombies_v5.env(), 3),
+    supersuit.cyclically_expansive_learning_v0(pursuit_v3.env(), [(0, 1), (2, 2), (6, 3)]),
 ]
 
 

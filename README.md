@@ -123,7 +123,7 @@ env = action_lambda_v0(env,
 
 Version 2.3.1 (January 10, 2021):
 
-Added max_observation wrapper for Atari games. Added cyclically_expansive_learning wrapper. Allowed dtype to accept strings. 
+Added max_observation wrapper for Atari games. Added cyclically_expansive_learning wrapper. Allowed dtype to accept strings.
 
 Version 2.3.0 (December 27, 2020):
 

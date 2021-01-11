@@ -7,7 +7,6 @@ from .adv_transforms import agent_indicator as agent_ider
 from .adv_transforms.frame_skip import check_transform_frameskip
 from .adv_transforms.obs_delay import Delayer
 from .adv_transforms.accumulator import Accumulator
-from collections import deque
 import numpy as np
 import gym
 
@@ -495,28 +494,6 @@ class clip_reward(RewardWrapper):
         return max(min(rew, self.upper_bound), self.lower_bound)
 
 
-class queuesum:
-    def __init__(self):
-        self.queue = deque()
-        self.sum = 0
-        self.size = 0
-
-    def add(self, item):
-        self.queue.append(item)
-        self.sum += item
-        if len(self.queue) > self.size:
-            self.sum -= self.queue[0]
-            self.queue.popleft()
-        return self.sum
-
-    def resize(self, new_size):
-        assert new_size >= self.size
-        self.size = new_size
-
-    def __str__(self):
-        return f"{self.queue}"
-
-
 class cyclically_expansive_learning(PettingzooWrap):
     def __init__(self, env, curriculum):
         '''
@@ -525,8 +502,8 @@ class cyclically_expansive_learning(PettingzooWrap):
         '''
         assert curriculum == list(sorted(curriculum))
         self.curriculum = curriculum
-        self.env_step = 0
-        self.curriculum_step = 0
+        self.env_step = None
+        self.curriculum_step = None
         super().__init__(env)
 
     def _check_wrapper_params(self):
@@ -537,18 +514,24 @@ class cyclically_expansive_learning(PettingzooWrap):
 
     def reset(self):
         super().reset()
-        self.reward_queues = {agent: queuesum() for agent in self.agents}
-        for qs in self.reward_queues.values():
-            qs.resize(self.curriculum[0][1])
+        self.curriculum_step = 0
+        self.env_step = 0
         self._cumulative_rewards = {a: 0 for a in self.agents}
 
     def step(self, action):
-        super().step(action)
+        self._cumulative_rewards[self.agent_selection] = 0
+        self.env.step(action)
+
+        self.agent_selection = self.env.agent_selection
+        self.dones = self.env.dones
+        self.infos = self.env.infos
+        self.agents = self.env.agents
+
         if self.curriculum_step < len(self.curriculum) - 1 and self.env_step >= self.curriculum[self.curriculum_step + 1][0]:
             self.curriculum_step += 1
-            num_cycles_keep = self.curriculum[self.curriculum_step][1]
-            for qs in self.reward_queues.values():
-                qs.resize(num_cycles_keep)
 
-        self._cumulative_rewards = {a: self.reward_queues[a].add(r) for a, r in self.env.rewards.items()}
+        num_cycles_keep = self.curriculum[self.curriculum_step][1]
+        cur_agent_index = self.agents.index(self.agent_selection)
+        self.rewards = {a: (self.env.rewards[a] if (cur_agent_index - i)% len(self.agents) < num_cycles_keep else 0) for i, a in enumerate(self.agents)}
+        self._accumulate_rewards()
         self.env_step += 1

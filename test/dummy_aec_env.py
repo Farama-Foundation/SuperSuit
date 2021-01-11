@@ -6,7 +6,7 @@ from pettingzoo.utils.agent_selector import agent_selector
 class DummyEnv(AECEnv):
     metadata = {"render.modes": ["human"]}
 
-    def __init__(self, observations, observation_spaces, action_spaces):
+    def __init__(self, observations, observation_spaces, action_spaces, duration=5):
         super().__init__()
         self._observations = observations
         self.observation_spaces = observation_spaces
@@ -16,6 +16,7 @@ class DummyEnv(AECEnv):
         self._agent_selector = agent_selector(self.agents)
         self.agent_selection = self._agent_selector.reset()
         self.action_spaces = action_spaces
+        self.duration = duration
 
         self.steps = 0
 
@@ -32,7 +33,7 @@ class DummyEnv(AECEnv):
         self._cumulative_rewards[self.agent_selection] = 0
         self.agent_selection = self._agent_selector.next()
         self.steps += 1
-        if self.steps >= 5 * len(self.agents):
+        if self.steps >= self.duration * len(self.agents):
             self.dones = {a: True for a in self.agents}
 
         self._accumulate_rewards()
@@ -42,7 +43,7 @@ class DummyEnv(AECEnv):
         self.agents = self.possible_agents[:]
         self._agent_selector = agent_selector(self.agents)
         self.agent_selection = self._agent_selector.reset()
-        self.rewards = {a: 1 for a in self.agents}
+        self.rewards = {a: i for i,a in enumerate(self.agents)}
         self._cumulative_rewards = {a: 0 for a in self.agents}
         self.dones = {a: False for a in self.agents}
         self.infos = {a: {} for a in self.agents}
