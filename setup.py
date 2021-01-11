@@ -35,6 +35,6 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    extras={"dev": ["pettingzoo[butterfly]"]},
+    extras={"dev": ["pettingzoo[butterfly]", "pettingzoo[sisl]"]},
     include_package_data=True,
 )
