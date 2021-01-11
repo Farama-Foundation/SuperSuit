@@ -328,8 +328,6 @@ class frame_skip(StepAltWrapper):
 
     def step(self, action):
         if self.dones[self.agent_selection]:
-            print(self.env.agent_selection)
-            print(self.env.agents)
             if self.env.agents and self.agent_selection == self.env.agent_selection:
                 self.env.step(None)
             self._was_done_step(action)
