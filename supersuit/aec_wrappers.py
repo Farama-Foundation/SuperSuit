@@ -525,10 +525,10 @@ class cyclically_expansive_learning(PettingzooWrap):
 
         num_cycles_keep = self.curriculum[self.curriculum_step][1]
         self.rewards = {}
-        for i, a in enumerate(self.agents):
+        for i, agent in enumerate(self.agents):
             if (cur_agent_index - i) % len(self.agents) < num_cycles_keep:
-                self.rewards[a] = self.env.rewards[a]
+                self.rewards[agent] = self.env.rewards[agent]
             else:
-                self.rewards[a] = 0
+                self.rewards[agent] = 0
         self._accumulate_rewards()
         self.env_step += 1
