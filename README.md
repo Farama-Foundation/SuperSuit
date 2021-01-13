@@ -61,8 +61,6 @@ You can install SuperSuit via `pip install supersuit`
 
 `black_death_v0(env)` Instead of removing dead actions, observations and rewards are 0 and actions are ignored. This can simplify handling agent death mechanics. The name "black death" does not come from the plague, but from the fact that you see a black image (an image filled with zeros) when you die.
 
-`cyclically_expansive_learning_v0(env, curriculum)` is a cirriculum learning scheme introduced in the paper *Agent Environment Cycle Games*. The `curriculum` is list of tuples `[(schedule_step_0, reward_steps_to_sum_0), (schedule_step_1, reward_steps_to_sum_1), ...]`. The first value determines at what step to apply the curriculum, and the second is the number of actors to expand by.
-
 `pad_action_space_v0(env)` pads the action spaces of all agents to be be the same as the biggest, per the algorithm posed in *Parameter Sharing is Surprisingly Useful for Deep Reinforcement Learning*.  This enables MARL methods that require homogeneous action spaces for all agents to work with environments with heterogeneous action spaces. Discrete actions inside the padded region will be set to zero, and Box actions will be cropped down to the original space.
 
 `pad_observations_v0(env)` pads observations to be of the shape of the largest observation of any agent with 0s, per the algorithm posed in *Parameter Sharing is Surprisingly Useful for Deep Reinforcement Learning*. This enables MARL methods that require homogeneous observations from all agents to work in environments with heterogeneous observations. This currently supports Discrete and Box observation spaces.
@@ -123,7 +121,7 @@ env = action_lambda_v0(env,
 
 Version 2.3.1 (January 10, 2021):
 
-Added max_observation wrapper for Atari games. Added cyclically_expansive_learning wrapper. Allowed dtype to accept strings. 
+Added max_observation wrapper for Atari games. Added cyclically_expansive_learning wrapper. Allowed dtype to accept strings.
 
 Version 2.3.0 (December 27, 2020):
 
