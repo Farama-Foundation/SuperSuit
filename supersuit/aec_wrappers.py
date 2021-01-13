@@ -500,10 +500,10 @@ class cyclically_expansive_learning(PettingzooWrap):
         The curriculum is a sorted list of tuples:
         (schedual_step, reward_steps_to_sum)
         '''
-        assert curriculum == list(sorted(curriculum))
+        assert curriculum == list(sorted(curriculum)), "The curriculum must be in the form of a sorted list"
         self.curriculum = curriculum
-        self.env_step = None
-        self.curriculum_step = None
+        self.curriculum_step = 0
+        self.env_step = 0
         super().__init__(env)
 
     def _check_wrapper_params(self):
@@ -514,8 +514,6 @@ class cyclically_expansive_learning(PettingzooWrap):
 
     def reset(self):
         super().reset()
-        self.curriculum_step = 0
-        self.env_step = 0
         self._cumulative_rewards = {a: 0 for a in self.agents}
 
     def step(self, action):
