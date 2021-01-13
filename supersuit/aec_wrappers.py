@@ -509,6 +509,7 @@ class cyclically_expansive_learning(PettingzooWrap):
 
     def reset(self):
         super().reset()
+        self.rewards = {a: 0 for a in self.agents}
         self._cumulative_rewards = {a: 0 for a in self.agents}
         self.agent_history = deque()
 
@@ -525,10 +526,13 @@ class cyclically_expansive_learning(PettingzooWrap):
             self.curriculum_step += 1
 
         num_cycles_keep = self.curriculum[self.curriculum_step][1]
-        self.rewards = {agent: 0 for agent in self.agents}
+        for agent in self.agents:
+            self.rewards[agent] = 0
+        # rewards from current agent count towards the reward of the n most recent agents as per cyclically expansive learning
         for agent in self.agent_history:
             self.rewards[agent] = self.env.rewards[agent]
 
+        # adds most recent agent to the queue
         self.agent_history.append(self.agent_selection)
         if len(self.agent_history) > num_cycles_keep:
             self.agent_history.popleft()
