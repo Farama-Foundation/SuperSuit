@@ -514,7 +514,6 @@ class cyclically_expansive_learning(PettingzooWrap):
 
     def step(self, action):
         self._cumulative_rewards[self.agent_selection] = 0  # the agents cycle is done if it's selected again
-        cur_agent_index = self.agents.index(self.agent_selection)
         self.env.step(action)
 
         self.agent_selection = self.env.agent_selection
