@@ -8,6 +8,7 @@ from .adv_transforms.frame_skip import check_transform_frameskip
 from .adv_transforms.obs_delay import Delayer
 from .adv_transforms.accumulator import Accumulator
 import numpy as np
+from collections import deque
 import gym
 
 
@@ -509,6 +510,7 @@ class cyclically_expansive_learning(PettingzooWrap):
     def reset(self):
         super().reset()
         self._cumulative_rewards = {a: 0 for a in self.agents}
+        self.agent_history = deque()
 
     def step(self, action):
         self._cumulative_rewards[self.agent_selection] = 0  # the agents cycle is done if it's selected again
@@ -524,11 +526,13 @@ class cyclically_expansive_learning(PettingzooWrap):
             self.curriculum_step += 1
 
         num_cycles_keep = self.curriculum[self.curriculum_step][1]
-        self.rewards = {}
-        for i, agent in enumerate(self.agents):
-            if ((cur_agent_index - i) % len(self.agents)) < num_cycles_keep:
-                self.rewards[agent] = self.env.rewards[agent]
-            else:
-                self.rewards[agent] = 0
+        self.rewards = {agent: 0 for agent in self.agents}
+        for agent in self.agent_history:
+            self.rewards[agent] = self.env.rewards[agent]
+
+        self.agent_history.append(self.agent_selection)
+        if len(self.agent_history) > num_cycles_keep:
+            self.agent_history.popleft()
+
         self._accumulate_rewards()
         self.env_step += 1
