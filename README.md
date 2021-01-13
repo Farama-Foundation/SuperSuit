@@ -117,61 +117,6 @@ env = action_lambda_v0(env,
     lambda act_space : gym.spaces.Discrete(act_space.shape[0]))
 ```
 
-## Release History
-
-Version 2.4.0 (January 13, 2021):
-
-Removed cyclically_expansive_learning wrapper, removed extraneous print statement from frame_skip wrapper.
-
-Version 2.3.1 (January 10, 2021):
-
-Added max_observation wrapper for Atari games. Added cyclically_expansive_learning wrapper. Allowed dtype to accept strings.
-
-Version 2.3.0 (December 27, 2020):
-
-Fixed parallel frame skip wrapper and added black_death wrapper.
-
-Version 2.2.0 (November 6, 2020):
-
-Made multi-agent environments compatible with PettingZoo version 1.4.0, enforced flake8.
-
-Version 2.1.1 (October 14, 2020):
-
-Fixed argument name to frame_skip.
-
-Version 2.1.0 (September 12, 2020):
-
-Fixed bug in AEC frame_stack wrapper, bumped version of frame_stack.
-
-Version 2.0.2 (September 12, 2020):
-
-Fixed installation issue in setup.py.
-
-Version 2.0.1 (September 11, 2020):
-
-Switched image resizing backend from lycon to opencv.
-
-Version 2.0.0 (September 8, 2020):
-
-Added versioning to wrappers. Wrappers are now named `<wrapper>_v0`, for example `dtype_v0`. Note that this will break all imports!
-Fixed `frame_skip` wrapper. Bumped required PettingZoo version to upstream fixes in PettingZoo's AgentIterWrapper.
-
-Version 1.2.0 (August 21, 2020):
-
-Added support for pettingzoo ParallelEnv. Fixed delay_observations API issue.
-
-Version 1.1.2 (August 19th, 2020):
-
-Fix pip installation bug
-
-Version 1.1.0 (August 17th, 2020):
-
-Adds action clipping
-
-Version 1.0.0 (August 5th, 2020):
-
-This is the first official stable release of SuperSuit. We don't have any further features planned at this time, but we're going to keep maintaining it and adding functionality as new things become standard.
-
 ## Citation
 
 If you use this in your research, please cite:
