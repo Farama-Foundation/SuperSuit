@@ -119,6 +119,10 @@ env = action_lambda_v0(env,
 
 ## Release History
 
+Version 2.4.0 (January 13, 2021):
+
+Removed cyclically_expansive_learning wrapper, removed extraneous print statement from frame_skip wrapper.
+
 Version 2.3.1 (January 10, 2021):
 
 Added max_observation wrapper for Atari games. Added cyclically_expansive_learning wrapper. Allowed dtype to accept strings.
