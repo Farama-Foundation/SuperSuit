@@ -506,12 +506,6 @@ class cyclically_expansive_learning(PettingzooWrap):
         self.curriculum_step = None
         super().__init__(env)
 
-    def _check_wrapper_params(self):
-        pass
-
-    def _modify_spaces(self):
-        pass
-
     def reset(self):
         super().reset()
         self.curriculum_step = 0
