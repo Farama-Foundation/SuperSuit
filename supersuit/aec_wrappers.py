@@ -506,12 +506,6 @@ class cyclically_expansive_learning(PettingzooWrap):
         self.env_step = 0
         super().__init__(env)
 
-    def _check_wrapper_params(self):
-        pass
-
-    def _modify_spaces(self):
-        pass
-
     def reset(self):
         super().reset()
         self._cumulative_rewards = {a: 0 for a in self.agents}
