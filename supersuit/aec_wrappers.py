@@ -509,8 +509,8 @@ class cyclically_expansive_learning(PettingzooWrap):
 
     def reset(self):
         super().reset()
-        self.rewards = {a: 0 for a in self.agents}
-        self._cumulative_rewards = {a: 0 for a in self.agents}
+        self.rewards = {agent: 0 for agent in self.agents}
+        self._cumulative_rewards = {agent: 0 for agent in self.agents}
         self.agent_history = deque()
 
     def step(self, action):
