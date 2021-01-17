@@ -50,6 +50,10 @@ class MarkovVectorEnv(gym.vector.VectorEnv):
         agent_set = set(self.par_env.agents)
         act_dict = {agent: actions[i] for i, agent in enumerate(self.par_env.possible_agents) if agent in agent_set}
         observations, rewards, dones, infos = self.par_env.step(act_dict)
+
+        rews = np.array([rewards.get(agent, 0) for agent in self.par_env.possible_agents], dtype=np.float32)
+        dns = np.array([dones.get(agent, False) for agent in self.par_env.possible_agents], dtype=np.uint8)
+        infs = [infos[agent] for agent in self.par_env.possible_agents]
         if all(dones):
             observations = self.reset()
         else:
@@ -57,7 +61,4 @@ class MarkovVectorEnv(gym.vector.VectorEnv):
         assert (
             self.par_env.agents == self.par_env.possible_agents
         ), "MarkovVectorEnv does not support environments with varying numbers of active agents unless black_death is set to True"
-        rews = np.array([rewards.get(agent, 0) for agent in self.par_env.possible_agents], dtype=np.float32)
-        dns = np.array([dones.get(agent, False) for agent in self.par_env.possible_agents], dtype=np.uint8)
-        infs = [infos[agent] for agent in self.par_env.possible_agents]
         return observations, rews, dns, infs
