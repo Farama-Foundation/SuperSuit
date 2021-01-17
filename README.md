@@ -35,7 +35,7 @@ You can install SuperSuit via `pip install supersuit`
 
 `color_reduction_v0(env, mode='full')` simplifies color information in graphical ((x,y,3) shaped) environments. `mode='full'` fully greyscales of the observation. This can be computationally intensive. Arguments of 'R', 'G' or 'B' just take the corresponding R, G or B color channel from observation. This is much faster and is generally sufficient.
 
-`dtype_v0(env, dtype)` recasts your observation as a certain dtype. Many graphical games return `uint8` observations, while neural networks generally want `float16` or `float32`.
+`dtype_v0(env, dtype)` recasts your observation as a certain dtype. Many graphical games return `uint8` observations, while neural networks generally want `float16` or `float32`. `dtype` can be anything NumPy would except as a dtype argument (e.g. np.dtype classes or strings).
 
 `flatten_v0(env)` flattens observations into a 1D array.
 
@@ -51,15 +51,15 @@ You can install SuperSuit via `pip install supersuit`
 
 `reshape_v0(env, shape)` reshapes observations into given shape.
 
-`resize_v0(env, x_size, y_size, linear_interp=False)` Performs interpolation to up-size or down-size observation image using area interpolation by default. Linear interpolation is also available by setting `linear_interp=True` (it's faster and better for up-sizing). This wrapper is only available for 2D or 3D observations, and only makes sense of the observation is an image.
+`resize_v0(env, x_size, y_size, linear_interp=False)` Performs interpolation to up-size or down-size observation image using area interpolation by default. Linear interpolation is also available by setting `linear_interp=True` (it's faster and better for up-sizing). This wrapper is only available for 2D or 3D observations, and only makes sense if the observation is an image.
+
+`max_observation_v0(env, memory)` the resulting observation becomes the max over `memory` number of prior frames. This is important for Atari environments, as many games have elements that are intermitently flashed on the instead of being constant, due to the peculiarities of the console and CRT TVs. The OpenAI baselines MaxAndSkip Atari wrapper is equivalent to doing `memory=2` and then a  `frame_skip` of 4.
 
 ## Included Multi-Agent Only Functions
 
 `agent_indicator_v0(env, type_only=False)` Adds an indicator of the agent ID to the observation, only supports discrete and 1D, 2D, and 3D box. For 1d spaces, the agent ID is converted to a 1-hot vector and appended to the observation (increasing the size of the observation space as necessary). 2d and 3d spaces are treated as images (with channels last) and the ID is converted to *n* additional channels with the channel that represents the ID as all 1s and the other channel as all 0s (a sort of one hot encoding). This allows MADRL methods like parameter sharing to learn policies for heterogeneous agents since the policy can tell what agent it's acting on. Set the `type_only` parameter to parse the name of the agent as `<type>_<n>` and have the appended 1-hot vector only identify the type, rather than the specific agent name. This is useful for games where there are many agents in an environment but few types of agents. Agent indication for MADRL was first introduced in *Cooperative Multi-Agent Control Using Deep Reinforcement Learning.*
 
 `black_death_v0(env)` Instead of removing dead actions, observations and rewards are 0 and actions are ignored. This can simplify handling agent death mechanics. The name "black death" does not come from the plague, but from the fact that you see a black image (an image filled with zeros) when you die.
-
-`cyclically_expansive_learning_v0(env, curriculum)` is a cirriculum learning scheme introduced in the paper *Agent Environment Cycle Games*. The `curriculum` is list of tuples `[(schedule_step_0, reward_steps_to_sum_0), (schedule_step_1, reward_steps_to_sum_1), ...]`. The first value determines at what step to apply the curriculum, and the second is the number of actors to expand by.
 
 `pad_action_space_v0(env)` pads the action spaces of all agents to be be the same as the biggest, per the algorithm posed in *Parameter Sharing is Surprisingly Useful for Deep Reinforcement Learning*.  This enables MARL methods that require homogeneous action spaces for all agents to work with environments with heterogeneous action spaces. Discrete actions inside the padded region will be set to zero, and Box actions will be cropped down to the original space.
 
@@ -139,6 +139,14 @@ env = action_lambda_v0(env,
 ```
 
 ## Release History
+
+Version 2.4.0 (January 13, 2021):
+
+Removed cyclically_expansive_learning wrapper, removed extraneous print statement from frame_skip wrapper.
+
+Version 2.3.1 (January 10, 2021):
+
+Added max_observation wrapper for Atari games. Added cyclically_expansive_learning wrapper. Allowed dtype to accept strings.
 
 Version 2.3.0 (December 27, 2020):
 

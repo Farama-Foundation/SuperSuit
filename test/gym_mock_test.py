@@ -50,6 +50,7 @@ wrappers = [
     supersuit.frame_skip_v0(new_dummy(), (4, 6)),
     supersuit.sticky_actions_v0(new_dummy(), 0.75),
     supersuit.delay_observations_v0(new_dummy(), 1),
+    supersuit.max_observation_v0(new_dummy(), 3),
 ]
 
 
