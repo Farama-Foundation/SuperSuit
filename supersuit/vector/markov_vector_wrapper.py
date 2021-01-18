@@ -54,7 +54,8 @@ class MarkovVectorEnv(gym.vector.VectorEnv):
         rews = np.array([rewards.get(agent, 0) for agent in self.par_env.possible_agents], dtype=np.float32)
         dns = np.array([dones.get(agent, False) for agent in self.par_env.possible_agents], dtype=np.uint8)
         infs = [infos[agent] for agent in self.par_env.possible_agents]
-        if all(dones):
+
+        if all(dones.values()):
             observations = self.reset()
         else:
             observations = self.concat_obs(observations)
