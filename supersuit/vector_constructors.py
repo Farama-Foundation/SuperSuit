@@ -1,10 +1,10 @@
 import gym
-import pickle
+import cloudpickle
 
 
 def vec_env_args(env, num_envs):
     def env_fn():
-        return pickle.loads(pickle.dumps(env))
+        return cloudpickle.loads(cloudpickle.dumps(env))
 
     return [env_fn] * num_envs, env.observation_space, env.action_space
 
