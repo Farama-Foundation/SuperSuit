@@ -5,9 +5,10 @@ from pettingzoo.utils.agent_selector import agent_selector
 import numpy as np
 import ctypes
 import gym
+from .base_aec_vec_env import VectorAECEnv
 
 
-class VectorAECWrapper:
+class SyncAECVectorEnv(VectorAECEnv):
     def __init__(self, env_constructors):
         assert len(env_constructors) >= 1
         assert callable(env_constructors[0]), "env_constructor must be a callable object (i.e function) that create an environment"

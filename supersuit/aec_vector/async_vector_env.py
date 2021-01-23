@@ -5,7 +5,7 @@ from pettingzoo.utils.agent_selector import agent_selector
 import numpy as np
 import ctypes
 import gym
-from .vector_env import VectorAECWrapper
+from .base_aec_vec_env import VectorAECEnv
 import warnings
 import signal
 import traceback
@@ -220,7 +220,7 @@ def env_worker(env_constructors, total_num_envs, idx_start, my_num_envs, agent_a
         pipe.send((e, tb))
 
 
-class ProcVectorEnv(VectorAECWrapper):
+class AsyncAECVectorEnv(VectorAECEnv):
     def __init__(self, env_constructors, num_cpus=None, return_copy=True):
         # set signaling so that crashing is handled gracefully
         init_parallel_env()
