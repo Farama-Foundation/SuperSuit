@@ -56,8 +56,8 @@ class SyncAECVectorEnv(VectorAECEnv):
         self.envs_dones = np.zeros(self.num_envs)
 
     def seed(self, seed=None):
-        for env in self.envs:
-            env.seed(seed)
+        for i, env in enumerate(self.envs):
+            env.seed(seed + i)
 
     def observe(self, agent):
         observations = []

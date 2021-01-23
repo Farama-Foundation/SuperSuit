@@ -43,6 +43,9 @@ def test_all():
         infos = vec_env.infos[vec_env.agent_selection]
         assert infos[1]['legal_moves']
 
+    def test_seed(vec_env):
+        vec_env.seed(4)
+
     def test_some_done(vec_env):
         vec_env.reset()
         act_space = vec_env.action_spaces[vec_env.agent_selection]

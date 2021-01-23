@@ -91,8 +91,8 @@ class _SeperableAECWrapper:
         return observations
 
     def seed(self, seed=None):
-        for env in self.envs:
-            env.seed(seed)
+        for i,env in enumerate(self.envs):
+            env.seed(seed + i)
 
     def step(self, agent_step, actions):
         assert len(actions) == len(self.envs)
@@ -364,8 +364,8 @@ class AsyncAECVectorEnv(VectorAECEnv):
         return obs
 
     def seed(self, seed):
-        for cin in self.con_ins:
-            cin.send(("seed", seed))
+        for start, cin in zip(self.env_starts,self.con_ins):
+            cin.send(("seed", seed+start if seed is not None else None))
 
         self._receive_info()
 
