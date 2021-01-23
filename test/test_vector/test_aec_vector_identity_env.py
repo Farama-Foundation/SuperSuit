@@ -5,14 +5,14 @@ from pettingzoo.sisl import waterworld_v3
 from supersuit import frame_skip_v0
 import numpy as np
 
+
 def test_identical():
     def env_fn():
-        return (knights_archers_zombies_v5.env())#,20)
-
+        return knights_archers_zombies_v5.env()  # ,20)
 
     n_envs = 2
-    env1 = SyncAECVectorEnv([env_fn]*n_envs)
-    env2 = AsyncAECVectorEnv([env_fn]*n_envs)
+    env1 = SyncAECVectorEnv([env_fn] * n_envs)
+    env2 = AsyncAECVectorEnv([env_fn] * n_envs)
     env1.seed(42)
     env2.seed(42)
     env1.reset()
@@ -32,7 +32,7 @@ def test_identical():
         assert np.all(np.equal(agent_passes1, agent_passes2))
         assert np.all(np.equal(env_done1, env_done2))
         assert np.all(np.equal(obs1, obs2))
-        assert all(np.all(np.equal(r1,r2)) for r1, r2 in zip(env1.rewards.values(), env2.rewards.values()))
+        assert all(np.all(np.equal(r1, r2)) for r1, r2 in zip(env1.rewards.values(), env2.rewards.values()))
         assert infos1 == infos2
         actions = policy(obs1, agent)
         env1.step(actions)
@@ -42,13 +42,14 @@ def test_identical():
             # if agent_passes[j]:
             #     print("pass")
             if rew1[j] != 0:
-                print(j,agent,rew1,agent_done1[j])
+                print(j, agent, rew1, agent_done1[j])
             if env_done1[j]:
-                print(j,"done")
+                print(j, "done")
                 envs_done += 1
                 if envs_done == n_envs + 1:
                     print("test passed")
                     return
+
 
 if __name__ == "__main__":
     test_identical()

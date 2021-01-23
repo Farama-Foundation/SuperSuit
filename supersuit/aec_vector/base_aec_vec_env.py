@@ -36,18 +36,18 @@ class VectorAECEnv:
         """
 
     def step(self, actions, observe=True):
-        '''
+        """
         steps the current agent with the following actions.
         Unlike a regular AECEnv, the actions cannot be None
-        '''
+        """
 
     def agent_iter(self, max_iter):
-        '''
+        """
         Unlike aec agent_iter, this does not stop on environment done. Instead,
         vector environment resets speciic envs when done.
 
         Instead, just continues until max_iter is reached.
-        '''
+        """
         return AECIterable(self, max_iter)
 
 
