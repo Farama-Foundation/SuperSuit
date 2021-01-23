@@ -1,4 +1,4 @@
-from supersuit.aec_vector import SyncAECVectorEnv, AsyncAECVectorEnv
+from supersuit import vectorize_aec_env_v0
 from pettingzoo.butterfly import knights_archers_zombies_v5
 from pettingzoo.mpe import simple_push_v2
 from pettingzoo.sisl import waterworld_v3
@@ -8,7 +8,7 @@ import numpy as np
 
 def test_identical():
     def env_fn():
-        return )  # ,20)
+        return knights_archers_zombies_v5.env()  # ,20)
 
     n_envs = 2
     # single threaded
@@ -50,7 +50,3 @@ def test_identical():
                 if envs_done == n_envs + 1:
                     print("test passed")
                     return
-
-
-if __name__ == "__main__":
-    test_identical()
