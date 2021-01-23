@@ -75,6 +75,8 @@ These functions turn plain Gym environments into vectorized environments, for ev
 
 `stable_baselines3_vec_env(env, num_envs, multiprocessing=False)` creates a stable_baselines vector environment with num_envs copies of the environment. If `multiprocessing` is True, SubprocVecEnv is used instead of DummyVecEnv. Needs stable_baselines3 to be installed to work.
 
+`vectorize_aec_env_v0(aec_env, num_envs, num_cpus=0)` creates an AEC Vector env (API documented in source [here](https://github.com/PettingZoo-Team/SuperSuit/blob/master/supersuit/aec_vector/base_aec_vec_env.py)). `num_cpus=0` indicates that the process will run in a single thread. Values of 1 or more will spawn at most that number of processes.  
+
 #### Note on multiprocessing
 Turning on multiprocessing runs each environment in it's own process. Turning this on is typically much slower for fast environments (like card games), but much faster for slow environments (like robotics simulations). Determining which case you are will require testing.
 

@@ -2,17 +2,18 @@ from supersuit.aec_vector import SyncAECVectorEnv, AsyncAECVectorEnv
 from pettingzoo.butterfly import knights_archers_zombies_v5
 from pettingzoo.mpe import simple_push_v2
 from pettingzoo.sisl import waterworld_v3
-from supersuit import frame_skip_v0
+from supersuit import frame_skip_v0, vectorize_aec_env_v0
 import numpy as np
 
 
 def test_identical():
     def env_fn():
-        return knights_archers_zombies_v5.env()  # ,20)
+        return )  # ,20)
 
     n_envs = 2
-    env1 = SyncAECVectorEnv([env_fn] * n_envs)
-    env2 = AsyncAECVectorEnv([env_fn] * n_envs)
+    # single threaded
+    env1 = vectorize_aec_env_v0(knights_archers_zombies_v5.env(), n_envs)
+    env2 = vectorize_aec_env_v0(knights_archers_zombies_v5.env(), n_envs, num_cpus=1)
     env1.seed(42)
     env2.seed(42)
     env1.reset()

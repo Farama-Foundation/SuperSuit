@@ -1,4 +1,4 @@
-from supersuit.aec_vector import SyncAECVectorEnv, AsyncAECVectorEnv
+from supersuit import vectorize_aec_env_v0
 from pettingzoo.classic import rps_v1
 from pettingzoo.classic import mahjong_v2, hanabi_v3
 from pettingzoo.butterfly import knights_archers_zombies_v5
@@ -64,16 +64,10 @@ def test_all():
             act_space = vec_env.action_spaces[vec_env.agent_selection]
             return act_space.sample()
 
-    test_vec_env(SyncAECVectorEnv([rps_v1.env] * NUM_ENVS))
-    test_vec_env(SyncAECVectorEnv([lambda: mahjong_maker() for i in range(NUM_ENVS)]))
-    test_infos(SyncAECVectorEnv([hanabi_maker] * NUM_ENVS))
-    test_some_done(SyncAECVectorEnv([mahjong_maker] * NUM_ENVS))
-    test_vec_env(SyncAECVectorEnv([multiwalker_v6.env] * NUM_ENVS))
-    test_vec_env(SyncAECVectorEnv([simple_world_comm_v2.env] * NUM_ENVS))
-
-    test_vec_env(AsyncAECVectorEnv([rps_v1.env] * NUM_ENVS, NUM_CPUS))
-    test_vec_env(AsyncAECVectorEnv([lambda: mahjong_maker() for i in range(NUM_ENVS)], NUM_CPUS))
-    test_infos(AsyncAECVectorEnv([hanabi_maker] * NUM_ENVS, NUM_CPUS))
-    test_some_done(AsyncAECVectorEnv([mahjong_maker] * NUM_ENVS, NUM_CPUS))
-    test_vec_env(AsyncAECVectorEnv([multiwalker_v6.env] * NUM_ENVS, NUM_CPUS))
-    test_vec_env(AsyncAECVectorEnv([simple_world_comm_v2.env] * NUM_ENVS, NUM_CPUS))
+    for num_cpus in [0, 1]:
+        test_vec_env(vectorize_aec_env_v0(rps_v1.env(), NUM_ENVS, num_cpus=num_cpus))
+        test_vec_env(vectorize_aec_env_v0(mahjong_maker(), NUM_ENVS, num_cpus=num_cpus))
+        test_infos(vectorize_aec_env_v0(hanabi_maker(), NUM_ENVS, num_cpus=num_cpus))
+        test_some_done(vectorize_aec_env_v0(mahjong_maker(), NUM_ENVS, num_cpus=num_cpus))
+        test_vec_env(vectorize_aec_env_v0(multiwalker_v6.env(), NUM_ENVS, num_cpus=num_cpus))
+        test_vec_env(vectorize_aec_env_v0(simple_world_comm_v2.env(), NUM_ENVS, num_cpus=num_cpus))
