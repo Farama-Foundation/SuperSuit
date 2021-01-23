@@ -6,7 +6,7 @@ from . import gym_wrappers
 from . import parallel_wrappers
 from . import vector_constructors
 
-__version__ = "2.3.1"
+__version__ = "2.4.0"
 
 
 class WrapperFactory:
@@ -70,7 +70,6 @@ frame_skip_v0 = WrapperFactory("frame_skip")
 sticky_actions_v0 = WrapperFactory("sticky_actions")
 delay_observations_v0 = WrapperFactory("delay_observations")
 max_observation_v0 = WrapperFactory("max_observation")
-cyclically_expansive_learning_v0 = WrapperFactory("cyclically_expansive_learning")
 
 black_death_v0 = WrapperFactory("black_death", False)
 agent_indicator_v0 = WrapperFactory("agent_indicator", False)
