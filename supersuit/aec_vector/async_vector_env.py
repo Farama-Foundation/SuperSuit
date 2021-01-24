@@ -317,7 +317,6 @@ class AsyncAECVectorEnv(VectorAECEnv):
         self.agent_selection = self._agent_selector.reset() if reset else self._agent_selector.next()
         self.agent_selection = self._find_active_agent()
 
-        obs = self.shared_datas[self.agent_selection].obs.np_arr
         passes = np.not_equal(self.env_datas.agent_sel_idx.np_arr, self.agent_indexes[self.agent_selection])
 
         assert not np.all(passes), "something went wrong with finding agent"

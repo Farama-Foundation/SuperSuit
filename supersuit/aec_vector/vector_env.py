@@ -87,7 +87,6 @@ class SyncAECVectorEnv(VectorAECEnv):
 
         self.agent_selection = self._agent_selector.next()
         self.agent_selection = self._find_active_agent()
-        new_agent = self.agent_selection
 
         self.envs_dones = np.array(envs_dones)
         self._collect_dicts()
