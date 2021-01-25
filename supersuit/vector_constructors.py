@@ -45,6 +45,6 @@ def concat_vec_envs(vec_env, num_vec_envs, num_cpus=0, base_class='gym'):
         raise ValueError("supersuit_vec_env only supports 'gym' and 'stable_baselines3' for its base_class")
 
 
-def pettingzoo_env_to_vec_env(parallel_env, black_death=False):
+def pettingzoo_env_to_vec_env(parallel_env):
     assert isinstance(parallel_env, ParallelEnv), "pettingzoo_env_to_vec_env takes in a pettingzoo ParallelEnv. Can create a parallel_env with pistonball.parallel_env() or convert it from an AEC env with `from pettingzoo.utils.to_parallel import to_parallel; to_parallel(env)``"
-    return MarkovVectorEnv(parallel_env, black_death=black_death)
+    return MarkovVectorEnv(parallel_env)

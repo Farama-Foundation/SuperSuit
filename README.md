@@ -75,13 +75,36 @@ These functions turn plain Gym environments into vectorized environments, for ev
 
 `stable_baselines3_vec_env_v0(env, num_envs, multiprocessing=False)` creates a stable_baselines vector environment with num_envs copies of the environment. If `multiprocessing` is True, SubprocVecEnv is used instead of DummyVecEnv. Needs stable_baselines3 to be installed to work.
 
-`concat_vec_envs_v0(vec_env, num_vec_envs, num_cpus=0, base_class='gym')` takes in an `vec_env` which is vector environment (should not have multithreading enabled). Creates a new vector environment with num_vec_envs copies of that vector environment and runs them on num_cpus as balanced as possible between cpus. `num_cpus=0` means to create 0 new threads, i.e. run the process in an efficient single threaded manner. The fact that it can take in a vector environment means that it can parallelize some Pettingzoo envs by concatenating the environments produced by `pettingzoo_env_to_vec_env_v0`.
+`concat_vec_envs_v0(vec_env, num_vec_envs, num_cpus=0, base_class='gym')` takes in an `vec_env` which is vector environment (should not have multithreading enabled). Creates a new vector environment with `num_vec_envs` copies of that vector environment concatenated together and runs them on `num_cpus` as balanced as possible between cpus. `num_cpus=0` means to create 0 new threads, i.e. run the process in an efficient single threaded manner. A use case for this function is given below. 
 
 ### Parallel Environment vectorization
 
-`pettingzoo_env_to_vec_env_v0(env, black_death=False)`: Takes a PettingZoo ParallelEnv with POSG assumptions: no agent death or generation, homogeneous action and observation spaces. Returns a gym vector environment where each "environment" in the vector represents one agent. An arbitrary PettingZoo parallel environment can be made into a POSG environment by wrapping it with the pad_action_space and pad_observations wrappers, and setting (black_death=True or wrapping with the black_death wrapper). This conversion to a vector environment can be used to train appropriate pettingzoo environments with standard single agent RL methods such as stable baselines's A2C out of box.
+Note that a parallel environment has a similar interface to a vector environment. Give each possible agent a number and the vector of "environments" can just be
 
-So you can for example train pettingzoo's pistonball environment with some code like:
+```
+agent_1
+agent_2
+agent_3
+...
+```
+
+The following function performs this conversion.
+
+`pettingzoo_env_to_vec_env_v0(env)`: Takes a PettingZoo ParallelEnv with the following assumptions: no agent death or generation, homogeneous action and observation spaces. Returns a gym vector environment where each "environment" in the vector represents one agent. An arbitrary PettingZoo parallel environment can be enforced to have these assumptions by wrapping it with the pad_action_space, pad_observations, and the black_death wrapper). This conversion to a vector environment can be used to train appropriate pettingzoo environments with standard single agent RL methods such as stable baselines's A2C out of box (example below).
+
+You can also use the `concat_vec_envs_v0` functionality to train on several vector environments in parallel, forming a vector which looks like
+
+```
+env_1_agent_1
+env_1_agent_2
+env_1_agent_3
+env_2_agent_1
+env_2_agent_2
+env_2_agent_3
+...
+```
+
+So you can for example train 4 copies of pettingzoo's pistonball environment in parallel with some code like:
 
 ```
 from stable_baselines3 import PPO
