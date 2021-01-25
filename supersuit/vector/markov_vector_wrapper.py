@@ -34,7 +34,14 @@ class MarkovVectorEnv(gym.vector.VectorEnv):
         if self.black_death:
             self.obs_buffer[:] = 0
         for i, agent in enumerate(self.par_env.possible_agents):
-            self.obs_buffer[i] = obs_dict[agent]
+            if self.black_death:
+                if agent in obs_dict:
+                    self.obs_buffer[i] = obs_dict[agent]
+            else:
+                if agent not in obs_dict:
+                    raise AssertionError("environment has agent death. Not allowed for pettingzoo_env_to_vec_env_v0 unless black_death is True")
+                self.obs_buffer[i] = obs_dict[agent]
+
         return self.obs_buffer
 
     def step_async(self, actions):
@@ -53,7 +60,7 @@ class MarkovVectorEnv(gym.vector.VectorEnv):
 
         rews = np.array([rewards.get(agent, 0) for agent in self.par_env.possible_agents], dtype=np.float32)
         dns = np.array([dones.get(agent, False) for agent in self.par_env.possible_agents], dtype=np.uint8)
-        infs = [infos[agent] for agent in self.par_env.possible_agents]
+        infs = [infos.get(agent, {}) for agent in self.par_env.possible_agents]
 
         if all(dones.values()):
             observations = self.reset()

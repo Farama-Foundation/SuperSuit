@@ -69,28 +69,28 @@ You can install SuperSuit via `pip install supersuit`
 
 These functions turn plain Gym environments into vectorized environments, for every common vector environment spec.
 
-`gym_vec_env(env, num_envs, multiprocessing=False)` creates a Gym vector environment with `num_envs` copies of the environment. If `multiprocessing` is True, AsyncVectorEnv is used instead of SyncVectorEnv.
+`gym_vec_env_v0(env, num_envs, multiprocessing=False)` creates a Gym vector environment with `num_envs` copies of the environment. If `multiprocessing` is True, AsyncVectorEnv is used instead of SyncVectorEnv.
 
-`stable_baselines_vec_env(env, num_envs, multiprocessing=False)` creates a stable_baselines vector environment with num_envs copies of the environment. If `multiprocessing` is True, SubprocVecEnv is used instead of DummyVecEnv. Needs stable_baselines to be installed to work.
+`stable_baselines_vec_env_v0(env, num_envs, multiprocessing=False)` creates a stable_baselines vector environment with num_envs copies of the environment. If `multiprocessing` is True, SubprocVecEnv is used instead of DummyVecEnv. Needs stable_baselines to be installed to work.
 
-`stable_baselines3_vec_env(env, num_envs, multiprocessing=False)` creates a stable_baselines vector environment with num_envs copies of the environment. If `multiprocessing` is True, SubprocVecEnv is used instead of DummyVecEnv. Needs stable_baselines3 to be installed to work.
+`stable_baselines3_vec_env_v0(env, num_envs, multiprocessing=False)` creates a stable_baselines vector environment with num_envs copies of the environment. If `multiprocessing` is True, SubprocVecEnv is used instead of DummyVecEnv. Needs stable_baselines3 to be installed to work.
 
-`supersuit_vec_env(env, num_envs, num_cpus=0, base_class='gym')` takes in an `env` which can either be a gym environment or a vector environment (should not have multithreading enabled). Creates a new vector environment with num_envs copies of that environment or vector environment and runs them on num_cpus as balanced as possible between cpus. `num_cpus=0` means to create 0 new threads, i.e. run the process in an efficient single threaded manner. The fact that it can take in a vector environment means that it can parallelize POSG Pettingzoo envs by wrapping over the result of `posg_env_to_vec_env`.
+`concat_vec_envs_v0(vec_env, num_vec_envs, num_cpus=0, base_class='gym')` takes in an `vec_env` which is vector environment (should not have multithreading enabled). Creates a new vector environment with num_vec_envs copies of that vector environment and runs them on num_cpus as balanced as possible between cpus. `num_cpus=0` means to create 0 new threads, i.e. run the process in an efficient single threaded manner. The fact that it can take in a vector environment means that it can parallelize some Pettingzoo envs by concatenating the environments produced by `pettingzoo_env_to_vec_env_v0`.
 
 ### Parallel Environment vectorization
 
-`posg_env_to_vec_env(env)`: Takes a PettingZoo ParallelEnv with POSG assumptions: no agent death or generation, homogeneous action and observation spaces. Returns a gym vector environment where each "environment" in the vector represents one agent. An arbitrary PettingZoo parallel environment can be made into a POSG environment by wrapping it with the black_death, pad_action_space and pad_observations wrappers. This mapping to a vector environment can be used to train appropriate pettingzoo environments with standard single agent RL methods such as stable baselines's A2C out of box.
+`pettingzoo_env_to_vec_env_v0(env, black_death=False)`: Takes a PettingZoo ParallelEnv with POSG assumptions: no agent death or generation, homogeneous action and observation spaces. Returns a gym vector environment where each "environment" in the vector represents one agent. An arbitrary PettingZoo parallel environment can be made into a POSG environment by wrapping it with the pad_action_space and pad_observations wrappers, and setting (black_death=True or wrapping with the black_death wrapper). This conversion to a vector environment can be used to train appropriate pettingzoo environments with standard single agent RL methods such as stable baselines's A2C out of box.
 
-So you can for example train pistonball with some code like:
+So you can for example train pettingzoo's pistonball environment with some code like:
 
 ```
 from stable_baselines3 import PPO
 from pettingzoo.butterfly import pistonball_v3
-from supersuit import posg_env_to_vec_env, supersuit_vec_env
+from supersuit import concat_vec_envs_v0, pettingzoo_env_to_vec_env_v0
 
 env = pistonball_v3.parallel_env()
-env = posg_env_to_vec_env(env)
-env = supersuit_vec_env(env, 4, base_class='stable_baselines3')
+env = pettingzoo_env_to_vec_env_v0(env)
+env = concat_vec_envs_v0(env, 4, base_class='stable_baselines3')
 
 model = PPO('CnnPolicy', env, verbose=3, n_steps=16)
 model.learn(total_timesteps=1000000)

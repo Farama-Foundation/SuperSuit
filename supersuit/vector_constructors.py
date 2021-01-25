@@ -33,8 +33,8 @@ def stable_baselines3_vec_env(env, num_envs, multiprocessing=False):
     return constructor(*args)
 
 
-def supersuit_vec_env(env, num_envs, num_cpus=0, base_class='gym'):
-    vec_env = MakeCPUAsyncConstructor(num_cpus)(*vec_env_args(env, num_envs))
+def concat_vec_envs(vec_env, num_vec_envs, num_cpus=0, base_class='gym'):
+    vec_env = MakeCPUAsyncConstructor(num_cpus)(*vec_env_args(vec_env, num_vec_envs))
 
     if base_class == "gym":
         return vec_env
@@ -45,5 +45,6 @@ def supersuit_vec_env(env, num_envs, num_cpus=0, base_class='gym'):
         raise ValueError("supersuit_vec_env only supports 'gym' and 'stable_baselines3' for its base_class")
 
 
-def posg_env_to_vec_env(parallel_env):
-    return MarkovVectorEnv(parallel_env)
+def pettingzoo_env_to_vec_env(parallel_env, black_death=False):
+    assert isinstance(parallel_env, ParallelEnv), "pettingzoo_env_to_vec_env takes in a pettingzoo ParallelEnv. Can create a parallel_env with pistonball.parallel_env() or convert it from an AEC env with `from pettingzoo.utils.to_parallel import to_parallel; to_parallel(env)``"
+    return MarkovVectorEnv(parallel_env, black_death=False)

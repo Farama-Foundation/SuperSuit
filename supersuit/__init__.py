@@ -76,8 +76,8 @@ agent_indicator_v0 = WrapperFactory("agent_indicator", False)
 pad_action_space_v0 = WrapperFactory("pad_action_space", False)
 pad_observations_v0 = WrapperFactory("pad_observations", False)
 
-gym_vec_env = vector_constructors.gym_vec_env
-stable_baselines_vec_env = vector_constructors.stable_baselines_vec_env
-stable_baselines3_vec_env = vector_constructors.stable_baselines3_vec_env
-supersuit_vec_env = vector_constructors.supersuit_vec_env
-posg_env_to_vec_env = vector_constructors.posg_env_to_vec_env
+gym_vec_env_v0 = vector_constructors.gym_vec_env
+stable_baselines_vec_env_v0 = vector_constructors.stable_baselines_vec_env
+stable_baselines3_vec_env_v0 = vector_constructors.stable_baselines3_vec_env
+concat_vec_envs_v0 = vector_constructors.concat_vec_envs
+pettingzoo_env_to_vec_env_v0 = vector_constructors.pettingzoo_env_to_vec_env

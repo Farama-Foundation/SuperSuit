@@ -1,4 +1,4 @@
-from supersuit import supersuit_vec_env, gym_vec_env, stable_baselines3_vec_env, posg_env_to_vec_env
+from supersuit import gym_vec_env_v0, stable_baselines3_vec_env_v0, concat_vec_envs_v0, pettingzoo_env_to_vec_env_v0
 from pettingzoo.mpe import simple_spread_v2
 import gym
 import numpy as np
@@ -30,8 +30,8 @@ def check_vec_env_equivalency(venv1, venv2, check_info=True):
 def test_gym_supersuit_equivalency():
     env = gym.make("Pendulum-v0")
     num_envs = 3
-    venv1 = supersuit_vec_env(env, num_envs)
-    venv2 = gym_vec_env(env, num_envs)
+    venv1 = concat_vec_envs_v0(env, num_envs)
+    venv2 = gym_vec_env_v0(env, num_envs)
     check_vec_env_equivalency(venv1, venv2)
 
 
@@ -46,15 +46,15 @@ def test_gym_supersuit_equivalency():
 def test_mutliproc_single_proc_equivalency():
     env = gym.make("Pendulum-v0")
     num_envs = 3
-    venv1 = supersuit_vec_env(env, num_envs, num_cpus=0)  # uses single threaded vector environment
-    venv2 = supersuit_vec_env(env, num_envs, num_cpus=4)  # uses multiprocessing vector environment
+    venv1 = concat_vec_envs_v0(env, num_envs, num_cpus=0)  # uses single threaded vector environment
+    venv2 = concat_vec_envs_v0(env, num_envs, num_cpus=4)  # uses multiprocessing vector environment
     check_vec_env_equivalency(venv1, venv2)
 
 
 def test_multiagent_mutliproc_single_proc_equivalency():
     env = simple_spread_v2.parallel_env()
-    env = posg_env_to_vec_env(env)
+    env = pettingzoo_env_to_vec_env_v0(env)
     num_envs = 3
-    venv1 = supersuit_vec_env(env, num_envs, num_cpus=0)  # uses single threaded vector environment
-    venv2 = supersuit_vec_env(env, num_envs, num_cpus=4)  # uses multiprocessing vector environment
+    venv1 = concat_vec_envs_v0(env, num_envs, num_cpus=0)  # uses single threaded vector environment
+    venv2 = concat_vec_envs_v0(env, num_envs, num_cpus=4)  # uses multiprocessing vector environment
     check_vec_env_equivalency(venv1, venv2)
