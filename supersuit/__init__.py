@@ -5,6 +5,7 @@ from . import aec_wrappers
 from . import gym_wrappers
 from . import parallel_wrappers
 from . import vector_constructors
+from . import aec_vector
 
 __version__ = "2.4.0"
 
@@ -79,3 +80,4 @@ pad_observations_v0 = WrapperFactory("pad_observations", False)
 gym_vec_env = vector_constructors.gym_vec_env
 stable_baselines_vec_env = vector_constructors.stable_baselines_vec_env
 stable_baselines3_vec_env = vector_constructors.stable_baselines3_vec_env
+vectorize_aec_env_v0 = aec_vector.vectorize_aec_env
