@@ -159,7 +159,7 @@ class black_death(ObservationWrapper):
         return np.zeros_like(self.observation_spaces[agent].low) if agent not in self.env.dones else self.env.observe(agent)
 
     def reset(self):
-        super().reset()
+        self.env.reset()
         self._agent_idx = 0
         self.agent_selection = self.possible_agents[self._agent_idx]
         self.agents = self.possible_agents[:]
@@ -171,20 +171,21 @@ class black_death(ObservationWrapper):
         self.rewards = {}
         self._cumulative_rewards = {}
 
-        _env_finishing = all(self.env.dones.values())
+        _env_finishing = self._agent_idx == len(self.possible_agents) - 1 and all(self.env.dones.values())
 
         for agent in self.agents:
             self.dones[agent] = _env_finishing
             self.rewards[agent] = self.env.rewards.get(agent, 0)
             self.infos[agent] = self.env.infos.get(agent, {})
-            self._cumulative_rewards[agent] = self.env._cumulative_rewards.get(agent, 0) if agent in self.env.rewards else 0
+            self._cumulative_rewards[agent] = self.env._cumulative_rewards.get(agent, 0)
 
     def step(self, action):
         if self.dones[self.agent_selection]:
             return self._was_done_step(action)
 
         cur_agent = self.agent_selection
-        if cur_agent == self.env.agent_selection and cur_agent in self.env.dones:
+        if cur_agent == self.env.agent_selection:
+            assert cur_agent in self.env.dones
             if self.env.dones[cur_agent]:
                 action = None
             self.env.step(action)

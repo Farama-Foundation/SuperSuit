@@ -56,7 +56,7 @@ wrappers = [
     supersuit.frame_stack_v1(knights_archers_zombies_v5.env(), 8),
     supersuit.pad_observations_v0(knights_archers_zombies_v5.env()),
     supersuit.pad_action_space_v0(knights_archers_zombies_v5.env()),
-    supersuit.black_death_v0(knights_archers_zombies_v5.env()),
+    supersuit.black_death_v1(knights_archers_zombies_v5.env()),
     supersuit.agent_indicator_v0(knights_archers_zombies_v5.env(), True),
     supersuit.agent_indicator_v0(knights_archers_zombies_v5.env(), False),
     supersuit.reward_lambda_v0(knights_archers_zombies_v5.env(), lambda x: x / 10),
@@ -81,6 +81,7 @@ parallel_wrappers = [
     supersuit.color_reduction_v0(knights_archers_zombies_v5.parallel_env(), "R"),
     supersuit.frame_skip_v0(knights_archers_zombies_v5.parallel_env(), 4),
     supersuit.max_observation_v0(knights_archers_zombies_v5.parallel_env(), 4),
+    supersuit.black_death_v1(knights_archers_zombies_v5.env()),
 ]
 
 
