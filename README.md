@@ -60,7 +60,7 @@ You can install SuperSuit via `pip install supersuit`
 
 `agent_indicator_v0(env, type_only=False)` Adds an indicator of the agent ID to the observation, only supports discrete and 1D, 2D, and 3D box. For 1d spaces, the agent ID is converted to a 1-hot vector and appended to the observation (increasing the size of the observation space as necessary). 2d and 3d spaces are treated as images (with channels last) and the ID is converted to *n* additional channels with the channel that represents the ID as all 1s and the other channel as all 0s (a sort of one hot encoding). This allows MADRL methods like parameter sharing to learn policies for heterogeneous agents since the policy can tell what agent it's acting on. Set the `type_only` parameter to parse the name of the agent as `<type>_<n>` and have the appended 1-hot vector only identify the type, rather than the specific agent name. This is useful for games where there are many agents in an environment but few types of agents. Agent indication for MADRL was first introduced in *Cooperative Multi-Agent Control Using Deep Reinforcement Learning.*
 
-`black_death_v0(env)` Instead of removing dead actions, observations and rewards are 0 and actions are ignored. This can simplify handling agent death mechanics. The name "black death" does not come from the plague, but from the fact that you see a black image (an image filled with zeros) when you die.
+`black_death_v1(env)` Instead of removing dead actions, observations and rewards are 0 and actions are ignored. This can simplify handling agent death mechanics. The name "black death" does not come from the plague, but from the fact that you see a black image (an image filled with zeros) when you die.
 
 `pad_action_space_v0(env)` pads the action spaces of all agents to be be the same as the biggest, per the algorithm posed in *Parameter Sharing is Surprisingly Useful for Deep Reinforcement Learning*.  This enables MARL methods that require homogeneous action spaces for all agents to work with environments with heterogeneous action spaces. Discrete actions inside the padded region will be set to zero, and Box actions will be cropped down to the original space.
 
@@ -70,11 +70,57 @@ You can install SuperSuit via `pip install supersuit`
 
 These functions turn plain Gym environments into vectorized environments, for every common vector environment spec.
 
-`gym_vec_env(env, num_envs, multiprocessing=False)` creates a Gym vector environment with `num_envs` copies of the environment. If `multiprocessing` is True, AsyncVectorEnv is used instead of SyncVectorEnv.
+`gym_vec_env_v0(env, num_envs, multiprocessing=False)` creates a Gym vector environment with `num_envs` copies of the environment. If `multiprocessing` is True, AsyncVectorEnv is used instead of SyncVectorEnv.
 
-`stable_baselines_vec_env(env, num_envs, multiprocessing=False)` creates a stable_baselines vector environment with num_envs copies of the environment. If `multiprocessing` is True, SubprocVecEnv is used instead of DummyVecEnv. Needs stable_baselines to be installed to work.
+`stable_baselines_vec_env_v0(env, num_envs, multiprocessing=False)` creates a stable_baselines vector environment with num_envs copies of the environment. If `multiprocessing` is True, SubprocVecEnv is used instead of DummyVecEnv. Needs stable_baselines to be installed to work.
 
-`stable_baselines3_vec_env(env, num_envs, multiprocessing=False)` creates a stable_baselines vector environment with num_envs copies of the environment. If `multiprocessing` is True, SubprocVecEnv is used instead of DummyVecEnv. Needs stable_baselines3 to be installed to work.
+`stable_baselines3_vec_env_v0(env, num_envs, multiprocessing=False)` creates a stable_baselines vector environment with num_envs copies of the environment. If `multiprocessing` is True, SubprocVecEnv is used instead of DummyVecEnv. Needs stable_baselines3 to be installed to work.
+
+`concat_vec_envs_v0(vec_env, num_vec_envs, num_cpus=0, base_class='gym')` takes in an `vec_env` which is vector environment (should not have multithreading enabled). Creates a new vector environment with `num_vec_envs` copies of that vector environment concatenated together and runs them on `num_cpus` cpus as balanced as possible between cpus. `num_cpus=0` means to create 0 new threads, i.e. run the process in an efficient single threaded manner. A use case for this function is given below. If the base class of the resulting vector environment matters as it does for stable baselines, you can use the `base_class` parameter to switch between `"gym"` base class and `"stable_baselines3"`'s base class. Note that both have identical functionality.
+
+### Parallel Environment vectorization
+
+Note that a multi-agent environment has a similar interface to a vector environment. Give each possible agent an index in the vector and the vector of agents can be interpreted as a vector of "environments":
+
+```
+agent_1
+agent_2
+agent_3
+...
+```
+
+Where each agent's observation, reward, done, and info will be that environment's data.
+
+The following function performs this conversion.
+
+`pettingzoo_env_to_vec_env_v0(env)`: Takes a PettingZoo ParallelEnv with the following assumptions: no agent death or generation, homogeneous action and observation spaces. Returns a gym vector environment where each "environment" in the vector represents one agent. An arbitrary PettingZoo parallel environment can be enforced to have these assumptions by wrapping it with the pad_action_space, pad_observations, and the black_death wrapper). This conversion to a vector environment can be used to train appropriate pettingzoo environments with standard single agent RL methods such as stable baselines's A2C out of box (example below).
+
+You can also use the `concat_vec_envs_v0` functionality to train on several vector environments in parallel, forming a vector which looks like
+
+```
+env_1_agent_1
+env_1_agent_2
+env_1_agent_3
+env_2_agent_1
+env_2_agent_2
+env_2_agent_3
+...
+```
+
+So you can for example train 4 copies of pettingzoo's pistonball environment in parallel with some code like:
+
+```
+from stable_baselines3 import PPO
+from pettingzoo.butterfly import pistonball_v3
+from supersuit import concat_vec_envs_v0, pettingzoo_env_to_vec_env_v0
+
+env = pistonball_v3.parallel_env()
+env = pettingzoo_env_to_vec_env_v0(env)
+env = concat_vec_envs_v0(env, 4, base_class='stable_baselines3')
+
+model = PPO('CnnPolicy', env, verbose=3, n_steps=16)
+model.learn(total_timesteps=1000000)
+```
 
 `vectorize_aec_env_v0(aec_env, num_envs, num_cpus=0)` creates an AEC Vector env (API documented in source [here](https://github.com/PettingZoo-Team/SuperSuit/blob/master/supersuit/aec_vector/base_aec_vec_env.py)). `num_cpus=0` indicates that the process will run in a single thread. Values of 1 or more will spawn at most that number of processes.  
 

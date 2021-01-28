@@ -1,5 +1,7 @@
 import gym
 import cloudpickle
+from .vector import MakeCPUAsyncConstructor, MarkovVectorEnv
+from pettingzoo.utils.env import AECEnv, ParallelEnv
 
 
 def vec_env_args(env, num_envs):
@@ -29,3 +31,20 @@ def stable_baselines3_vec_env(env, num_envs, multiprocessing=False):
     args = vec_env_args(env, num_envs)[:1]
     constructor = stable_baselines3.common.vec_env.SubprocVecEnv if multiprocessing else stable_baselines3.common.vec_env.DummyVecEnv
     return constructor(*args)
+
+
+def concat_vec_envs(vec_env, num_vec_envs, num_cpus=0, base_class='gym'):
+    vec_env = MakeCPUAsyncConstructor(num_cpus)(*vec_env_args(vec_env, num_vec_envs))
+
+    if base_class == "gym":
+        return vec_env
+    elif base_class == "stable_baselines3":
+        from .vector.sb_vector_wrapper import SB3VecEnvWrapper
+        return SB3VecEnvWrapper(vec_env)
+    else:
+        raise ValueError("supersuit_vec_env only supports 'gym' and 'stable_baselines3' for its base_class")
+
+
+def pettingzoo_env_to_vec_env(parallel_env):
+    assert isinstance(parallel_env, ParallelEnv), "pettingzoo_env_to_vec_env takes in a pettingzoo ParallelEnv. Can create a parallel_env with pistonball.parallel_env() or convert it from an AEC env with `from pettingzoo.utils.to_parallel import to_parallel; to_parallel(env)``"
+    return MarkovVectorEnv(parallel_env)

@@ -72,12 +72,14 @@ sticky_actions_v0 = WrapperFactory("sticky_actions")
 delay_observations_v0 = WrapperFactory("delay_observations")
 max_observation_v0 = WrapperFactory("max_observation")
 
-black_death_v0 = WrapperFactory("black_death", False)
+black_death_v1 = WrapperFactory("black_death", False)
 agent_indicator_v0 = WrapperFactory("agent_indicator", False)
 pad_action_space_v0 = WrapperFactory("pad_action_space", False)
 pad_observations_v0 = WrapperFactory("pad_observations", False)
 
-gym_vec_env = vector_constructors.gym_vec_env
-stable_baselines_vec_env = vector_constructors.stable_baselines_vec_env
-stable_baselines3_vec_env = vector_constructors.stable_baselines3_vec_env
+gym_vec_env_v0 = vector_constructors.gym_vec_env
+stable_baselines_vec_env_v0 = vector_constructors.stable_baselines_vec_env
+stable_baselines3_vec_env_v0 = vector_constructors.stable_baselines3_vec_env
 vectorize_aec_env_v0 = aec_vector.vectorize_aec_env
+concat_vec_envs_v0 = vector_constructors.concat_vec_envs
+pettingzoo_env_to_vec_env_v0 = vector_constructors.pettingzoo_env_to_vec_env

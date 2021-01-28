@@ -123,7 +123,7 @@ wrappers = [
     supersuit.frame_stack_v1(new_dummy(), 8),
     supersuit.pad_observations_v0(new_dummy()),
     supersuit.pad_action_space_v0(new_dummy()),
-    supersuit.black_death_v0(new_dummy()),
+    supersuit.black_death_v1(new_dummy()),
     supersuit.agent_indicator_v0(new_dummy(), True),
     supersuit.agent_indicator_v0(new_dummy(), False),
     supersuit.reward_lambda_v0(new_dummy(), lambda x: x / 10),
