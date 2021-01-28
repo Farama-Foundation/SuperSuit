@@ -81,7 +81,7 @@ parallel_wrappers = [
     supersuit.color_reduction_v0(knights_archers_zombies_v5.parallel_env(), "R"),
     supersuit.frame_skip_v0(knights_archers_zombies_v5.parallel_env(), 4),
     supersuit.max_observation_v0(knights_archers_zombies_v5.parallel_env(), 4),
-    supersuit.black_death_v1(knights_archers_zombies_v5.env()),
+    supersuit.black_death_v1(knights_archers_zombies_v5.parallel_env()),
 ]
 
 
