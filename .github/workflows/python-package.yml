@@ -26,13 +26,13 @@ jobs:
     - name: Install dependencies
       run: |
         pip install -r requirements.txt
-        pip install flake8 pytest
+        pip install flake8 pytest pettingzoo[classic]
     - name: Lint with flake8
       run: |
         pytest
     - name: Test with pytest
       run: |
-        flake8 supersuit/ --ignore E501,E402,F401
+        flake8 supersuit/ --ignore E501,E402,F401,E203
         flake8 test/ --ignore E501,E402,F401,F841
     - name: Test installation
       run: |

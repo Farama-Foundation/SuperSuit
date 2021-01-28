@@ -47,13 +47,14 @@ You can install SuperSuit via `pip install supersuit`
 
 `frame_stack_v1(env, num_frames=4)` stacks the most recent frames. For vector games observed via plain vectors (1D arrays), the output is just concatenated to a longer 1D array. 2D or 3D arrays are stacked to be taller 3D arrays. At the start of the game, frames that don't yet exist are filled with 0s. `num_frames=1` is analogous to not using this function.
 
+`max_observation_v0(env, memory)` the resulting observation becomes the max over `memory` number of prior frames. This is important for Atari environments, as many games have elements that are intermitently flashed on the instead of being constant, due to the peculiarities of the console and CRT TVs. The OpenAI baselines MaxAndSkip Atari wrapper is equivalent to doing `memory=2` and then a  `frame_skip` of 4.
+
 `normalize_obs_v0(env, env_min=0, env_max=1)` linearly scales observations to the range `env_min` (default 1) to `env_max` (default 0), given the known minimum and maximum observation values defined in the observation space. Only works on Box observations with float32 or float64 dtypes and finite bounds. If you wish to normalize another type, you can first apply the dtype wrapper to convert your type to float32 or float64.
 
 `reshape_v0(env, shape)` reshapes observations into given shape.
 
 `resize_v0(env, x_size, y_size, linear_interp=False)` Performs interpolation to up-size or down-size observation image using area interpolation by default. Linear interpolation is also available by setting `linear_interp=True` (it's faster and better for up-sizing). This wrapper is only available for 2D or 3D observations, and only makes sense if the observation is an image.
 
-`max_observation_v0(env, memory)` the resulting observation becomes the max over `memory` number of prior frames. This is important for Atari environments, as many games have elements that are intermitently flashed on the instead of being constant, due to the peculiarities of the console and CRT TVs. The OpenAI baselines MaxAndSkip Atari wrapper is equivalent to doing `memory=2` and then a  `frame_skip` of 4.
 
 ## Included Multi-Agent Only Functions
 
@@ -121,6 +122,8 @@ model = PPO('CnnPolicy', env, verbose=3, n_steps=16)
 model.learn(total_timesteps=1000000)
 ```
 
+`vectorize_aec_env_v0(aec_env, num_envs, num_cpus=0)` creates an AEC Vector env (API documented in source [here](https://github.com/PettingZoo-Team/SuperSuit/blob/master/supersuit/aec_vector/base_aec_vec_env.py)). `num_cpus=0` indicates that the process will run in a single thread. Values of 1 or more will spawn at most that number of processes.  
+
 #### Note on multiprocessing
 Turning on multiprocessing runs each environment in it's own process. Turning this on is typically much slower for fast environments (like card games), but much faster for slow environments (like robotics simulations). Determining which case you are will require testing.
 
@@ -162,61 +165,6 @@ env = action_lambda_v0(env,
     lambda action, act_space : one_hot(action, act_space.shape[0]),
     lambda act_space : gym.spaces.Discrete(act_space.shape[0]))
 ```
-
-## Release History
-
-Version 2.4.0 (January 13, 2021):
-
-Removed cyclically_expansive_learning wrapper, removed extraneous print statement from frame_skip wrapper.
-
-Version 2.3.1 (January 10, 2021):
-
-Added max_observation wrapper for Atari games. Added cyclically_expansive_learning wrapper. Allowed dtype to accept strings.
-
-Version 2.3.0 (December 27, 2020):
-
-Fixed parallel frame skip wrapper and added black_death wrapper.
-
-Version 2.2.0 (November 6, 2020):
-
-Made multi-agent environments compatible with PettingZoo version 1.4.0, enforced flake8.
-
-Version 2.1.1 (October 14, 2020):
-
-Fixed argument name to frame_skip.
-
-Version 2.1.0 (September 12, 2020):
-
-Fixed bug in AEC frame_stack wrapper, bumped version of frame_stack.
-
-Version 2.0.2 (September 12, 2020):
-
-Fixed installation issue in setup.py.
-
-Version 2.0.1 (September 11, 2020):
-
-Switched image resizing backend from lycon to opencv.
-
-Version 2.0.0 (September 8, 2020):
-
-Added versioning to wrappers. Wrappers are now named `<wrapper>_v0`, for example `dtype_v0`. Note that this will break all imports!
-Fixed `frame_skip` wrapper. Bumped required PettingZoo version to upstream fixes in PettingZoo's AgentIterWrapper.
-
-Version 1.2.0 (August 21, 2020):
-
-Added support for pettingzoo ParallelEnv. Fixed delay_observations API issue.
-
-Version 1.1.2 (August 19th, 2020):
-
-Fix pip installation bug
-
-Version 1.1.0 (August 17th, 2020):
-
-Adds action clipping
-
-Version 1.0.0 (August 5th, 2020):
-
-This is the first official stable release of SuperSuit. We don't have any further features planned at this time, but we're going to keep maintaining it and adding functionality as new things become standard.
 
 ## Citation
 
