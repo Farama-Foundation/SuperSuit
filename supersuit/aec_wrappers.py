@@ -159,7 +159,7 @@ class black_death(ObservationWrapper):
         return np.zeros_like(self.observation_spaces[agent].low) if agent not in self.env.dones else self.env.observe(agent)
 
     def reset(self):
-        self.env.reset()
+        super().reset()
         self._agent_idx = 0
         self.agent_selection = self.possible_agents[self._agent_idx]
         self.agents = self.possible_agents[:]
