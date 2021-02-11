@@ -33,10 +33,11 @@ def test_env_black_death_assertion():
     env = knights_archers_zombies_v6.parallel_env(spawn_rate=50, max_cycles=2000)
     env = pettingzoo_env_to_vec_env_v0(env)
     with pytest.raises(AssertionError):
-        env.reset()
-        for i in range(2000):
-            actions = [env.action_space.sample() for i in range(env.num_envs)]
-            obss, rews, dones, infos = env.step(actions)
+        for i in range(100):
+            env.reset()
+            for i in range(2000):
+                actions = [env.action_space.sample() for i in range(env.num_envs)]
+                obss, rews, dones, infos = env.step(actions)
 
 
 def test_env_black_death_wrapper():
