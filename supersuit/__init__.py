@@ -7,7 +7,7 @@ from . import parallel_wrappers
 from . import vector_constructors
 from . import aec_vector
 
-__version__ = "2.5.0"
+__version__ = "2.5.1"
 
 
 class WrapperFactory:
