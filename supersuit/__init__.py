@@ -72,6 +72,7 @@ sticky_actions_v0 = WrapperFactory("sticky_actions")
 delay_observations_v0 = WrapperFactory("delay_observations")
 max_observation_v0 = WrapperFactory("max_observation")
 
+black_death_v0 = Depreciated("black_death", "v0", "v1")
 black_death_v1 = WrapperFactory("black_death", False)
 agent_indicator_v0 = WrapperFactory("agent_indicator", False)
 pad_action_space_v0 = WrapperFactory("pad_action_space", False)
