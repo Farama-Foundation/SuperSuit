@@ -1,8 +1,8 @@
-from stable_baselines.common.vec_env.base_vec_env import VecEnv
+from stable_baselines3.common.vec_env.base_vec_env import VecEnv
 import warnings
 
 
-class SBVecEnvWrapper(VecEnv):
+class SB3VecEnvWrapper(VecEnv):
     def __init__(self, venv):
         self.venv = venv
         self.num_envs = venv.num_envs
