@@ -1,5 +1,5 @@
 import gym
-from pettingzoo.utils.to_parallel import to_parallel, ParallelEnv, from_parallel
+from pettingzoo.utils.conversions import to_parallel, ParallelEnv, from_parallel
 from pettingzoo.utils.env import AECEnv
 from . import aec_wrappers
 from . import gym_wrappers

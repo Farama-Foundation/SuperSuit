@@ -42,7 +42,7 @@ def test_pettingzoo_pad_action_space():
 def test_pettingzoo_parallel_env():
     _env = simple_world_comm_v2.parallel_env()
     wrapped_env = pad_action_space_v0(_env)
-    parallel_test.parallel_play_test(wrapped_env)
+    parallel_test.parallel_api_test(wrapped_env)
 
 
 wrappers = [
@@ -87,4 +87,4 @@ parallel_wrappers = [
 
 @pytest.mark.parametrize("env", parallel_wrappers)
 def test_pettingzoo_parallel_api(env):
-    parallel_test.parallel_play_test(env)
+    parallel_test.parallel_api_test(env)
