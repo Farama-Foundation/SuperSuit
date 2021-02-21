@@ -1,4 +1,4 @@
-from pettingzoo.utils.to_parallel import ParallelEnv
+from pettingzoo.utils import ParallelEnv
 from gym.spaces import Box, Discrete
 import numpy as np
 import supersuit
