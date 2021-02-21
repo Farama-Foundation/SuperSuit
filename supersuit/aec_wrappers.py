@@ -180,6 +180,7 @@ class black_death(ObservationWrapper):
             self._cumulative_rewards[agent] = self.env._cumulative_rewards.get(agent, 0)
 
     def step(self, action):
+        self._has_updated = True
         if self.dones[self.agent_selection]:
             return self._was_done_step(action)
 
@@ -327,6 +328,7 @@ class frame_skip(StepAltWrapper):
         return fin_observe if fin_observe is not None else super().observe(agent)
 
     def step(self, action):
+        self._has_updated = True
         if self.dones[self.agent_selection]:
             if self.env.agents and self.agent_selection == self.env.agent_selection:
                 self.env.step(None)

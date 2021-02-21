@@ -1,4 +1,4 @@
-from pettingzoo.utils.to_parallel import ParallelEnv
+from pettingzoo.utils.conversions import ParallelEnv
 import gym
 from gym.spaces import Box, Discrete
 from .adv_transforms.frame_stack import stack_obs_space, stack_init, stack_obs

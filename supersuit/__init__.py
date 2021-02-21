@@ -1,5 +1,5 @@
 import gym
-from pettingzoo.utils.to_parallel import to_parallel, ParallelEnv, from_parallel
+from pettingzoo.utils.conversions import to_parallel, ParallelEnv, from_parallel
 from pettingzoo.utils.env import AECEnv
 from . import aec_wrappers
 from . import gym_wrappers
@@ -7,7 +7,7 @@ from . import parallel_wrappers
 from . import vector_constructors
 from . import aec_vector
 
-__version__ = "2.5.1"
+__version__ = "2.6.0"
 
 
 class WrapperFactory:
