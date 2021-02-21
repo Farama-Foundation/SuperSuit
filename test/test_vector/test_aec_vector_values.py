@@ -1,7 +1,7 @@
 from supersuit import vectorize_aec_env_v0
 from pettingzoo.classic import rps_v1
 from pettingzoo.classic import mahjong_v2, hanabi_v3
-from pettingzoo.butterfly import knights_archers_zombies_v6
+from pettingzoo.butterfly import knights_archers_zombies_v7
 from pettingzoo.mpe import simple_world_comm_v2
 from pettingzoo.classic import chess_v0
 import numpy as np
@@ -67,5 +67,5 @@ def test_all():
         test_vec_env(vectorize_aec_env_v0(mahjong_maker(), NUM_ENVS, num_cpus=num_cpus))
         test_infos(vectorize_aec_env_v0(hanabi_maker(), NUM_ENVS, num_cpus=num_cpus))
         test_some_done(vectorize_aec_env_v0(mahjong_maker(), NUM_ENVS, num_cpus=num_cpus))
-        test_vec_env(vectorize_aec_env_v0(knights_archers_zombies_v6.env(), NUM_ENVS, num_cpus=num_cpus))
+        test_vec_env(vectorize_aec_env_v0(knights_archers_zombies_v7.env(), NUM_ENVS, num_cpus=num_cpus))
         test_vec_env(vectorize_aec_env_v0(simple_world_comm_v2.env(), NUM_ENVS, num_cpus=num_cpus))
