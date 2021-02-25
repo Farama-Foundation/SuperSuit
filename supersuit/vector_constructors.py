@@ -49,5 +49,5 @@ def concat_vec_envs(vec_env, num_vec_envs, num_cpus=0, base_class='gym'):
 
 
 def pettingzoo_env_to_vec_env(parallel_env):
-    assert isinstance(parallel_env, ParallelEnv), "pettingzoo_env_to_vec_env takes in a pettingzoo ParallelEnv. Can create a parallel_env with pistonball.parallel_env() or convert it from an AEC env with `from pettingzoo.utils.to_parallel import to_parallel; to_parallel(env)``"
+    assert isinstance(parallel_env, ParallelEnv), "pettingzoo_env_to_vec_env takes in a pettingzoo ParallelEnv. Can create a parallel_env with pistonball.parallel_env() or convert it from an AEC env with `from pettingzoo.utils.conversions import to_parallel; to_parallel(env)``"
     return MarkovVectorEnv(parallel_env)
