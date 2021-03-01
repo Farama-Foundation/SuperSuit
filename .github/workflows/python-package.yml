@@ -25,7 +25,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install ubuntu dependencies
       run: |
-        apt-get install python-opengl
+        sudo apt-get install python-opengl
     - name: Install python dependencies
       run: |
         pip install -r requirements.txt
