@@ -15,6 +15,7 @@ class MarkovVectorEnv(gym.vector.VectorEnv):
         rewards, dones, etc, and will reset environment automatically when it finishes
         """
         self.par_env = par_env
+        self.metadata = par_env.metadata
         self.observation_space = list(par_env.observation_spaces.values())[0]
         self.action_space = list(par_env.action_spaces.values())[0]
         assert all(
@@ -70,3 +71,6 @@ class MarkovVectorEnv(gym.vector.VectorEnv):
             self.black_death or self.par_env.agents == self.par_env.possible_agents
         ), "MarkovVectorEnv does not support environments with varying numbers of active agents unless black_death is set to True"
         return observations, rews, dns, infs
+
+    def render(self, mode="human"):
+        return self.par_env.render(mode)

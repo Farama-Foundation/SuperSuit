@@ -19,7 +19,7 @@ def decompress_info(num_envs, idx_starts, comp_infos):
     return all_info
 
 
-def async_loop(vec_env_constr, pipe, shared_obs, shared_actions, shared_rews, shared_dones):
+def async_loop(vec_env_constr, pipe, shared_obs, shared_actions, shared_rews, shared_dones, shared_renders):
     try:
         vec_env = vec_env_constr()
 
@@ -45,6 +45,10 @@ def async_loop(vec_env_constr, pipe, shared_obs, shared_actions, shared_rews, sh
                 name, data = instr
                 if name == "seed":
                     vec_env.seed(data)
+                elif name == "render":
+                    render_result = vec_env.render(data)
+                    if shared_renders is not None:
+                        shared_renders.np_arr[:] = render_result
                 comp_infos = []
             elif instr == "terminate":
                 return
@@ -55,23 +59,28 @@ def async_loop(vec_env_constr, pipe, shared_obs, shared_actions, shared_rews, sh
 
 
 class ProcConcatVec(gym.vector.VectorEnv):
-    def __init__(self, vec_env_constrs, observation_space, action_space, tot_num_envs):
+    def __init__(self, vec_env_constrs, observation_space, action_space, tot_num_envs, metadata, render_shape):
         self.observation_space = observation_space
         self.action_space = action_space
         self.num_envs = num_envs = tot_num_envs
+        self.metadata = metadata
+        self.render_shape = render_shape
 
         self.shared_obs = SharedArray((num_envs,) + self.observation_space.shape, dtype=self.observation_space.dtype)
         act_space_wrap = SpaceWrapper(self.action_space)
         self.shared_act = SharedArray((num_envs,) + act_space_wrap.shape, dtype=act_space_wrap.dtype)
         self.shared_rews = SharedArray((num_envs,), dtype=np.float32)
         self.shared_dones = SharedArray((num_envs,), dtype=np.uint8)
+        self.shared_renders = None
+        if self.render_shape:
+            self.shared_renders = SharedArray(self.render_shape, dtype=np.uint8)
 
         pipes = []
         procs = []
         for constr in vec_env_constrs:
             inpt, outpt = mp.Pipe()
             proc = mp.Process(
-                target=async_loop, args=(constr, outpt, self.shared_obs, self.shared_act, self.shared_rews, self.shared_dones)
+                target=async_loop, args=(constr, outpt, self.shared_obs, self.shared_act, self.shared_rews, self.shared_dones, self.shared_renders)
             )
             proc.start()
             pipes.append(inpt)
@@ -143,3 +152,10 @@ class ProcConcatVec(gym.vector.VectorEnv):
                 pass
         for proc in self.procs:
             proc.join()
+
+    def render(self, mode="human"):
+        self.pipes[0].send(("render", mode))
+
+        self._receive_info()
+        if mode == "rgb_array":
+            return self.shared_renders.np_arr
