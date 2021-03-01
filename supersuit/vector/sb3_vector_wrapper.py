@@ -35,3 +35,6 @@ class SB3VecEnvWrapper(VecEnv):
 
     def env_method(self, method_name, *method_args, indices=None, **method_kwargs):
         raise NotImplementedError()
+
+    def env_is_wrapped(self, wrapper_class, indices):
+        raise NotImplementedError()
