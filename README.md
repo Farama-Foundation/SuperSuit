@@ -111,15 +111,16 @@ So you can for example train 4 copies of pettingzoo's pistonball environment in 
 
 ```
 from stable_baselines3 import PPO
-from pettingzoo.butterfly import pistonball_v3
-from supersuit import concat_vec_envs_v0, pettingzoo_env_to_vec_env_v0
-
-env = pistonball_v3.parallel_env()
-env = pettingzoo_env_to_vec_env_v0(env)
-env = concat_vec_envs_v0(env, 4, base_class='stable_baselines3')
-
+from pettingzoo.butterfly import pistonball_v4
+import supersuit as ss
+env = pistonball_v4.parallel_env()
+env = ss.color_reduction_v0(env, mode='B')
+env = ss.resize_v0(env, x_size=84, y_size=84)
+env = ss.frame_stack_v1(env, 3)
+env = ss.pettingzoo_env_to_vec_env_v0(env)
+env = ss.concat_vec_envs_v0(env, 8, num_cpus=4, base_class='stable_baselines3')
 model = PPO('CnnPolicy', env, verbose=3, n_steps=16)
-model.learn(total_timesteps=1000000)
+model.learn(total_timesteps=2000000)
 ```
 
 `vectorize_aec_env_v0(aec_env, num_envs, num_cpus=0)` creates an AEC Vector env (API documented in source [here](https://github.com/PettingZoo-Team/SuperSuit/blob/master/supersuit/aec_vector/base_aec_vec_env.py)). `num_cpus=0` indicates that the process will run in a single thread. Values of 1 or more will spawn at most that number of processes.  
