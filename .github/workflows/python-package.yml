@@ -23,7 +23,10 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
+    - name: Install ubuntu dependencies
+      run: |
+        apt-get install python-opengl
+    - name: Install python dependencies
       run: |
         pip install -r requirements.txt
         pip install flake8 pytest pettingzoo[classic]
