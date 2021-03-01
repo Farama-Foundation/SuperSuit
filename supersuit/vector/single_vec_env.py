@@ -8,6 +8,7 @@ class SingleVecEnv:
         self.observation_space = self.gym_env.observation_space
         self.action_space = self.gym_env.action_space
         self.num_envs = 1
+        self.metadata = self.gym_env.metadata
 
     def reset(self):
         return np.expand_dims(self.gym_env.reset(), 0)
