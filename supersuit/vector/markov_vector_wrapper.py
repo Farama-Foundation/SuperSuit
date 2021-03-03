@@ -74,3 +74,6 @@ class MarkovVectorEnv(gym.vector.VectorEnv):
 
     def render(self, mode="human"):
         return self.par_env.render(mode)
+
+    def close(self):
+        return self.par_env.close()

@@ -61,3 +61,7 @@ class ConcatVecEnv(gym.vector.VectorEnv):
 
     def render(self, mode="human"):
         return self.vec_envs[0].render(mode)
+
+    def close(self):
+        for vec_env in self.vec_envs:
+            vec_env.close()

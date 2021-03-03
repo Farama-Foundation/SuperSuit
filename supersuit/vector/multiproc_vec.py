@@ -28,12 +28,12 @@ def async_loop(vec_env_constr, pipe, shared_obs, shared_actions, shared_rews, sh
         env_end_idx = env_start_idx + vec_env.num_envs
         while True:
             instr = pipe.recv()
+            comp_infos = []
             if instr == "reset":
                 obs = vec_env.reset()
                 shared_obs.np_arr[env_start_idx:env_end_idx] = obs
                 shared_dones.np_arr[env_start_idx:env_end_idx] = False
                 shared_rews.np_arr[env_start_idx:env_end_idx] = 0.0
-                comp_infos = []
             elif instr == "step":
                 actions = shared_actions.np_arr[env_start_idx:env_end_idx]
                 observations, rewards, dones, infos = vec_env.step(actions)
@@ -41,15 +41,16 @@ def async_loop(vec_env_constr, pipe, shared_obs, shared_actions, shared_rews, sh
                 shared_dones.np_arr[env_start_idx:env_end_idx] = dones
                 shared_rews.np_arr[env_start_idx:env_end_idx] = rewards
                 comp_infos = compress_info(infos)
+            elif instr == "close":
+                vec_env.close()
             elif isinstance(instr, tuple):
                 name, data = instr
                 if name == "seed":
                     vec_env.seed(data)
                 elif name == "render":
                     render_result = vec_env.render(data)
-                    if shared_renders is not None:
+                    if shared_renders is not None and data == "rgb_array":
                         shared_renders.np_arr[:] = render_result
-                comp_infos = []
             elif instr == "terminate":
                 return
             pipe.send(comp_infos)
@@ -159,3 +160,14 @@ class ProcConcatVec(gym.vector.VectorEnv):
         self._receive_info()
         if mode == "rgb_array":
             return self.shared_renders.np_arr
+
+    def close(self):
+        self.pipes[0].send("close")
+        for pipe in self.pipes:
+            try:
+                pipe.send("terminate")
+            except BrokenPipeError:
+                pass
+        for proc in self.procs:
+            proc.join()
+
