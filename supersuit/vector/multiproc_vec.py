@@ -170,4 +170,3 @@ class ProcConcatVec(gym.vector.VectorEnv):
                 pass
         for proc in self.procs:
             proc.join()
-
