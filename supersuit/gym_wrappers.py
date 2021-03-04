@@ -225,7 +225,7 @@ class action_lambda(ActionWrapper):
     def _modify_spaces(self):
         new_space = self.change_space_fn(self.action_space)
         assert isinstance(new_space, Space), "output of change_space_fn argument to action_lambda_wrapper must be a gym space"
-        self.action_spaces = new_space
+        self.action_space = new_space
 
     def _modify_action(self, action):
         return self.change_action_fn(action, self.env.action_space)

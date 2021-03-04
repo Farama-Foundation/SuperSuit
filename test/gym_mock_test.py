@@ -106,6 +106,7 @@ def test_action_lambda():
 
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
     env = action_lambda_v0(base_env, inc1, change_space_fn)
+    assert env.action_space.n == base_env.action_space.n + 1
     env.reset()
     env.step(5)
 
