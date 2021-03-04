@@ -23,14 +23,17 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
+    - name: Install ubuntu dependencies
+      run: |
+        sudo apt-get install python-opengl xvfb
+    - name: Install python dependencies
       run: |
         pip install -r requirements.txt
         pip install flake8 pytest pettingzoo[classic]
-    - name: Lint with flake8
-      run: |
-        pytest
     - name: Test with pytest
+      run: |
+        xvfb-run -s "-screen 0 1400x900x24" pytest
+    - name: Lint with flake8
       run: |
         flake8 supersuit/ --ignore E501,E402,F401,E203
         flake8 test/ --ignore E501,E402,F401,F841

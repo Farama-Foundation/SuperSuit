@@ -13,6 +13,7 @@ class ConcatVecEnv(gym.vector.VectorEnv):
         for i in range(len(vec_envs)):
             if not hasattr(vec_envs[i], "num_envs"):
                 vec_envs[i] = SingleVecEnv([lambda: vec_envs[i]])
+        self.metadata = self.vec_envs[0].metadata
         self.observation_space = vec_envs[0].observation_space
         self.action_space = vec_envs[0].action_space
         tot_num_envs = sum(env.num_envs for env in vec_envs)
@@ -57,3 +58,10 @@ class ConcatVecEnv(gym.vector.VectorEnv):
         dones = np.concatenate(dones, axis=0)
         infos = sum(infos, [])
         return observations, rewards, dones, infos
+
+    def render(self, mode="human"):
+        return self.vec_envs[0].render(mode)
+
+    def close(self):
+        for vec_env in self.vec_envs:
+            vec_env.close()

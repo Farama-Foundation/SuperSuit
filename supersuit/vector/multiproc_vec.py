@@ -19,7 +19,7 @@ def decompress_info(num_envs, idx_starts, comp_infos):
     return all_info
 
 
-def async_loop(vec_env_constr, pipe, shared_obs, shared_actions, shared_rews, shared_dones):
+def async_loop(vec_env_constr, pipe, shared_obs, shared_actions, shared_rews, shared_dones, shared_renders):
     try:
         vec_env = vec_env_constr()
 
@@ -28,12 +28,12 @@ def async_loop(vec_env_constr, pipe, shared_obs, shared_actions, shared_rews, sh
         env_end_idx = env_start_idx + vec_env.num_envs
         while True:
             instr = pipe.recv()
+            comp_infos = []
             if instr == "reset":
                 obs = vec_env.reset()
                 shared_obs.np_arr[env_start_idx:env_end_idx] = obs
                 shared_dones.np_arr[env_start_idx:env_end_idx] = False
                 shared_rews.np_arr[env_start_idx:env_end_idx] = 0.0
-                comp_infos = []
             elif instr == "step":
                 actions = shared_actions.np_arr[env_start_idx:env_end_idx]
                 observations, rewards, dones, infos = vec_env.step(actions)
@@ -41,11 +41,16 @@ def async_loop(vec_env_constr, pipe, shared_obs, shared_actions, shared_rews, sh
                 shared_dones.np_arr[env_start_idx:env_end_idx] = dones
                 shared_rews.np_arr[env_start_idx:env_end_idx] = rewards
                 comp_infos = compress_info(infos)
+            elif instr == "close":
+                vec_env.close()
             elif isinstance(instr, tuple):
                 name, data = instr
                 if name == "seed":
                     vec_env.seed(data)
-                comp_infos = []
+                elif name == "render":
+                    render_result = vec_env.render(data)
+                    if shared_renders is not None and data == "rgb_array":
+                        shared_renders.np_arr[:] = render_result
             elif instr == "terminate":
                 return
             pipe.send(comp_infos)
@@ -55,23 +60,28 @@ def async_loop(vec_env_constr, pipe, shared_obs, shared_actions, shared_rews, sh
 
 
 class ProcConcatVec(gym.vector.VectorEnv):
-    def __init__(self, vec_env_constrs, observation_space, action_space, tot_num_envs):
+    def __init__(self, vec_env_constrs, observation_space, action_space, tot_num_envs, metadata, render_shape):
         self.observation_space = observation_space
         self.action_space = action_space
         self.num_envs = num_envs = tot_num_envs
+        self.metadata = metadata
+        self.render_shape = render_shape
 
         self.shared_obs = SharedArray((num_envs,) + self.observation_space.shape, dtype=self.observation_space.dtype)
         act_space_wrap = SpaceWrapper(self.action_space)
         self.shared_act = SharedArray((num_envs,) + act_space_wrap.shape, dtype=act_space_wrap.dtype)
         self.shared_rews = SharedArray((num_envs,), dtype=np.float32)
         self.shared_dones = SharedArray((num_envs,), dtype=np.uint8)
+        self.shared_renders = None
+        if self.render_shape:
+            self.shared_renders = SharedArray(self.render_shape, dtype=np.uint8)
 
         pipes = []
         procs = []
         for constr in vec_env_constrs:
             inpt, outpt = mp.Pipe()
             proc = mp.Process(
-                target=async_loop, args=(constr, outpt, self.shared_obs, self.shared_act, self.shared_rews, self.shared_dones)
+                target=async_loop, args=(constr, outpt, self.shared_obs, self.shared_act, self.shared_rews, self.shared_dones, self.shared_renders)
             )
             proc.start()
             pipes.append(inpt)
@@ -136,6 +146,23 @@ class ProcConcatVec(gym.vector.VectorEnv):
         self._receive_info()
 
     def __del__(self):
+        for pipe in self.pipes:
+            try:
+                pipe.send("terminate")
+            except BrokenPipeError:
+                pass
+        for proc in self.procs:
+            proc.join()
+
+    def render(self, mode="human"):
+        self.pipes[0].send(("render", mode))
+
+        self._receive_info()
+        if mode == "rgb_array":
+            return self.shared_renders.np_arr
+
+    def close(self):
+        self.pipes[0].send("close")
         for pipe in self.pipes:
             try:
                 pipe.send("terminate")
