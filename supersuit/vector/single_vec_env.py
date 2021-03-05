@@ -25,6 +25,9 @@ class SingleVecEnv:
     def render(self, mode="human"):
         return self.gym_env.render(mode)
 
+    def close(self):
+        self.gym_env.close()
+
     def step(self, actions):
         observations, reward, done, info = self.gym_env.step(actions[0])
         if done:

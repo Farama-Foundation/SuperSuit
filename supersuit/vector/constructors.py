@@ -12,7 +12,7 @@ class call_wrap:
 
 
 def MakeCPUAsyncConstructor(max_num_cpus):
-    if max_num_cpus == 0:
+    if max_num_cpus == 0 or max_num_cpus == 1:
         return ConcatVecEnv
     else:
 

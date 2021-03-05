@@ -162,11 +162,7 @@ class ProcConcatVec(gym.vector.VectorEnv):
             return self.shared_renders.np_arr
 
     def close(self):
-        self.pipes[0].send("close")
         for pipe in self.pipes:
-            try:
-                pipe.send("terminate")
-            except BrokenPipeError:
-                pass
+            pipe.send("close")
         for proc in self.procs:
             proc.join()
