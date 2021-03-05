@@ -321,7 +321,7 @@ class AsyncAECVectorEnv(VectorAECEnv):
 
         assert not np.all(passes), "something went wrong with finding agent"
         if np.any(passes) or self.order_is_nondeterministic:
-            warnings.warn("agent order of environment is werid, so the ProcVectorEnv has to do more work, expect it to be slower than expected")
+            warnings.warn("The agent order of sub-environments of ProcVectorEnv differs, likely due to agent death. The ProcVectorEnv only returns one agent at a time, so it will now 'pass' environments where the current agent is not active, taking up to O(n) more time")
             self.order_is_nondeterministic = True
 
         self.dones = {agent: self.copy(self.shared_datas[agent].dones.np_arr) for agent in self.possible_agents}
