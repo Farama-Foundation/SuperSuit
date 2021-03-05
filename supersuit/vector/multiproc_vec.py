@@ -156,8 +156,8 @@ class ProcConcatVec(gym.vector.VectorEnv):
 
     def render(self, mode="human"):
         self.pipes[0].send(("render", mode))
+        self.pipes[0].recv()
 
-        self._receive_info()
         if mode == "rgb_array":
             return self.shared_renders.np_arr
 

@@ -22,6 +22,9 @@ class SingleVecEnv:
     def seed(self, seed=None):
         self.gym_env.seed(seed)
 
+    def render(self, mode="human"):
+        return self.gym_env.render(mode)
+
     def step(self, actions):
         observations, reward, done, info = self.gym_env.step(actions[0])
         if done:
