@@ -164,5 +164,5 @@ class ProcConcatVec(gym.vector.VectorEnv):
     def close(self):
         for pipe in self.pipes:
             pipe.send("close")
-        for proc in self.procs:
-            proc.join()
+        for pipe in self.pipes:
+            pipe.recv()
