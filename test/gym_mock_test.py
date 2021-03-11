@@ -5,7 +5,7 @@ from supersuit import (
     frame_stack_v1,
     reshape_v0,
     observation_lambda_v0,
-    action_lambda_v0,
+    action_lambda_v1,
     dtype_v0,
 )
 import supersuit
@@ -105,7 +105,7 @@ def test_action_lambda():
         return Discrete(space.n + 1)
 
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
-    env = action_lambda_v0(base_env, inc1, change_space_fn)
+    env = action_lambda_v1(base_env, inc1, change_space_fn)
     assert env.action_space.n == base_env.action_space.n + 1
     env.reset()
     env.step(5)
@@ -117,7 +117,7 @@ def test_action_lambda():
 
     act_spaces = Box(low=0, high=1, shape=(15,))
     base_env = DummyEnv(base_obs, base_obs_space, act_spaces)
-    env = action_lambda_v0(
+    env = action_lambda_v1(
         base_env,
         lambda action, act_space: one_hot(action, act_space.shape[0]),
         lambda act_space: Discrete(act_space.shape[0]),
