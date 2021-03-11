@@ -132,7 +132,7 @@ Turning on multiprocessing runs each environment in it's own process. Turning th
 
 If none of the included in micro-wrappers are suitable for your needs, you can use a lambda function (or submit a PR).
 
-`action_lambda_v0(env, change_action_fn, change_space_fn)` allows you to define arbitrary changes to the actions via `change_action_fn(action, space) : action` and to the action spaces with `change_space_fn(action_space) : action_space`. Remember that you are transforming the actions received by the wrapper to the actions expected by the base environment.
+`action_lambda_v1(env, change_action_fn, change_space_fn)` allows you to define arbitrary changes to the actions via `change_action_fn(action, space) : action` and to the action spaces with `change_space_fn(action_space) : action_space`. Remember that you are transforming the actions received by the wrapper to the actions expected by the base environment.
 
 `observation_lambda_v0(env, observation_fn, observation_space_fn=None)` allows you to define arbitrary changes to the via `observation_fn(observation) : observation`, and `observation_space_fn(obs_space) : obs_space`. For Box-Box transformations the space transformation will be inferred from `change_observation_fn` if `change_obs_space_fn=None` by passing the `high` and `low` bounds through the `observation_space_fn`.
 
@@ -162,7 +162,7 @@ def one_hot(x,n):
     v[x] = 1
     return v
 
-env = action_lambda_v0(env,
+env = action_lambda_v1(env,
     lambda action, act_space : one_hot(action, act_space.shape[0]),
     lambda act_space : gym.spaces.Discrete(act_space.shape[0]))
 ```
