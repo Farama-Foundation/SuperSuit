@@ -26,8 +26,10 @@ class observation_lambda(ObservationWrapper):
 
         old_space_fn = change_obs_space_fn
         old_obs_fn = change_observation_fn
+
         def space_fn_ignore(space, agent):
             return old_space_fn(space)
+
         def obs_fn_ignore(obs, agent):
             return old_obs_fn(obs)
 
@@ -434,8 +436,10 @@ class action_lambda(ActionWrapper):
 
         old_space_fn = change_space_fn
         old_action_fn = change_action_fn
+
         def space_fn_ignore(space, agent):
             return old_space_fn(space)
+
         def action_fn_ignore(action, space, agent):
             return old_action_fn(action, space)
 
