@@ -158,7 +158,7 @@ def test_rew_lambda():
     assert env.rewards[env.agent_selection] == 1.0 / 10
 
 
-def test_lambda():
+def test_observation_lambda():
     def add1(obs):
         return obs + 1
 
@@ -192,6 +192,27 @@ def test_lambda():
     assert env.observation_spaces[env.agent_selection].shape == (32, 8, 3)
     assert obs0.shape == (32, 8, 3)
 
+    base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
+    env = observation_lambda_v0(base_env, lambda obs, agent: obs + base_env.possible_agents.index(agent))
+    env.reset()
+    obs0 = env.observe(env.agents[0])
+    obs1 = env.observe(env.agents[1])
+
+    assert int(obs0[0][0][0]) == 0
+    assert int(obs1[0][0][0]) == 2
+    assert (env.observation_spaces[env.agents[0]].high + 1 == env.observation_spaces[env.agents[1]].high).all()
+
+    base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
+    env = observation_lambda_v0(base_env,
+        lambda obs, agent: obs + base_env.possible_agents.index(agent),
+        lambda obs_space, agent: Box(obs_space.low, obs_space.high+base_env.possible_agents.index(agent)))
+    env.reset()
+    obs0 = env.observe(env.agents[0])
+    obs1 = env.observe(env.agents[1])
+
+    assert int(obs0[0][0][0]) == 0
+    assert int(obs1[0][0][0]) == 2
+    assert (env.observation_spaces[env.agents[0]].high + 1 == env.observation_spaces[env.agents[1]].high).all()
 
 def test_action_lambda():
     def inc1(x, space):
@@ -217,10 +238,22 @@ def test_action_lambda():
         lambda action, act_space: one_hot(action, act_space.shape[0]),
         lambda act_space: Discrete(act_space.shape[0]),
     )
+    assert env.action_spaces[env.possible_agents[0]].n == 15
 
     env.reset()
     env.step(2)
 
+    act_spaces = {"a{}".format(idx): Box(low=0, high=1, shape=(15,)) for idx in range(2)}
+    base_env = DummyEnv(base_obs, base_obs_space, act_spaces)
+    env = action_lambda_v1(
+        base_env,
+        lambda action, act_space, agent: one_hot(action+base_env.possible_agents.index(agent), act_space.shape[0]),
+        lambda act_space, agent: Discrete(act_space.shape[0]+base_env.possible_agents.index(agent)),
+    )
+    assert env.action_spaces[env.possible_agents[0]].n == 15
+    assert env.action_spaces[env.possible_agents[1]].n == 16
+    env.reset()
+    env.step(2)
 
 def test_dehomogenize():
     base_act_spaces = {"a{}".format(idx): Discrete(5 + idx) for idx in range(2)}
