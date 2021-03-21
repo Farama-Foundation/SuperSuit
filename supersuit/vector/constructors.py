@@ -22,7 +22,11 @@ def MakeCPUAsyncConstructor(max_num_cpus):
             render_shape = None
             if "rgb_array" in example_env.metadata["render.modes"]:
                 example_env.reset()
-                render_shape = example_env.render("rgb_array").shape
+                try:
+                    render_shape = example_env.render("rgb_array").shape
+                except Exception:
+                    pass
+
             num_fns = len(env_fn_list)
             envs_per_cpu = (num_fns + max_num_cpus - 1) // max_num_cpus
             alloced_num_cpus = (num_fns + envs_per_cpu - 1) // envs_per_cpu
