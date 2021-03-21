@@ -19,7 +19,7 @@ def decompress_info(num_envs, idx_starts, comp_infos):
     return all_info
 
 
-def async_loop(vec_env_constr, pipe, shared_obs, shared_actions, shared_rews, shared_dones, shared_renders):
+def async_loop(vec_env_constr, pipe, shared_obs, shared_actions, shared_rews, shared_dones):
     try:
         vec_env = vec_env_constr()
 
@@ -49,8 +49,8 @@ def async_loop(vec_env_constr, pipe, shared_obs, shared_actions, shared_rews, sh
                     vec_env.seed(data)
                 elif name == "render":
                     render_result = vec_env.render(data)
-                    if shared_renders is not None and data == "rgb_array":
-                        shared_renders.np_arr[:] = render_result
+                    if data == "rgb_array":
+                        comp_infos['render_rgb_array'] = render_result
             elif instr == "terminate":
                 return
             pipe.send(comp_infos)
@@ -60,28 +60,24 @@ def async_loop(vec_env_constr, pipe, shared_obs, shared_actions, shared_rews, sh
 
 
 class ProcConcatVec(gym.vector.VectorEnv):
-    def __init__(self, vec_env_constrs, observation_space, action_space, tot_num_envs, metadata, render_shape):
+    def __init__(self, vec_env_constrs, observation_space, action_space, tot_num_envs, metadata):
         self.observation_space = observation_space
         self.action_space = action_space
         self.num_envs = num_envs = tot_num_envs
         self.metadata = metadata
-        self.render_shape = render_shape
 
         self.shared_obs = SharedArray((num_envs,) + self.observation_space.shape, dtype=self.observation_space.dtype)
         act_space_wrap = SpaceWrapper(self.action_space)
         self.shared_act = SharedArray((num_envs,) + act_space_wrap.shape, dtype=act_space_wrap.dtype)
         self.shared_rews = SharedArray((num_envs,), dtype=np.float32)
         self.shared_dones = SharedArray((num_envs,), dtype=np.uint8)
-        self.shared_renders = None
-        if self.render_shape:
-            self.shared_renders = SharedArray(self.render_shape, dtype=np.uint8)
 
         pipes = []
         procs = []
         for constr in vec_env_constrs:
             inpt, outpt = mp.Pipe()
             proc = mp.Process(
-                target=async_loop, args=(constr, outpt, self.shared_obs, self.shared_act, self.shared_rews, self.shared_dones, self.shared_renders)
+                target=async_loop, args=(constr, outpt, self.shared_obs, self.shared_act, self.shared_rews, self.shared_dones)
             )
             proc.start()
             pipes.append(inpt)
@@ -156,10 +152,10 @@ class ProcConcatVec(gym.vector.VectorEnv):
 
     def render(self, mode="human"):
         self.pipes[0].send(("render", mode))
+        render_result = self.pipes[0].recv()
 
-        self._receive_info()
         if mode == "rgb_array":
-            return self.shared_renders.np_arr
+            return render_result['render_rgb_array']
 
     def close(self):
         self.pipes[0].send("close")
