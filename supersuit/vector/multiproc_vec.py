@@ -19,7 +19,8 @@ def decompress_info(num_envs, idx_starts, comp_infos):
     return all_info
 
 
-def async_loop(vec_env_constr, pipe, shared_obs, shared_actions, shared_rews, shared_dones):
+def async_loop(vec_env_constr, inpt_p, pipe, shared_obs, shared_actions, shared_rews, shared_dones):
+    inpt_p.close()
     try:
         vec_env = vec_env_constr()
 
@@ -77,9 +78,10 @@ class ProcConcatVec(gym.vector.VectorEnv):
         for constr in vec_env_constrs:
             inpt, outpt = mp.Pipe()
             proc = mp.Process(
-                target=async_loop, args=(constr, outpt, self.shared_obs, self.shared_act, self.shared_rews, self.shared_dones)
+                target=async_loop, args=(constr, inpt, outpt, self.shared_obs, self.shared_act, self.shared_rews, self.shared_dones)
             )
             proc.start()
+            outpt.close()
             pipes.append(inpt)
             procs.append(proc)
 
