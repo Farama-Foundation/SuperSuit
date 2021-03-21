@@ -165,4 +165,7 @@ class ProcConcatVec(gym.vector.VectorEnv):
         for pipe in self.pipes:
             pipe.send("close")
         for pipe in self.pipes:
-            pipe.recv()
+            try:
+                pipe.recv()
+            except EOFError:
+                pass

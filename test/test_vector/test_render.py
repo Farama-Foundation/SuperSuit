@@ -10,12 +10,14 @@ def make_env():
     env = pettingzoo_env_to_vec_env_v0(env)
     return env
 
+
 def test_vector_render_multiproc():
     env = make_env()
     num_envs = 3
     venv = concat_vec_envs_v0(env, num_envs, num_cpus=num_envs, base_class='stable_baselines3')
     venv.reset()
     arr = venv.render(mode="rgb_array")
+    venv.reset()
     assert len(arr.shape) == 3 and arr.shape[2] == 3
     venv.close()
 
@@ -26,6 +28,7 @@ def test_vector_render_multiproc_human():
     venv = concat_vec_envs_v0(env, num_envs, num_cpus=num_envs, base_class='stable_baselines3')
     venv.reset()
     arr = venv.render(mode="human")
+    venv.reset()
     venv.close()
 
 
@@ -35,6 +38,7 @@ def test_vector_render_single_proc():
     venv = concat_vec_envs_v0(env, num_envs, num_cpus=num_envs)
     venv.reset()
     venv.render(mode="rgb_array")
+    venv.reset()
     assert len(arr.shape) == 3 and arr.shape[2] == 3
     venv.close()
 
