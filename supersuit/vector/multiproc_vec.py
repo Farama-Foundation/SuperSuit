@@ -50,7 +50,7 @@ def async_loop(vec_env_constr, pipe, shared_obs, shared_actions, shared_rews, sh
                 elif name == "render":
                     render_result = vec_env.render(data)
                     if data == "rgb_array":
-                        comp_infos['render_rgb_array'] = render_result
+                        comp_infos = render_result
             elif instr == "terminate":
                 return
             pipe.send(comp_infos)
@@ -154,8 +154,13 @@ class ProcConcatVec(gym.vector.VectorEnv):
         self.pipes[0].send(("render", mode))
         render_result = self.pipes[0].recv()
 
+        if isinstance(render_result, tuple):
+            e, tb = render_result
+            print(tb)
+            raise e
+
         if mode == "rgb_array":
-            return render_result['render_rgb_array']
+            return render_result
 
     def close(self):
         for pipe in self.pipes:
