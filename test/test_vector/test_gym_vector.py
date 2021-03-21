@@ -4,6 +4,12 @@ import gym
 import numpy as np
 
 
+def recursive_equal(info1, info2):
+    if info1 == info2:
+        return True
+    return False
+
+
 def check_vec_env_equivalency(venv1, venv2, check_info=True):
     # assert venv1.observation_space == venv2.observation_space
     # assert venv1.action_space == venv2.action_space
@@ -14,7 +20,7 @@ def check_vec_env_equivalency(venv1, venv2, check_info=True):
     obs1 = venv1.reset()
     obs2 = venv2.reset()
 
-    for i in range(200):
+    for i in range(400):
         action = [venv1.action_space.sample() for env in range(venv1.num_envs)]
         assert np.all(np.equal(obs1, obs2))
 
@@ -24,7 +30,7 @@ def check_vec_env_equivalency(venv1, venv2, check_info=True):
         # uses close rather than equal due to inconsistency in reporting rewards as float32 or float64
         assert np.allclose(rew1, rew2)
         assert np.all(np.equal(done1, done2))
-        assert info1 == info2 or not check_info
+        assert recursive_equal(info1, info2) or not check_info
 
 
 def test_gym_supersuit_equivalency():
@@ -44,7 +50,7 @@ def test_gym_supersuit_equivalency():
 #     check_vec_env_equivalency(venv1, venv2, check_info=False)  # stable baselines does not implement info correctly
 
 def test_mutliproc_single_proc_equivalency():
-    env = gym.make("Pendulum-v0")
+    env = gym.make("CartPole-v0")
     num_envs = 3
     venv1 = concat_vec_envs_v0(env, num_envs, num_cpus=0)  # uses single threaded vector environment
     venv2 = concat_vec_envs_v0(env, num_envs, num_cpus=4)  # uses multiprocessing vector environment
@@ -52,7 +58,7 @@ def test_mutliproc_single_proc_equivalency():
 
 
 def test_multiagent_mutliproc_single_proc_equivalency():
-    env = simple_spread_v2.parallel_env()
+    env = simple_spread_v2.parallel_env(max_cycles=10)
     env = pettingzoo_env_to_vec_env_v0(env)
     num_envs = 3
     venv1 = concat_vec_envs_v0(env, num_envs, num_cpus=0)  # uses single threaded vector environment

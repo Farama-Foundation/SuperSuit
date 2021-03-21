@@ -5,6 +5,12 @@ from supersuit import frame_skip_v0, vectorize_aec_env_v0
 import numpy as np
 
 
+def recursive_equal(info1, info2):
+    if info1 == info2:
+        return True
+    return False
+
+
 def test_identical():
     def env_fn():
         return knights_archers_zombies_v7.env()  # ,20)
@@ -33,7 +39,7 @@ def test_identical():
         assert np.all(np.equal(env_done1, env_done2))
         assert np.all(np.equal(obs1, obs2))
         assert all(np.all(np.equal(r1, r2)) for r1, r2 in zip(env1.rewards.values(), env2.rewards.values()))
-        assert infos1 == infos2
+        assert recursive_equal(infos1, infos2)
         actions = policy(obs1, agent)
         env1.step(actions)
         env2.step(actions)
