@@ -59,6 +59,11 @@ class MarkovVectorEnv(gym.vector.VectorEnv):
         act_dict = {agent: actions[i] for i, agent in enumerate(self.par_env.possible_agents) if agent in agent_set}
         observations, rewards, dones, infos = self.par_env.step(act_dict)
 
+        # adds last observation to info where user can get it
+        if all(dones.values()):
+            for agent, obs in observations.items():
+                infos[agent]['terminal_observation'] = obs
+
         rews = np.array([rewards.get(agent, 0) for agent in self.par_env.possible_agents], dtype=np.float32)
         dns = np.array([dones.get(agent, False) for agent in self.par_env.possible_agents], dtype=np.uint8)
         infs = [infos.get(agent, {}) for agent in self.par_env.possible_agents]
