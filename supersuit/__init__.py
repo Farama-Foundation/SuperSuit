@@ -45,25 +45,26 @@ class DeprecatedWrapper(ImportError):
     pass
 
 
-class Depreciated:
+class Deprecated:
     def __init__(self, wrapper_name, orig_version, new_version):
         self.name = wrapper_name
         self.old_version, self.new_version = orig_version, new_version
 
     def __call__(self, env, *args, **kwargs):
-        raise DeprecatedWrapper(f"{self.name}_{self.old_version} is now depreciated, use {self.name}_{self.new_version} instead")
+        raise DeprecatedWrapper(f"{self.name}_{self.old_version} is now Deprecated, use {self.name}_{self.new_version} instead")
 
 
 color_reduction_v0 = WrapperFactory("color_reduction")
 resize_v0 = WrapperFactory("resize")
 dtype_v0 = WrapperFactory("dtype")
 flatten_v0 = WrapperFactory("flatten")
-frame_stack_v0 = Depreciated("frame_stack", "v0", "v1")
+frame_stack_v0 = Deprecated("frame_stack", "v0", "v1")
 frame_stack_v1 = WrapperFactory("frame_stack")
 normalize_obs_v0 = WrapperFactory("normalize_obs")
 reshape_v0 = WrapperFactory("reshape")
 clip_reward_v0 = WrapperFactory("clip_reward")
-action_lambda_v0 = WrapperFactory("action_lambda")
+action_lambda_v1 = Deprecated("action_lambda", "v0", "v1")
+action_lambda_v1 = WrapperFactory("action_lambda")
 clip_actions_v0 = WrapperFactory("clip_actions")
 observation_lambda_v0 = WrapperFactory("observation_lambda")
 reward_lambda_v0 = WrapperFactory("reward_lambda")
@@ -72,7 +73,7 @@ sticky_actions_v0 = WrapperFactory("sticky_actions")
 delay_observations_v0 = WrapperFactory("delay_observations")
 max_observation_v0 = WrapperFactory("max_observation")
 
-black_death_v0 = Depreciated("black_death", "v0", "v1")
+black_death_v0 = Deprecated("black_death", "v0", "v1")
 black_death_v1 = WrapperFactory("black_death", False)
 agent_indicator_v0 = WrapperFactory("agent_indicator", False)
 pad_action_space_v0 = WrapperFactory("pad_action_space", False)
