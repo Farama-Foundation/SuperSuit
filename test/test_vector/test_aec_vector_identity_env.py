@@ -3,6 +3,7 @@ from pettingzoo.mpe import simple_push_v2
 from pettingzoo.sisl import waterworld_v3
 from supersuit import frame_skip_v0, vectorize_aec_env_v0
 import numpy as np
+import cloudpickle
 
 
 def test_identical():
@@ -33,7 +34,7 @@ def test_identical():
         assert np.all(np.equal(env_done1, env_done2))
         assert np.all(np.equal(obs1, obs2))
         assert all(np.all(np.equal(r1, r2)) for r1, r2 in zip(env1.rewards.values(), env2.rewards.values()))
-        assert infos1 == infos2
+        assert cloudpickle.dumps(infos1) == cloudpickle.dumps(infos2)
         actions = policy(obs1, agent)
         env1.step(actions)
         env2.step(actions)
