@@ -169,4 +169,4 @@ class ProcConcatVec(gym.vector.VectorEnv):
             try:
                 pipe.recv()
             except EOFError:
-                pass
+                raise RuntimeError("only one multiproccessing vector environment can open a window over the duration of a process")
