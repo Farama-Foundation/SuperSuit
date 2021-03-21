@@ -1,4 +1,4 @@
-from supersuit import gym_vec_env_v0, concat_vec_envs_v0
+from supersuit import gym_vec_env_v0
 import gym
 import numpy as np
 from pettingzoo.butterfly import pistonball_v4, cooperative_pong_v2
