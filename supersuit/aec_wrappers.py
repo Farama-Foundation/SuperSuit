@@ -62,8 +62,10 @@ class observation_lambda(ObservationWrapper):
         new_spaces = {}
         for agent, space in self.observation_spaces.items():
             if self.change_obs_space_fn is None:
-                new_low = self.change_observation_fn(space.low, agent)
-                new_high = self.change_observation_fn(space.high, agent)
+                trans_low = self.change_observation_fn(space.low, agent)
+                trans_high = self.change_observation_fn(space.high, agent)
+                new_low = np.minimum(trans_low, trans_high)
+                new_high = np.maximum(trans_low, trans_high)
 
                 new_spaces[agent] = Box(low=new_low, high=new_high, dtype=new_low.dtype)
             else:
