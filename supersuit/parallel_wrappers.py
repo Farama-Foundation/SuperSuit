@@ -1,9 +1,9 @@
 from pettingzoo.utils.conversions import ParallelEnv
 import gym
 from gym.spaces import Box, Discrete
-from .adv_transforms.frame_stack import stack_obs_space, stack_init, stack_obs
-from .adv_transforms.frame_skip import check_transform_frameskip
-from .adv_transforms.obs_delay import Delayer
+from .utils.frame_stack import stack_obs_space, stack_init, stack_obs
+from .utils.frame_skip import check_transform_frameskip
+from .utils.obs_delay import Delayer
 
 
 class ParallelWraper(ParallelEnv):

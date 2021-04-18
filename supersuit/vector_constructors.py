@@ -2,6 +2,7 @@ import gym
 import cloudpickle
 from .vector import MakeCPUAsyncConstructor, MarkovVectorEnv
 from pettingzoo.utils.env import AECEnv, ParallelEnv
+import warnings
 
 
 def vec_env_args(env, num_envs):
@@ -11,7 +12,13 @@ def vec_env_args(env, num_envs):
     return [env_fn] * num_envs, env.observation_space, env.action_space
 
 
+def warn_not_gym_env(env, fn_name):
+    if not isinstance(env, gym.Env):
+        warnings.warn(f"{fn_name} took in an environment which does not inherit from gym.Env. Note that gym_vec_env only takes in gym-style environments, not pettingzoo environments.")
+
+
 def gym_vec_env(env, num_envs, multiprocessing=False):
+    warn_not_gym_env(env, "gym_vec_env")
     args = vec_env_args(env, num_envs)
     constructor = gym.vector.AsyncVectorEnv if multiprocessing else gym.vector.SyncVectorEnv
     return constructor(*args)
@@ -20,6 +27,7 @@ def gym_vec_env(env, num_envs, multiprocessing=False):
 def stable_baselines_vec_env(env, num_envs, multiprocessing=False):
     import stable_baselines
 
+    warn_not_gym_env(env, "stable_baselines_vec_env")
     args = vec_env_args(env, num_envs)[:1]
     constructor = stable_baselines.common.vec_env.SubprocVecEnv if multiprocessing else stable_baselines.common.vec_env.DummyVecEnv
     return constructor(*args)
@@ -28,6 +36,7 @@ def stable_baselines_vec_env(env, num_envs, multiprocessing=False):
 def stable_baselines3_vec_env(env, num_envs, multiprocessing=False):
     import stable_baselines3
 
+    warn_not_gym_env(env, "stable_baselines3_vec_env")
     args = vec_env_args(env, num_envs)[:1]
     constructor = stable_baselines3.common.vec_env.SubprocVecEnv if multiprocessing else stable_baselines3.common.vec_env.DummyVecEnv
     return constructor(*args)

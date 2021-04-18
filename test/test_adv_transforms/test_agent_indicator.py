@@ -1,4 +1,4 @@
-from supersuit.adv_transforms.agent_indicator import (
+from supersuit.utils.agent_indicator import (
     change_obs_space,
     change_observation,
     get_indicator_map,
