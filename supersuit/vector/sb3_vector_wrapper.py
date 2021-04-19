@@ -14,3 +14,7 @@ class SB3VecEnvWrapper(VecEnvWrapper):
 
     def step_wait(self):
         return self.venv.step_wait()
+
+    def env_is_wrapped(self, wrapper_class, indices):
+        n_returns = len(indices) if indices is not None else self.num_envs
+        return [False] * n_returns
