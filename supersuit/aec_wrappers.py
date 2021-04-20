@@ -7,6 +7,8 @@ from .adv_transforms import agent_indicator as agent_ider
 from .adv_transforms.frame_skip import check_transform_frameskip
 from .adv_transforms.obs_delay import Delayer
 from .adv_transforms.accumulator import Accumulator
+import warnings
+import random
 import numpy as np
 import gym
 
@@ -544,3 +546,64 @@ class clip_reward(RewardWrapper):
 
     def _change_reward_fn(self, rew):
         return max(min(rew, self.upper_bound), self.lower_bound)
+
+class nan_noop_wrapper(BaseWrapper):
+    '''
+    this wrapper expects there to be a no_op_action parameter which
+    is the action to take in cases when nothing should be done.
+    '''
+    def step(self, action, no_op_action, observe = True):
+        if np.isnan(action).any():
+            warnings.warn("[WARNING]: Step received an NaN action {}. Evironment is {}. Taking no operation action.".format(action, self))
+            action = no_op_action
+        return super().step(action)
+
+class nan_zeros_wrapper(BaseWrapper):
+    '''
+    this wrapper warns and executes a zeros action when nothing should be done.
+    Only for Box action spaces.
+    '''
+    def step(self, action, observe=True):
+        if np.isnan(action).any():
+            warnings.warn("[WARNING]: Step received an NaN action {}. Environment is {}. Taking the all zeroes action.".format(action, self))
+            action = np.zeros_like(action)
+        return super().step(action)
+
+
+class nan_random_wrapper(BaseWrapper):
+    '''
+    this wrapper takes a random action
+    '''
+    def step(self, action, observe=True):
+        if np.isnan(action).any():
+            obs = self.env.last()
+            if isinstance(obs, dict) and 'action mask' in obs:
+                warnings.warn("[WARNING]: Step received an NaN action {}. Environment is {}. Taking a random action from 'action mask'.".format(action, self))
+                action = self.np_random.choice(np.flatnonzero(obs['action_mask']))
+            else:
+                warnings.warn("[WARNING]: Step received an NaN action {}. Environment is {}. Taking a random action.".format(action, self))
+                action = self.action_spaces[self.agent_selection].sample()
+        return super().step(action)
+
+    def seed(self, seed=None):
+        self.np_random, seed = gym.utils.seeding.np_random(seed)
+        super().seed(seed)
+
+class scale_actions_wrapper(BaseWrapper):
+    '''
+    this wrapper expects a scale parameter and scales actions accordingly.
+    '''
+    def __init__(self, env, scale):
+        super().__init__(env)
+        self.scale = scale
+        new_spaces = {}
+        for agent, space in self.action_spaces.items():
+            new_low = space.low * scale
+            new_high = space.high * scale
+
+            new_spaces[agent] = Box(low=new_low, high=new_high, dtype=new_low.dtype)
+        self.action_spaces = new_spaces
+        
+    def step(self, action, observe = True):
+        action = action * self.scale
+        return super().step(action)
