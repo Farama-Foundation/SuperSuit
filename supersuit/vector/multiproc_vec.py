@@ -153,7 +153,7 @@ class ProcConcatVec(gym.vector.VectorEnv):
         for pipe in self.pipes:
             try:
                 pipe.send("terminate")
-            except BrokenPipeError:
+            except ConnectionError:
                 pass
         for proc in self.procs:
             proc.join()
@@ -178,6 +178,8 @@ class ProcConcatVec(gym.vector.VectorEnv):
                 pipe.recv()
             except EOFError:
                 raise RuntimeError("only one multiproccessing vector environment can open a window over the duration of a process")
+            except ConnectionError:
+                pass
 
     def env_is_wrapped(self, wrapper_class, indices=None):
         for i, pipe in enumerate(self.pipes):
