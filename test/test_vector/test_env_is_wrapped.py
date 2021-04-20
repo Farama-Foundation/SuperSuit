@@ -11,11 +11,13 @@ def test_env_is_wrapped_true():
     venv1 = concat_vec_envs_v0(env, num_envs)
     assert venv1.env_is_wrapped(flatten) == [True] * 3
 
+
 def test_env_is_wrapped_false():
     env = gym.make("Pendulum-v0")
     num_envs = 3
     venv1 = concat_vec_envs_v0(env, num_envs)
     assert venv1.env_is_wrapped(flatten) == [False] * 3
+
 
 def test_env_is_wrapped_cpu():
     env = gym.make("Pendulum-v0")
@@ -23,6 +25,7 @@ def test_env_is_wrapped_cpu():
     num_envs = 3
     venv1 = concat_vec_envs_v0(env, num_envs, num_cpus=2)
     assert venv1.env_is_wrapped(flatten) == [True] * 3
+
 
 def test_env_is_wrapped_pettingzoo():
     env = simple_spread_v2.parallel_env()
