@@ -55,11 +55,11 @@ def async_loop(vec_env_constr, inpt_p, pipe, shared_obs, shared_actions, shared_
                     if data == "rgb_array":
                         comp_infos = render_result
                 else:
-                    raise AssertionError("bad tuple instruction name: "+name)
+                    raise AssertionError("bad tuple instruction name: " + name)
             elif instr == "terminate":
                 return
             else:
-                raise AssertionError("bad instruction: "+instr)
+                raise AssertionError("bad instruction: " + instr)
             pipe.send(comp_infos)
     except BaseException as e:
         tb = traceback.format_exc()
