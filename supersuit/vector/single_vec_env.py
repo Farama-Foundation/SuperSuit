@@ -1,4 +1,5 @@
 import numpy as np
+import gym
 
 
 class SingleVecEnv:
@@ -37,3 +38,11 @@ class SingleVecEnv:
         dones = np.array([done], dtype=np.uint8)
         infos = [info]
         return observations, rewards, dones, infos
+
+    def env_is_wrapped(self, wrapper_class):
+        env_tmp = self.gym_env
+        while isinstance(env_tmp, gym.Wrapper):
+            if isinstance(env_tmp, wrapper_class):
+                return [True]
+            env_tmp = env_tmp.env
+        return [False]

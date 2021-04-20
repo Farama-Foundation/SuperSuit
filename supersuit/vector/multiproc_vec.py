@@ -48,12 +48,18 @@ def async_loop(vec_env_constr, inpt_p, pipe, shared_obs, shared_actions, shared_
                 name, data = instr
                 if name == "seed":
                     vec_env.seed(data)
+                elif name == "env_is_wrapped":
+                    comp_infos = vec_env.env_is_wrapped(data)
                 elif name == "render":
                     render_result = vec_env.render(data)
                     if data == "rgb_array":
                         comp_infos = render_result
+                else:
+                    raise AssertionError("bad tuple instruction name: " + name)
             elif instr == "terminate":
                 return
+            else:
+                raise AssertionError("bad instruction: " + instr)
             pipe.send(comp_infos)
     except BaseException as e:
         tb = traceback.format_exc()
@@ -172,3 +178,10 @@ class ProcConcatVec(gym.vector.VectorEnv):
                 pipe.recv()
             except EOFError:
                 raise RuntimeError("only one multiproccessing vector environment can open a window over the duration of a process")
+
+    def env_is_wrapped(self, wrapper_class, indices=None):
+        for i, pipe in enumerate(self.pipes):
+            pipe.send(("env_is_wrapped", wrapper_class))
+
+        results = self._receive_info()
+        return sum(results, [])
