@@ -576,7 +576,7 @@ class nan_random_wrapper(BaseWrapper):
     '''
     def step(self, action, observe=True):
         if np.isnan(action).any():
-            obs = self.env.last()
+            obs = self.env.observe(self.agent_selection)
             if isinstance(obs, dict) and 'action mask' in obs:
                 warnings.warn("[WARNING]: Step received an NaN action {}. Environment is {}. Taking a random action from 'action mask'.".format(action, self))
                 action = self.np_random.choice(np.flatnonzero(obs['action_mask']))
