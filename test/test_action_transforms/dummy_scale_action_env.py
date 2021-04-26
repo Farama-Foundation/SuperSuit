@@ -2,7 +2,7 @@ from pettingzoo import AECEnv
 import copy
 from pettingzoo.utils.agent_selector import agent_selector
 
-class DummyEnv(AECEnv):
+class DummyScaleEnv(AECEnv):
     metadata = {"render.modes": ["human"]}
 
     def __init__(self, observations, observation_spaces, action_spaces):

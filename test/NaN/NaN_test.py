@@ -1,5 +1,6 @@
 from gym.spaces import Box, Discrete
 import numpy as np
+from .dummy_NaN_env import DummyNaNEnv
 from supersuit import (
     nan_noop_wrapper
     nan_zeros_wrapper
@@ -17,11 +18,11 @@ def test_NaN_noop_wrapper():
     wrapped_env.step(np.nan)
 
 def test_NaN_zeros_wrapper():
-    base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
+    base_env = DummyNaNEnv(base_obs, base_obs_space, base_act_spaces)
     wrapped_env = nan_zeros_wrapper(base_env)
     wrapped_env.step(np.nan)
 
 def test_NaN_random_wrapper():
-    base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
+    base_env = DummyNaNEnv(base_obs, base_obs_space, base_act_spaces)
     wrapped_env = nan_random_wrapper(base_env)
     wrapped_env.step(np.nan)
