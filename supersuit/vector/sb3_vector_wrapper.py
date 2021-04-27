@@ -18,3 +18,9 @@ class SB3VecEnvWrapper(VecEnvWrapper):
     def env_is_wrapped(self, wrapper_class, indices=None):
         # ignores indicies
         return self.venv.env_is_wrapped(wrapper_class)
+
+    def getattr_recursive(self, name):
+        raise AttributeError(name)
+
+    def getattr_depth_check(self, name, already_found):
+        return None

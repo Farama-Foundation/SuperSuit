@@ -43,6 +43,7 @@ def stable_baselines3_vec_env(env, num_envs, multiprocessing=False):
 
 
 def concat_vec_envs(vec_env, num_vec_envs, num_cpus=0, base_class='gym'):
+    num_cpus = min(num_cpus, num_vec_envs)
     vec_env = MakeCPUAsyncConstructor(num_cpus)(*vec_env_args(vec_env, num_vec_envs))
 
     if base_class == "gym":
