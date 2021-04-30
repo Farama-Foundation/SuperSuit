@@ -65,3 +65,6 @@ class ConcatVecEnv(gym.vector.VectorEnv):
     def close(self):
         for vec_env in self.vec_envs:
             vec_env.close()
+
+    def env_is_wrapped(self, wrapper_class):
+        return sum([sub_venv.env_is_wrapped(wrapper_class) for sub_venv in self.vec_envs], [])

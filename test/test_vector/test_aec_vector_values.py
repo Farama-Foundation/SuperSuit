@@ -1,6 +1,6 @@
 from supersuit import vectorize_aec_env_v0
 from pettingzoo.classic import rps_v1
-from pettingzoo.classic import mahjong_v2, hanabi_v3
+from pettingzoo.classic import mahjong_v3, hanabi_v4
 from pettingzoo.butterfly import knights_archers_zombies_v7
 from pettingzoo.mpe import simple_world_comm_v2
 from pettingzoo.classic import chess_v0
@@ -11,13 +11,13 @@ import supersuit
 
 
 def mahjong_maker():
-    env = mahjong_v2.env()
+    env = mahjong_v3.env()
     env = supersuit.observation_lambda_v0(env, lambda obs: obs["observation"], lambda obs_space: obs_space["observation"])
     return env
 
 
 def hanabi_maker():
-    env = hanabi_v3.env()
+    env = hanabi_v4.env()
     env = supersuit.observation_lambda_v0(env, lambda obs: obs["observation"], lambda obs_space: obs_space["observation"])
     return env
 

@@ -1,7 +1,7 @@
 from .base_aec_wrapper import BaseWrapper, PettingzooWrap
 from gym.spaces import Box, Space, Discrete
 from . import basic_transforms
-from .adv_transforms.frame_stack import stack_obs_space, stack_init, stack_obs
+from .utils.frame_stack import stack_obs_space, stack_init, stack_obs
 from .action_transforms import homogenize_ops
 from .adv_transforms import agent_indicator as agent_ider
 from .adv_transforms.frame_skip import check_transform_frameskip
@@ -64,8 +64,10 @@ class observation_lambda(ObservationWrapper):
         new_spaces = {}
         for agent, space in self.observation_spaces.items():
             if self.change_obs_space_fn is None:
-                new_low = self.change_observation_fn(space.low, agent)
-                new_high = self.change_observation_fn(space.high, agent)
+                trans_low = self.change_observation_fn(space.low, agent)
+                trans_high = self.change_observation_fn(space.high, agent)
+                new_low = np.minimum(trans_low, trans_high)
+                new_high = np.maximum(trans_low, trans_high)
 
                 new_spaces[agent] = Box(low=new_low, high=new_high, dtype=new_low.dtype)
             else:
@@ -84,24 +86,26 @@ class BasicObservationWrapper(ObservationWrapper):
     """
 
     def __init__(self, env, module, param):
-        self.module = module
+        self.check_param = module.check_param
+        self.change_obs_space = module.change_obs_space
+        self.change_observation = module.change_observation
         self.param = param
         super().__init__(env)
 
     def _check_wrapper_params(self):
         assert all([isinstance(obs_space, Box) for obs_space in self.observation_spaces.values()]), "All agents' observation spaces are not Box, they are: {}.".format(self.observation_spaces)
         for obs_space in self.env.observation_spaces.values():
-            self.module.check_param(obs_space, self.param)
+            self.check_param(obs_space, self.param)
 
     def _modify_spaces(self):
         new_spaces = {}
         for agent, space in self.observation_spaces.items():
-            new_spaces[agent] = self.module.change_obs_space(space, self.param)
+            new_spaces[agent] = self.change_obs_space(space, self.param)
         self.observation_spaces = new_spaces
 
     def _modify_observation(self, agent, observation):
         obs_space = self.env.observation_spaces[agent]
-        return self.module.change_observation(observation, obs_space, self.param)
+        return self.change_observation(observation, obs_space, self.param)
 
 
 class color_reduction(BasicObservationWrapper):

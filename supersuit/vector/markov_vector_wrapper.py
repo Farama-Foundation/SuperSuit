@@ -82,3 +82,10 @@ class MarkovVectorEnv(gym.vector.VectorEnv):
 
     def close(self):
         return self.par_env.close()
+
+    def env_is_wrapped(self, wrapper_class):
+        '''
+        env_is_wrapped only suppors vector and gym environments
+        currently, not pettingzoo environments
+        '''
+        return [False] * self.num_envs
