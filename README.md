@@ -128,6 +128,13 @@ model.learn(total_timesteps=2000000)
 #### Note on multiprocessing
 Turning on multiprocessing runs each environment in it's own process. Turning this on is typically much slower for fast environments (like card games), but much faster for slow environments (like robotics simulations). Determining which case you are will require testing.
 
+On MacOS with python3.8 or higher, you will need to change the default multiprocessing setting to use fork multiprocessing instead of spawn multiprocessing, as shown below, before the multiprocessing environment is created.
+
+```
+import multiprocessing
+multiprocessing.set_start_method("fork")
+```
+
 ## Lambda Functions
 
 If none of the included in micro-wrappers are suitable for your needs, you can use a lambda function (or submit a PR).
