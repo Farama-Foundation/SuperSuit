@@ -83,6 +83,7 @@ class ProcConcatVec(gym.vector.VectorEnv):
         procs = []
         for constr in vec_env_constrs:
             inpt, outpt = mp.Pipe()
+            constr = gym.vector.async_vector_env.CloudpickleWrapper(constr)
             proc = mp.Process(
                 target=async_loop, args=(constr, inpt, outpt, self.shared_obs, self.shared_act, self.shared_rews, self.shared_dones)
             )
