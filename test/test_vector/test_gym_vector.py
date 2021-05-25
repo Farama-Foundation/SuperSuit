@@ -49,6 +49,13 @@ def test_gym_supersuit_equivalency():
     check_vec_env_equivalency(venv1, venv2)
 
 
+def test_inital_state_dissimilarity():
+    env = gym.make("CartPole-v0")
+    venv = concat_vec_envs_v0(env, 2)
+    observations = venv.reset()
+    assert not np.equal(observations[0], observations[1]).all()
+
+
 # we really don't want to have a stable baselines dependency even in tests
 # def test_stable_baselines_supersuit_equivalency():
 #     env = gym.make("Pendulum-v0")
