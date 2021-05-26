@@ -1,7 +1,7 @@
 from gym.spaces import Box, Discrete
 import numpy as np
 import pytest
-from supersuit.action_transforms.homogenize_ops import (
+from supersuit.utils.action_transforms.homogenize_ops import (
     check_homogenize_spaces,
     homogenize_spaces,
     dehomogenize_actions,

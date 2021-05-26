@@ -1,5 +1,5 @@
 from gym.spaces import Box, Space, Discrete
-from . import basic_transforms
+from .utils import basic_transforms
 from .utils.frame_stack import stack_obs_space, stack_init, stack_obs
 from .utils.frame_skip import check_transform_frameskip
 from .utils.obs_delay import Delayer
