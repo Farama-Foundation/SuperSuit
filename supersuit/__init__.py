@@ -1,42 +1,37 @@
 import gym
 from pettingzoo.utils.conversions import to_parallel, ParallelEnv, from_parallel
 from pettingzoo.utils.env import AECEnv
-from . import aec_wrappers
-from . import gym_wrappers
-from . import parallel_wrappers
+# from . import aec_wrappers
+# from . import gym_wrappers
+# from . import parallel_wrappers
 from . import vector_constructors
 from . import aec_vector
 
 __version__ = "2.6.5"
 
 
-class WrapperFactory:
-    def __init__(self, wrapper_name, gym_avaliable=True):
-        self.wrapper_name = wrapper_name
-        self.gym_avaliable = gym_avaliable
+class WrapperChooser:
+    def __init__(self, aec_wrapper=None, gym_wrapper=None, parallel_wrapper=None):
+        assert aec_wrapper is not None or parallel_wrapper is not None, "either the aec wrapper or the parallel wrapper must be defined for all supersuit environments"
+        self.aec_wrapper = aec_wrapper
+        self.gym_wrapper = gym_wrapper
+        self.parallel_wrapper = parallel_wrapper
 
     def __call__(self, env, *args, **kwargs):
         if isinstance(env, gym.Env):
-            if not self.gym_avaliable:
+            if self.gym_wrapper is None:
                 raise ValueError(f"{self.wrapper_name} does not apply to gym environments, pettingzoo environments only")
-            wrap_class = getattr(gym_wrappers, self.wrapper_name)
-            return wrap_class(env, *args, **kwargs)
+            return self.gym_wrapper(env, *args, **kwargs)
         elif isinstance(env, AECEnv):
-            wrap_class = getattr(aec_wrappers, self.wrapper_name, None)
-
-            if wrap_class is not None:
-                return wrap_class(env, *args, **kwargs)
+            if self.aec_wrapper is not None:
+                return self.aec_wrapper(env, *args, **kwargs)
             else:
-                wrap_class = getattr(parallel_wrappers, self.wrapper_name)
-                return from_parallel(wrap_class(to_parallel(env), *args, **kwargs))
-            return wrap_class(env, *args, **kwargs)
+                return from_parallel(self.parallel_wrapper(to_parallel(env), *args, **kwargs))
         elif isinstance(env, ParallelEnv):
-            wrap_class = getattr(parallel_wrappers, self.wrapper_name, None)
-            if wrap_class is not None:
-                return wrap_class(env, *args, **kwargs)
+            if self.parallel_wrapper is not None:
+                return self.parallel_wrapper(env, *args, **kwargs)
             else:
-                wrap_class = getattr(aec_wrappers, self.wrapper_name)
-                return to_parallel(wrap_class(from_parallel(env), *args, **kwargs))
+                return to_parallel(self.aec_wrapper(from_parallel(env), *args, **kwargs))
         else:
             raise ValueError("environment passed to supersuit wrapper must either be a gym environment or a pettingzoo environment")
 
@@ -53,31 +48,20 @@ class Deprecated:
     def __call__(self, env, *args, **kwargs):
         raise DeprecatedWrapper(f"{self.name}_{self.old_version} is now Deprecated, use {self.name}_{self.new_version} instead")
 
+from .lambda_wrappers.action_lambda import gym_action_lambda, aec_action_lambda
+from .lambda_wrappers.observation_lambda import gym_observation_lambda, aec_observation_lambda
+from .lambda_wrappers.reward_lambda import gym_reward_lambda, aec_reward_lambda
 
-color_reduction_v0 = WrapperFactory("color_reduction")
-resize_v0 = WrapperFactory("resize")
-dtype_v0 = WrapperFactory("dtype")
-flatten_v0 = WrapperFactory("flatten")
-frame_stack_v0 = Deprecated("frame_stack", "v0", "v1")
-frame_stack_v1 = WrapperFactory("frame_stack")
-normalize_obs_v0 = WrapperFactory("normalize_obs")
-reshape_v0 = WrapperFactory("reshape")
-clip_reward_v0 = WrapperFactory("clip_reward")
-action_lambda_v1 = Deprecated("action_lambda", "v0", "v1")
-action_lambda_v1 = WrapperFactory("action_lambda")
-clip_actions_v0 = WrapperFactory("clip_actions")
-observation_lambda_v0 = WrapperFactory("observation_lambda")
-reward_lambda_v0 = WrapperFactory("reward_lambda")
-frame_skip_v0 = WrapperFactory("frame_skip")
-sticky_actions_v0 = WrapperFactory("sticky_actions")
-delay_observations_v0 = WrapperFactory("delay_observations")
-max_observation_v0 = WrapperFactory("max_observation")
+observation_lambda_v0 = WrapperChooser(aec_wrapper=aec_observation_lambda, gym_wrapper=gym_observation_lambda)
+action_lambda_v0 = WrapperChooser(aec_wrapper=aec_action_lambda, gym_wrapper=gym_action_lambda)
+reward_lambda_v0 = WrapperChooser(aec_wrapper=aec_reward_lambda, gym_wrapper=gym_reward_lambda)
 
-black_death_v0 = Deprecated("black_death", "v0", "v1")
-black_death_v1 = WrapperFactory("black_death", False)
-agent_indicator_v0 = WrapperFactory("agent_indicator", False)
-pad_action_space_v0 = WrapperFactory("pad_action_space", False)
-pad_observations_v0 = WrapperFactory("pad_observations", False)
+
+# black_death_v0 = Deprecated("black_death", "v0", "v1")
+# black_death_v1 = WrapperFactory("black_death", False)
+# agent_indicator_v0 = WrapperFactory("agent_indicator", False)
+# pad_action_space_v0 = WrapperFactory("pad_action_space", False)
+# pad_observations_v0 = WrapperFactory("pad_observations", False)
 
 gym_vec_env_v0 = vector_constructors.gym_vec_env
 stable_baselines_vec_env_v0 = vector_constructors.stable_baselines_vec_env

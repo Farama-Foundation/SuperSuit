@@ -8,49 +8,6 @@ import numpy as np
 import gym
 
 
-class ObservationWrapper(gym.Wrapper):
-    def step(self, action):
-        observation, rew, done, info = self.env.step(action)
-        observation = self._modify_observation(observation)
-        return observation, rew, done, info
-
-    def reset(self):
-        observation = self.env.reset()
-        observation = self._modify_observation(observation)
-        return observation
-
-
-class observation_lambda(ObservationWrapper):
-    def __init__(self, env, change_observation_fn, change_obs_space_fn=None):
-        assert callable(change_observation_fn), "change_observation_fn needs to be a function. It is {}".format(change_observation_fn)
-        assert change_obs_space_fn is None or callable(change_obs_space_fn), "change_obs_space_fn needs to be a function. It is {}".format(change_obs_space_fn)
-        self.change_observation_fn = change_observation_fn
-        self.change_obs_space_fn = change_obs_space_fn
-
-        super().__init__(env)
-        self._check_wrapper_params()
-        self._modify_spaces()
-
-    def _check_wrapper_params(self):
-        if self.change_obs_space_fn is None:
-            space = self.observation_space
-            assert isinstance(space, Box), "the observation_lambda_wrapper only allows the change_obs_space_fn argument to be optional for Box observation spaces"
-
-    def _modify_spaces(self):
-        space = self.observation_space
-
-        if self.change_obs_space_fn is None:
-            new_low = self.change_observation_fn(space.low)
-            new_high = self.change_observation_fn(space.high)
-            new_space = Box(low=new_low, high=new_high, dtype=new_low.dtype)
-        else:
-            new_space = self.change_obs_space_fn(space)
-            assert isinstance(new_space, Space), "output of change_obs_space_fn to observation_lambda_wrapper must be a gym space"
-        self.observation_space = new_space
-
-    def _modify_observation(self, observation):
-        return self.change_observation_fn(observation)
-
 
 class BasicObservationWrapper(ObservationWrapper):
     """
@@ -204,33 +161,6 @@ class sticky_actions(gym.Wrapper):
         return super().step(action)
 
 
-class ActionWrapper(gym.Wrapper):
-    def __init__(self, env):
-        super().__init__(env)
-
-    def step(self, action):
-        return super().step(self._modify_action(action))
-
-
-class action_lambda(ActionWrapper):
-    def __init__(self, env, change_action_fn, change_space_fn):
-        assert callable(change_action_fn), "change_action_fn needs to be a function. It is {}".format(change_action_fn)
-        assert callable(change_space_fn), "change_space_fn needs to be a function. It is {}".format(change_space_fn)
-        self.change_action_fn = change_action_fn
-        self.change_space_fn = change_space_fn
-
-        super().__init__(env)
-        self._modify_spaces()
-
-    def _modify_spaces(self):
-        new_space = self.change_space_fn(self.action_space)
-        assert isinstance(new_space, Space), "output of change_space_fn argument to action_lambda_wrapper must be a gym space"
-        self.action_space = new_space
-
-    def _modify_action(self, action):
-        return self.change_action_fn(action, self.env.action_space)
-
-
 class clip_actions(ActionWrapper):
     def __init__(self, env):
         super().__init__(env)
@@ -238,20 +168,6 @@ class clip_actions(ActionWrapper):
 
     def _modify_action(self, action):
         action = np.clip(action, self.action_space.low, self.action_space.high)
-
-
-class RewardWrapper(gym.Wrapper):
-    def step(self, action):
-        obs, rew, done, info = super().step(action)
-        return obs, self._change_reward_fn(rew), done, info
-
-
-class reward_lambda(RewardWrapper):
-    def __init__(self, env, change_reward_fn):
-        assert callable(change_reward_fn), "change_reward_fn needs to be a function. It is {}".format(change_reward_fn)
-        self._change_reward_fn = change_reward_fn
-
-        super().__init__(env)
 
 
 class clip_reward(RewardWrapper):

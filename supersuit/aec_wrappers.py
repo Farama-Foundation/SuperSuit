@@ -11,73 +11,6 @@ import numpy as np
 import gym
 
 
-class ObservationWrapper(BaseWrapper):
-    def _modify_action(self, agent, action):
-        return action
-
-    def _update_step(self, agent):
-        pass
-
-
-class observation_lambda(ObservationWrapper):
-    def __init__(self, env, change_observation_fn, change_obs_space_fn=None):
-        assert callable(change_observation_fn), "change_observation_fn needs to be a function. It is {}".format(change_observation_fn)
-        assert change_obs_space_fn is None or callable(change_obs_space_fn), "change_obs_space_fn needs to be a function. It is {}".format(change_obs_space_fn)
-
-        old_space_fn = change_obs_space_fn
-        old_obs_fn = change_observation_fn
-
-        def space_fn_ignore(space, agent):
-            return old_space_fn(space)
-
-        def obs_fn_ignore(obs, agent):
-            return old_obs_fn(obs)
-
-        agent0 = env.possible_agents[0]
-        agent0_space = env.observation_spaces[agent0]
-
-        if change_obs_space_fn is not None:
-            try:
-                change_obs_space_fn(agent0_space, agent0)
-            except TypeError:
-                change_obs_space_fn = space_fn_ignore
-
-        try:
-            change_observation_fn(agent0_space.sample(), agent0)
-        except TypeError:
-            change_observation_fn = obs_fn_ignore
-
-        self.change_observation_fn = change_observation_fn
-        self.change_obs_space_fn = change_obs_space_fn
-
-        super().__init__(env)
-
-    def _check_wrapper_params(self):
-        if self.change_obs_space_fn is None:
-            spaces = self.observation_spaces.values()
-            for space in spaces:
-                assert isinstance(space, Box), "the observation_lambda_wrapper only allows the change_obs_space_fn argument to be optional for Box observation spaces"
-
-    def _modify_spaces(self):
-        new_spaces = {}
-        for agent, space in self.observation_spaces.items():
-            if self.change_obs_space_fn is None:
-                trans_low = self.change_observation_fn(space.low, agent)
-                trans_high = self.change_observation_fn(space.high, agent)
-                new_low = np.minimum(trans_low, trans_high)
-                new_high = np.maximum(trans_low, trans_high)
-
-                new_spaces[agent] = Box(low=new_low, high=new_high, dtype=new_low.dtype)
-            else:
-                new_space = self.change_obs_space_fn(space, agent)
-                assert isinstance(new_space, Space), "output of change_obs_space_fn to observation_lambda_wrapper must be a gym space"
-                new_spaces[agent] = new_space
-        self.observation_spaces = new_spaces
-
-    def _modify_observation(self, agent, observation):
-        return self.change_observation_fn(observation, agent)
-
-
 class BasicObservationWrapper(ObservationWrapper):
     """
     For internal use only
@@ -422,64 +355,6 @@ class sticky_actions(StepAltWrapper):
         super().step(action)
 
 
-class ActionWrapper(BaseWrapper):
-    def __init__(self, env):
-        super().__init__(env)
-
-    def _modify_observation(self, agent, observation):
-        return observation
-
-    def _update_step(self, agent):
-        pass
-
-
-class action_lambda(ActionWrapper):
-    def __init__(self, env, change_action_fn, change_space_fn):
-        assert callable(change_action_fn), "change_action_fn needs to be a function. It is {}".format(change_action_fn)
-        assert callable(change_space_fn), "change_space_fn needs to be a function. It is {}".format(change_space_fn)
-
-        old_space_fn = change_space_fn
-        old_action_fn = change_action_fn
-
-        def space_fn_ignore(space, agent):
-            return old_space_fn(space)
-
-        def action_fn_ignore(action, space, agent):
-            return old_action_fn(action, space)
-
-        agent0 = env.possible_agents[0]
-        agent0_space = env.action_spaces[agent0]
-
-        try:
-            new_space0 = change_space_fn(agent0_space, agent0)
-        except TypeError:
-            change_space_fn = space_fn_ignore
-            new_space0 = change_space_fn(agent0_space, agent0)
-
-        try:
-            change_action_fn(new_space0.sample(), agent0_space, agent0)
-        except TypeError:
-            change_action_fn = action_fn_ignore
-
-        self.change_action_fn = change_action_fn
-        self.change_space_fn = change_space_fn
-
-        super().__init__(env)
-
-    def _check_wrapper_params(self):
-        pass
-
-    def _modify_spaces(self):
-        new_spaces = {}
-        for agent, space in self.action_spaces.items():
-            new_spaces[agent] = self.change_space_fn(space, agent)
-            assert isinstance(new_spaces[agent], Space), "output of change_space_fn argument to action_lambda_wrapper must be a gym space"
-
-        self.action_spaces = new_spaces
-
-    def _modify_action(self, agent, action):
-        return self.change_action_fn(action, self.env.action_spaces[agent], agent)
-
 
 class pad_action_space(ActionWrapper):
     def _check_wrapper_params(self):
@@ -507,36 +382,6 @@ class clip_actions(ActionWrapper):
         act_space = self.action_spaces[agent]
         action = np.clip(action, act_space.low, act_space.high)
         return action
-
-
-class RewardWrapper(PettingzooWrap):
-    def _check_wrapper_params(self):
-        pass
-
-    def _modify_spaces(self):
-        pass
-
-    def reset(self):
-        super().reset()
-        self.rewards = {agent: self._change_reward_fn(reward) for agent, reward in self.rewards.items()}
-        self.__cumulative_rewards = {a: 0 for a in self.agents}
-        self._accumulate_rewards()
-
-    def step(self, action):
-        agent = self.env.agent_selection
-        super().step(action)
-        self.rewards = {agent: self._change_reward_fn(reward) for agent, reward in self.rewards.items()}
-        self.__cumulative_rewards[agent] = 0
-        self._cumulative_rewards = self.__cumulative_rewards
-        self._accumulate_rewards()
-
-
-class reward_lambda(RewardWrapper):
-    def __init__(self, env, change_reward_fn):
-        assert callable(change_reward_fn), "change_reward_fn needs to be a function. It is {}".format(change_reward_fn)
-        self._change_reward_fn = change_reward_fn
-
-        super().__init__(env)
 
 
 class clip_reward(RewardWrapper):
