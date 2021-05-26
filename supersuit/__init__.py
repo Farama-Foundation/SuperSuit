@@ -10,30 +10,6 @@ from . import aec_vector
 __version__ = "2.6.5"
 
 
-class WrapperChooser:
-    def __init__(self, aec_wrapper=None, gym_wrapper=None, parallel_wrapper=None):
-        assert aec_wrapper is not None or parallel_wrapper is not None, "either the aec wrapper or the parallel wrapper must be defined for all supersuit environments"
-        self.aec_wrapper = aec_wrapper
-        self.gym_wrapper = gym_wrapper
-        self.parallel_wrapper = parallel_wrapper
-
-    def __call__(self, env, *args, **kwargs):
-        if isinstance(env, gym.Env):
-            if self.gym_wrapper is None:
-                raise ValueError(f"{self.wrapper_name} does not apply to gym environments, pettingzoo environments only")
-            return self.gym_wrapper(env, *args, **kwargs)
-        elif isinstance(env, AECEnv):
-            if self.aec_wrapper is not None:
-                return self.aec_wrapper(env, *args, **kwargs)
-            else:
-                return from_parallel(self.parallel_wrapper(to_parallel(env), *args, **kwargs))
-        elif isinstance(env, ParallelEnv):
-            if self.parallel_wrapper is not None:
-                return self.parallel_wrapper(env, *args, **kwargs)
-            else:
-                return to_parallel(self.aec_wrapper(from_parallel(env), *args, **kwargs))
-        else:
-            raise ValueError("environment passed to supersuit wrapper must either be a gym environment or a pettingzoo environment")
 
 
 class DeprecatedWrapper(ImportError):
@@ -48,13 +24,8 @@ class Deprecated:
     def __call__(self, env, *args, **kwargs):
         raise DeprecatedWrapper(f"{self.name}_{self.old_version} is now Deprecated, use {self.name}_{self.new_version} instead")
 
-from .lambda_wrappers.action_lambda import gym_action_lambda, aec_action_lambda
-from .lambda_wrappers.observation_lambda import gym_observation_lambda, aec_observation_lambda
-from .lambda_wrappers.reward_lambda import gym_reward_lambda, aec_reward_lambda
+from .lambda_wrappers import action_lambda_v0, observation_lambda_v0, reward_lambda_v0
 
-observation_lambda_v0 = WrapperChooser(aec_wrapper=aec_observation_lambda, gym_wrapper=gym_observation_lambda)
-action_lambda_v0 = WrapperChooser(aec_wrapper=aec_action_lambda, gym_wrapper=gym_action_lambda)
-reward_lambda_v0 = WrapperChooser(aec_wrapper=aec_reward_lambda, gym_wrapper=gym_reward_lambda)
 
 
 # black_death_v0 = Deprecated("black_death", "v0", "v1")

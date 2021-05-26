@@ -2,6 +2,7 @@ import gym
 import numpy as np
 from gym.spaces import Box, Space, Discrete
 from supersuit.base_aec_wrapper import BaseWrapper
+from supersuit.utils.wrapper_chooser import WrapperChooser
 
 
 class aec_action_lambda(BaseWrapper):
@@ -78,3 +79,6 @@ class gym_action_lambda(gym.Wrapper):
 
     def step(self, action):
         return super().step(self._modify_action(action))
+
+
+action_lambda_v0 = WrapperChooser(aec_wrapper=aec_action_lambda, gym_wrapper=gym_action_lambda)

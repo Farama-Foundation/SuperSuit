@@ -2,6 +2,7 @@ import gym
 import numpy as np
 from gym.spaces import Box, Space, Discrete
 from supersuit.base_aec_wrapper import BaseWrapper
+from supersuit.utils.wrapper_chooser import WrapperChooser
 
 
 class aec_observation_lambda(BaseWrapper):
@@ -109,3 +110,6 @@ class gym_observation_lambda(gym.Wrapper):
         observation = self.env.reset()
         observation = self._modify_observation(observation)
         return observation
+
+
+observation_lambda_v0 = WrapperChooser(aec_wrapper=aec_observation_lambda, gym_wrapper=gym_observation_lambda)

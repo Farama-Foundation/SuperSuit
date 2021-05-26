@@ -2,6 +2,7 @@ import gym
 import numpy as np
 from gym.spaces import Box, Space, Discrete
 from supersuit.base_aec_wrapper import PettingzooWrap
+from supersuit.utils.wrapper_chooser import WrapperChooser
 
 
 class aec_reward_lambda(PettingzooWrap):
@@ -42,3 +43,6 @@ class gym_reward_lambda(gym.Wrapper):
     def step(self, action):
         obs, rew, done, info = super().step(action)
         return obs, self._change_reward_fn(rew), done, info
+
+
+reward_lambda_v0 = WrapperChooser(aec_wrapper=aec_reward_lambda, gym_wrapper=gym_reward_lambda)
