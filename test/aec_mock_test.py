@@ -129,6 +129,7 @@ wrappers = [
     supersuit.reward_lambda_v0(new_dummy(), lambda x: x / 10),
     supersuit.clip_reward_v0(new_dummy()),
     supersuit.clip_actions_v0(new_continuous_dummy()),
+    supersuit.scale_actions_v0(new_continuous_dummy()),
     supersuit.frame_skip_v0(new_dummy(), 4),
     supersuit.sticky_actions_v0(new_dummy(), 0.75),
     supersuit.delay_observations_v0(new_dummy(), 3),
@@ -265,3 +266,28 @@ def test_dehomogenize():
     env.reset()
     assert all([s.n == 6 for s in env.action_spaces.values()])
     env.step(5)
+
+
+class DummyNaNEnv(DummyEnv):
+    metadata = {"render.modes": ["human"]}
+    def step(self, action):
+        super().step(action)
+        assert (not (np.isnan(action))), "Action was a NaN, even though it should not have been."
+
+
+def test_NaN_noop():
+    base_env = DummyNaNEnv(base_obs, base_obs_space, base_act_spaces)
+    wrapped_env = supersuit.nan_noop_v0(base_env)
+    wrapped_env.step(np.nan)
+
+
+def test_NaN_zeros():
+    base_env = DummyNaNEnv(base_obs, base_obs_space, base_act_spaces)
+    wrapped_env = supersuit.nan_zeros_v0(base_env)
+    wrapped_env.step(np.nan)
+
+
+def test_NaN_random():
+    base_env = DummyNaNEnv(base_obs, base_obs_space, base_act_spaces)
+    wrapped_env = supersuit.nan_random_v0(base_env)
+    wrapped_env.step(np.nan)

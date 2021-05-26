@@ -3,10 +3,10 @@ from gym.spaces import Box, Space, Discrete
 from . import basic_transforms
 from .utils.frame_stack import stack_obs_space, stack_init, stack_obs
 from .action_transforms import homogenize_ops
-from .adv_transforms import agent_indicator as agent_ider
-from .adv_transforms.frame_skip import check_transform_frameskip
-from .adv_transforms.obs_delay import Delayer
-from .adv_transforms.accumulator import Accumulator
+from .utils import agent_indicator as agent_ider
+from .utils.frame_skip import check_transform_frameskip
+from .utils.obs_delay import Delayer
+from .utils.accumulator import Accumulator
 import warnings
 import random
 import numpy as np
@@ -551,7 +551,7 @@ class clip_reward(RewardWrapper):
     def _change_reward_fn(self, rew):
         return max(min(rew, self.upper_bound), self.lower_bound)
 
-class nan_noop_wrapper(BaseWrapper):
+class nan_noop(BaseWrapper):
     '''
     this wrapper expects there to be a no_op_action parameter which
     is the action to take in cases when nothing should be done.
@@ -562,7 +562,7 @@ class nan_noop_wrapper(BaseWrapper):
             action = no_op_action
         return super().step(action)
 
-class nan_zeros_wrapper(BaseWrapper):
+class nan_zeros(BaseWrapper):
     '''
     this wrapper warns and executes a zeros action when nothing should be done.
     Only for Box action spaces.
@@ -574,7 +574,7 @@ class nan_zeros_wrapper(BaseWrapper):
         return super().step(action)
 
 
-class nan_random_wrapper(BaseWrapper):
+class nan_random(BaseWrapper):
     '''
     this wrapper takes a random action
     '''
@@ -593,7 +593,8 @@ class nan_random_wrapper(BaseWrapper):
         self.np_random, seed = gym.utils.seeding.np_random(seed)
         super().seed(seed)
 
-class scale_actions_wrapper(BaseWrapper):
+
+class scale_actions(BaseWrapper):
     '''
     this wrapper expects a scale parameter and scales actions accordingly.
     '''
@@ -607,7 +608,7 @@ class scale_actions_wrapper(BaseWrapper):
 
             new_spaces[agent] = Box(low=new_low, high=new_high, dtype=new_low.dtype)
         self.action_spaces = new_spaces
-        
+
     def step(self, action, observe = True):
         action = action * self.scale
         return super().step(action)

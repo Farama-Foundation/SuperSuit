@@ -62,6 +62,7 @@ wrappers = [
     supersuit.reward_lambda_v0(knights_archers_zombies_v7.env(), lambda x: x / 10),
     supersuit.clip_reward_v0(knights_archers_zombies_v7.env()),
     supersuit.clip_actions_v0(prison_v3.env(continuous=True)),
+    supersuit.scale_actions_v0(prison_v3.env(continuous=True)),
     supersuit.frame_skip_v0(knights_archers_zombies_v7.env(), 4),
     supersuit.sticky_actions_v0(knights_archers_zombies_v7.env(), 0.75),
     supersuit.delay_observations_v0(knights_archers_zombies_v7.env(), 3),

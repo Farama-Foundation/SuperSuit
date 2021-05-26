@@ -70,8 +70,13 @@ observation_lambda_v0 = WrapperFactory("observation_lambda")
 reward_lambda_v0 = WrapperFactory("reward_lambda")
 frame_skip_v0 = WrapperFactory("frame_skip")
 sticky_actions_v0 = WrapperFactory("sticky_actions")
+scale_actions_v0 = WrapperFactory("scale_actions")
 delay_observations_v0 = WrapperFactory("delay_observations")
 max_observation_v0 = WrapperFactory("max_observation")
+
+nan_noop_v0 = WrapperFactory("nan_noop")
+nan_zeros_v0 = WrapperFactory("nan_zeros")
+nan_random_v0 = WrapperFactory("nan_random")
 
 black_death_v0 = Deprecated("black_death", "v0", "v1")
 black_death_v1 = WrapperFactory("black_death", False)
