@@ -381,7 +381,7 @@ class frame_skip(StepAltWrapper):
                 for agent in self.env.agents:
                     self.rewards[agent] += self.env.rewards[agent]
                 self.infos[self.env.agent_selection] = info
-                while not self.env.env_done and self.env.dones[self.env.agent_selection]:
+                while self.env.agents and self.env.dones[self.env.agent_selection]:
                     done_agent = self.env.agent_selection
                     self.dones[done_agent] = True
                     self._final_observations[done_agent] = self.env.observe(done_agent)
