@@ -5,6 +5,7 @@ from gym.spaces import Box, Discrete
 from .utils.frame_stack import stack_obs_space, stack_init, stack_obs
 from .utils.accumulator import Accumulator
 import numpy as np
+import gym
 
 
 def delay_observations_v0(env, delay):

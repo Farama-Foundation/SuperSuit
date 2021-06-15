@@ -16,8 +16,8 @@ class aec_observation_lambda(BaseWrapper):
         def space_fn_ignore(space, agent):
             return old_space_fn(space)
 
-        def obs_fn_ignore(obs, agent):
-            return old_obs_fn(obs)
+        def obs_fn_ignore(obs, obs_space, agent):
+            return old_obs_fn(obs, obs_space)
 
         agent0 = env.possible_agents[0]
         agent0_space = env.observation_spaces[agent0]
@@ -29,7 +29,7 @@ class aec_observation_lambda(BaseWrapper):
                 change_obs_space_fn = space_fn_ignore
 
         try:
-            change_observation_fn(agent0_space.sample(), agent0)
+            change_observation_fn(agent0_space.sample(), agent0_space, agent0)
         except TypeError:
             change_observation_fn = obs_fn_ignore
 
@@ -51,8 +51,8 @@ class aec_observation_lambda(BaseWrapper):
         new_spaces = {}
         for agent, space in self.observation_spaces.items():
             if self.change_obs_space_fn is None:
-                trans_low = self.change_observation_fn(space.low, agent)
-                trans_high = self.change_observation_fn(space.high, agent)
+                trans_low = self.change_observation_fn(space.low, space, agent)
+                trans_high = self.change_observation_fn(space.high, space, agent)
                 new_low = np.minimum(trans_low, trans_high)
                 new_high = np.maximum(trans_low, trans_high)
 
@@ -64,7 +64,7 @@ class aec_observation_lambda(BaseWrapper):
         self.observation_spaces = new_spaces
 
     def _modify_observation(self, agent, observation):
-        return self.change_observation_fn(observation, agent)
+        return self.change_observation_fn(observation, self.env.observation_spaces[agent], agent)
 
 
 class gym_observation_lambda(gym.Wrapper):
@@ -87,8 +87,8 @@ class gym_observation_lambda(gym.Wrapper):
         space = self.observation_space
 
         if self.change_obs_space_fn is None:
-            new_low = self.change_observation_fn(space.low)
-            new_high = self.change_observation_fn(space.high)
+            new_low = self.change_observation_fn(space.low, space)
+            new_high = self.change_observation_fn(space.high, space)
             new_space = Box(low=new_low, high=new_high, dtype=new_low.dtype)
         else:
             new_space = self.change_obs_space_fn(space)
@@ -96,7 +96,7 @@ class gym_observation_lambda(gym.Wrapper):
         self.observation_space = new_space
 
     def _modify_observation(self, observation):
-        return self.change_observation_fn(observation)
+        return self.change_observation_fn(observation, self.env.observation_space)
 
     def step(self, action):
         observation, rew, done, info = self.env.step(action)

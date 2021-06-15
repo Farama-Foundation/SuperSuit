@@ -159,7 +159,7 @@ def test_rew_lambda():
 
 
 def test_observation_lambda():
-    def add1(obs):
+    def add1(obs, obs_space):
         return obs + 1
 
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
@@ -172,7 +172,7 @@ def test_observation_lambda():
     obs0, _, _, _ = env.last()
     assert int(obs0[0][0][0]) == 2
 
-    def tile_obs(obs):
+    def tile_obs(obs, obs_space):
         shape_size = len(obs.shape)
         tile_shape = [1] * shape_size
         tile_shape[0] *= 2
@@ -193,7 +193,7 @@ def test_observation_lambda():
     assert obs0.shape == (32, 8, 3)
 
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
-    env = observation_lambda_v0(base_env, lambda obs, agent: obs + base_env.possible_agents.index(agent))
+    env = observation_lambda_v0(base_env, lambda obs, obs_space, agent: obs + base_env.possible_agents.index(agent))
     env.reset()
     obs0 = env.observe(env.agents[0])
     obs1 = env.observe(env.agents[1])
@@ -204,7 +204,7 @@ def test_observation_lambda():
 
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
     env = observation_lambda_v0(base_env,
-                                lambda obs, agent: obs + base_env.possible_agents.index(agent),
+                                lambda obs, obs_space, agent: obs + base_env.possible_agents.index(agent),
                                 lambda obs_space, agent: Box(obs_space.low, obs_space.high + base_env.possible_agents.index(agent)))
     env.reset()
     obs0 = env.observe(env.agents[0])
