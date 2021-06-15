@@ -11,67 +11,12 @@ import numpy as np
 import gym
 
 
-class BasicObservationWrapper(ObservationWrapper):
-    """
-    For internal use only
-    """
-
-    def __init__(self, env, module, param):
-        self.check_param = module.check_param
-        self.change_obs_space = module.change_obs_space
-        self.change_observation = module.change_observation
-        self.param = param
-        super().__init__(env)
-
-    def _check_wrapper_params(self):
-        assert all([isinstance(obs_space, Box) for obs_space in self.observation_spaces.values()]), "All agents' observation spaces are not Box, they are: {}.".format(self.observation_spaces)
-        for obs_space in self.env.observation_spaces.values():
-            self.check_param(obs_space, self.param)
-
-    def _modify_spaces(self):
-        new_spaces = {}
-        for agent, space in self.observation_spaces.items():
-            new_spaces[agent] = self.change_obs_space(space, self.param)
-        self.observation_spaces = new_spaces
-
-    def _modify_observation(self, agent, observation):
-        obs_space = self.env.observation_spaces[agent]
-        return self.change_observation(observation, obs_space, self.param)
+class ObservationWrapper(BaseWrapper):
+    def _modify_action(self, agent, action):
+        return action
 
 
-class color_reduction(BasicObservationWrapper):
-    def __init__(self, env, mode="full"):
-        super().__init__(env, basic_transforms.color_reduction, mode)
-
-
-class resize(BasicObservationWrapper):
-    def __init__(self, env, x_size, y_size, linear_interp=False):
-        scale_tuple = (x_size, y_size, linear_interp)
-        super().__init__(env, basic_transforms.resize, scale_tuple)
-
-
-class dtype(BasicObservationWrapper):
-    def __init__(self, env, dtype):
-        super().__init__(env, basic_transforms.dtype, dtype)
-
-
-class flatten(BasicObservationWrapper):
-    def __init__(self, env):
-        super().__init__(env, basic_transforms.flatten, True)
-
-
-class reshape(BasicObservationWrapper):
-    def __init__(self, env, shape):
-        super().__init__(env, basic_transforms.reshape, shape)
-
-
-class normalize_obs(BasicObservationWrapper):
-    def __init__(self, env, env_min=0.0, env_max=1.0):
-        shape = (env_min, env_max)
-        super().__init__(env, basic_transforms.normalize_obs, shape)
-
-
-class agent_indicator(ObservationWrapper):
+class agent_indicator_v0(ObservationWrapper):
     def __init__(self, env, type_only=False):
         self.type_only = type_only
         self.indicator_map = agent_ider.get_indicator_map(env.possible_agents, type_only)
@@ -93,7 +38,7 @@ class agent_indicator(ObservationWrapper):
         return new_obs
 
 
-class pad_observations(ObservationWrapper):
+class pad_observations_v0(ObservationWrapper):
     def _check_wrapper_params(self):
         spaces = list(self.observation_spaces.values())
         homogenize_ops.check_homogenize_spaces(spaces)
@@ -109,7 +54,7 @@ class pad_observations(ObservationWrapper):
         return new_obs
 
 
-class black_death(ObservationWrapper):
+class black_death_v1(ObservationWrapper):
     def _check_wrapper_params(self):
         for space in self.observation_spaces.values():
             assert isinstance(space, gym.spaces.Box), f"observation sapces for black death must be Box spaces, is {space}"
@@ -161,104 +106,8 @@ class black_death(ObservationWrapper):
         self._dones_step_first()
 
 
-class max_observation(ObservationWrapper):
-    def __init__(self, env, memory):
-        self.memory = memory
-        self.reduction = np.maximum
-        super().__init__(env)
-
-    def _check_wrapper_params(self):
-        int(self.memory)  # delay must be an int
-
-    def _modify_spaces(self):
-        return
-
-    def reset(self):
-        self._accumulators = {agent: Accumulator(obs_space, self.memory, self.reduction) for agent, obs_space in self.observation_spaces.items()}
-        super().reset()
-        for agent, accum in self._accumulators.items():
-            accum.add(self.env.observe(agent))
-
-    def _update_step(self, agent):
-        observation = self.env.observe(agent)
-        self._accumulators[agent].add(observation)
-
-    def _modify_observation(self, agent, observation):
-        return self._accumulators[agent].get()
-
-
-class delay_observations(ObservationWrapper):
-    def __init__(self, env, delay):
-        self.delay = delay
-        super().__init__(env)
-
-    def _check_wrapper_params(self):
-        int(self.delay)  # delay must be an int
-
-    def _modify_spaces(self):
-        return
-
-    def reset(self):
-        self._delayers = {agent: Delayer(obs_space, self.delay) for agent, obs_space in self.observation_spaces.items()}
-        self._observes = {agent: None for agent in self.possible_agents}
-        super().reset()
-
-    def _update_step(self, agent):
-        observation = self.env.observe(agent)
-        self._observes[agent] = self._delayers[agent].add(observation)
-
-    def _modify_observation(self, agent, observation):
-        return self._observes[agent]
-
-
-class frame_stack(BaseWrapper):
-    def __init__(self, env, num_frames=4):
-        self.stack_size = num_frames
-        super().__init__(env)
-
-    def _check_wrapper_params(self):
-        assert isinstance(self.stack_size, int), "stack size of frame_stack must be an int"
-        for space in self.observation_spaces.values():
-            if isinstance(space, Box):
-                assert 1 <= len(space.shape) <= 3, "frame_stack only works for 1, 2 or 3 dimensional observations"
-            elif isinstance(space, Discrete):
-                pass
-            else:
-                assert False, "Stacking is currently only allowed for Box and Discrete observation spaces. The given observation space is {}".format(space)
-
-    def reset(self):
-        self.stacks = {agent: stack_init(space, self.stack_size) for agent, space in self.env.observation_spaces.items()}
-        super().reset()
-
-    def _modify_spaces(self):
-        self.observation_spaces = {agent: stack_obs_space(space, self.stack_size) for agent, space in self.observation_spaces.items()}
-
-    def _modify_action(self, agent, action):
-        return action
-
-    def _modify_observation(self, agent, observation):
-        return self.stacks[agent]
-
-    def _update_step(self, agent):
-        observation = self.env.observe(agent)
-        self.stacks[agent] = stack_obs(
-            self.stacks[agent],
-            observation,
-            self.env.observation_spaces[agent],
-            self.stack_size,
-        )
-
 
 class StepAltWrapper(BaseWrapper):
-    def _check_wrapper_params(self):
-        pass
-
-    def _modify_spaces(self):
-        pass
-
-    def _update_step(self, agent):
-        pass
-
     def _modify_action(self, agent, action):
         return action
 
@@ -266,7 +115,7 @@ class StepAltWrapper(BaseWrapper):
         return observation
 
 
-class frame_skip(StepAltWrapper):
+class frame_skip_aec(StepAltWrapper):
     def __init__(self, env, num_frames):
         super().__init__(env)
         assert isinstance(num_frames, int), "multi-agent frame skip only takes in an integer"
@@ -333,30 +182,10 @@ class frame_skip(StepAltWrapper):
         self._dones_step_first()
 
 
-class sticky_actions(StepAltWrapper):
-    def __init__(self, env, repeat_action_probability):
-        super().__init__(env)
-        assert 0 <= repeat_action_probability < 1
-        self.repeat_action_probability = repeat_action_probability
-        self.np_random, seed = gym.utils.seeding.np_random(None)
+class pad_action_space_v0(BaseWrapper):
+    def _modify_observation(self, agent, obs):
+        return obs
 
-    def seed(self, seed=None):
-        self.np_random, seed = gym.utils.seeding.np_random(seed)
-        super().seed(seed)
-
-    def reset(self):
-        self.old_action = None
-        super().reset()
-
-    def step(self, action):
-        if self.old_action is not None and self.np_random.uniform() < self.repeat_action_probability:
-            action = self.old_action
-
-        super().step(action)
-
-
-
-class pad_action_space(ActionWrapper):
     def _check_wrapper_params(self):
         homogenize_ops.check_homogenize_spaces(list(self.env.action_spaces.values()))
 
@@ -368,28 +197,3 @@ class pad_action_space(ActionWrapper):
     def _modify_action(self, agent, action):
         new_action = homogenize_ops.dehomogenize_actions(self.env.action_spaces[agent], action)
         return new_action
-
-
-class clip_actions(ActionWrapper):
-    def _check_wrapper_params(self):
-        for space in self.env.action_spaces.values():
-            assert isinstance(space, Box), "clip_actions only works for Box action spaces"
-
-    def _modify_spaces(self):
-        pass
-
-    def _modify_action(self, agent, action):
-        act_space = self.action_spaces[agent]
-        action = np.clip(action, act_space.low, act_space.high)
-        return action
-
-
-class clip_reward(RewardWrapper):
-    def __init__(self, env, lower_bound=-1, upper_bound=1):
-        self.lower_bound = lower_bound
-        self.upper_bound = upper_bound
-
-        super().__init__(env)
-
-    def _change_reward_fn(self, rew):
-        return max(min(rew, self.upper_bound), self.lower_bound)

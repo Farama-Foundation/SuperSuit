@@ -1,15 +1,9 @@
 import gym
-from pettingzoo.utils.conversions import to_parallel, ParallelEnv, from_parallel
-from pettingzoo.utils.env import AECEnv
-# from . import aec_wrappers
-# from . import gym_wrappers
-# from . import parallel_wrappers
 from . import vector_constructors
 from . import aec_vector
+from .utils.wrapper_chooser import WrapperChooser
 
 __version__ = "2.6.5"
-
-
 
 
 class DeprecatedWrapper(ImportError):
@@ -24,15 +18,18 @@ class Deprecated:
     def __call__(self, env, *args, **kwargs):
         raise DeprecatedWrapper(f"{self.name}_{self.old_version} is now Deprecated, use {self.name}_{self.new_version} instead")
 
-from .lambda_wrappers import action_lambda_v0, observation_lambda_v0, reward_lambda_v0
+from .lambda_wrappers import action_lambda_v1, observation_lambda_v0, reward_lambda_v0
+from .basic_wrappers import color_reduction_v0, resize_v0, dtype_v0, \
+        flatten_v0, reshape_v0, normalize_obs_v0, clip_actions_v0, clip_reward_v0
+from .more_wrappers import delay_observations_v0, frame_stack_v1, max_observation_v0, sticky_actions_v0
+from .aec_wrappers import agent_indicator_v0, pad_observations_v0, black_death_v1, pad_action_space_v0, frame_skip_aec
+from .gym_wrappers import frame_skip_gym
 
+frame_skip_v0 = WrapperChooser(aec_wrapper=frame_skip_aec, gym_wrapper=frame_skip_gym)
 
-
-# black_death_v0 = Deprecated("black_death", "v0", "v1")
-# black_death_v1 = WrapperFactory("black_death", False)
-# agent_indicator_v0 = WrapperFactory("agent_indicator", False)
-# pad_action_space_v0 = WrapperFactory("pad_action_space", False)
-# pad_observations_v0 = WrapperFactory("pad_observations", False)
+black_death_v0 = Deprecated("black_death", "v0", "v1")
+frame_stack_v0 = Deprecated("frame_stack", "v0", "v1")
+action_lambda_v0 = Deprecated("action_lambda", "v0", "v1")
 
 gym_vec_env_v0 = vector_constructors.gym_vec_env
 stable_baselines_vec_env_v0 = vector_constructors.stable_baselines_vec_env

@@ -15,6 +15,12 @@ class shared_wrapper_aec(PettingzooWrap):
             self.observation_spaces[agent] = self.modifiers[agent].modify_obs_space(self.observation_spaces[agent])
             self.action_spaces[agent] = self.modifiers[agent].modify_action_space(self.action_spaces[agent])
 
+    def seed(self, seed=None):
+        for mod in self.modifiers:
+            mod.seed(seed)
+            if seed is not None:
+                seed += 1
+
     def reset(self):
         for mod in self.modifiers.values():
             mod.reset()
@@ -37,6 +43,9 @@ class shared_wrapper_gym(gym.Wrapper):
         self.modifier = modifier_class()
         self.observation_space = self.modifier.modify_obs_space(self.observation_space)
         self.action_space = self.modifier.modify_action_space(self.action_space)
+
+    def seed(self, seed=None):
+        self.modifier.seed(seed)
 
     def reset(self):
         self.modifier.reset()

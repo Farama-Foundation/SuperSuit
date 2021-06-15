@@ -1,9 +1,9 @@
 from .utils import basic_transforms
-from .lambda_wrappers import observation_lambda_v0
+from .lambda_wrappers import observation_lambda_v0, action_lambda_v1, reward_lambda_v0
 
 def basic_obs_wrapper(env, module, param):
     def change_space(space):
-        module.check_param(space, mode)
+        module.check_param(space, param)
         return module.change_obs_space(space, param)
 
     def change_obs(obs, obs_space):
@@ -29,3 +29,9 @@ def reshape_v0(env, shape):
 def normalize_obs_v0(env, env_min=0.0, env_max=1.0):
     shape = (env_min, env_max)
     return basic_obs_wrapper(env, basic_transforms.normalize_obs, (env_min, env_max))
+
+def clip_actions_v0(env):
+    return action_lambda_v1(env, lambda action, act_space: np.clip(action, act_space.low, act_space.high))
+
+def clip_reward_v0(env, lower_bound=-1, upper_bound=1):
+    return reward_lambda_v0(env, lambda rew: max(min(rew, upper_bound), lower_bound))

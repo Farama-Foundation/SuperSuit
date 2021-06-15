@@ -14,10 +14,10 @@ class BaseWrapper(PettingzooWrap):
         self._modify_spaces()
 
     def _check_wrapper_params(self):
-        raise NotImplementedError()
+        pass
 
     def _modify_spaces(self):
-        raise NotImplementedError()
+        pass
 
     def _modify_action(self, agent, action):
         raise NotImplementedError()
@@ -26,7 +26,7 @@ class BaseWrapper(PettingzooWrap):
         raise NotImplementedError()
 
     def _update_step(self, agent):
-        raise NotImplementedError()
+        pass
 
     def reset(self):
         super().reset()

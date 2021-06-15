@@ -38,14 +38,8 @@ class aec_action_lambda(BaseWrapper):
 
         super().__init__(env)
 
-    def _check_wrapper_params(self):
-        pass
-
     def _modify_observation(self, agent, observation):
         return observation
-
-    def _update_step(self, agent):
-        pass
 
     def _modify_spaces(self):
         new_spaces = {}
@@ -81,4 +75,4 @@ class gym_action_lambda(gym.Wrapper):
         return super().step(self._modify_action(action))
 
 
-action_lambda_v0 = WrapperChooser(aec_wrapper=aec_action_lambda, gym_wrapper=gym_action_lambda)
+action_lambda_v1 = WrapperChooser(aec_wrapper=aec_action_lambda, gym_wrapper=gym_action_lambda)

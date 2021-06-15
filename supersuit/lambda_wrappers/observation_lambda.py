@@ -41,9 +41,6 @@ class aec_observation_lambda(BaseWrapper):
     def _modify_action(self, agent, action):
         return action
 
-    def _update_step(self, agent):
-        pass
-
     def _check_wrapper_params(self):
         if self.change_obs_space_fn is None:
             spaces = self.observation_spaces.values()
