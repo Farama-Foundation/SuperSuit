@@ -1,7 +1,7 @@
 import gym
 import numpy as np
 from gym.spaces import Box, Space, Discrete
-from supersuit.base_aec_wrapper import PettingzooWrap
+from supersuit.utils.base_aec_wrapper import PettingzooWrap
 from supersuit.utils.wrapper_chooser import WrapperChooser
 
 

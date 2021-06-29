@@ -1,5 +1,6 @@
 from .utils import basic_transforms
 from .lambda_wrappers import observation_lambda_v0, action_lambda_v1, reward_lambda_v0
+import numpy as np
 
 def basic_obs_wrapper(env, module, param):
     def change_space(space):

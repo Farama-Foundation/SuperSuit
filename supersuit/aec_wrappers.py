@@ -1,4 +1,4 @@
-from .base_aec_wrapper import BaseWrapper, PettingzooWrap
+from .utils.base_aec_wrapper import BaseWrapper, PettingzooWrap
 from gym.spaces import Box, Space, Discrete
 from .utils import basic_transforms
 from .utils.frame_stack import stack_obs_space, stack_init, stack_obs
@@ -7,6 +7,7 @@ from .utils import agent_indicator as agent_ider
 from .utils.frame_skip import check_transform_frameskip
 from .utils.obs_delay import Delayer
 from .utils.accumulator import Accumulator
+from .utils.wrapper_chooser import WrapperChooser
 import numpy as np
 import gym
 
@@ -54,7 +55,7 @@ class pad_observations_v0(ObservationWrapper):
         return new_obs
 
 
-class black_death_v1(ObservationWrapper):
+class black_death_aec(ObservationWrapper):
     def _check_wrapper_params(self):
         for space in self.observation_spaces.values():
             assert isinstance(space, gym.spaces.Box), f"observation sapces for black death must be Box spaces, is {space}"
@@ -105,6 +106,8 @@ class black_death_v1(ObservationWrapper):
 
         self._dones_step_first()
 
+
+black_death_v1 = WrapperChooser(aec_wrapper=black_death_aec)
 
 
 class StepAltWrapper(BaseWrapper):
@@ -163,7 +166,7 @@ class frame_skip_aec(StepAltWrapper):
                 for agent in self.env.agents:
                     self.rewards[agent] += self.env.rewards[agent]
                 self.infos[self.env.agent_selection] = info
-                while not self.env.env_done and self.env.dones[self.env.agent_selection]:
+                while self.env.agents and self.env.dones[self.env.agent_selection]:
                     done_agent = self.env.agent_selection
                     self.dones[done_agent] = True
                     self._final_observations[done_agent] = self.env.observe(done_agent)

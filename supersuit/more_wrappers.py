@@ -15,12 +15,12 @@ def delay_observations_v0(env, delay):
 
         def modify_obs(self, obs):
             obs = self.delayer.add(obs)
-            return super().modify_obs(obs)
+            return BaseModifier.modify_obs(self, obs)
 
     return shared_wrapper(env, DelayObsModifier)
 
 
-def frame_stack_v1(env, stack_size):
+def frame_stack_v1(env, stack_size=4):
     assert isinstance(stack_size, int), "stack size of frame_stack must be an int"
     class FrameStackModifier(BaseModifier):
         def modify_obs_space(self, obs_space):
@@ -33,6 +33,7 @@ def frame_stack_v1(env, stack_size):
 
             self.old_obs_space = obs_space
             self.observation_space = stack_obs_space(obs_space, stack_size)
+            return self.observation_space
 
         def reset(self):
             self.stack = stack_init(self.old_obs_space, stack_size)
