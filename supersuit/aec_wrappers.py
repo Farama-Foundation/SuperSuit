@@ -17,7 +17,7 @@ class ObservationWrapper(BaseWrapper):
         return action
 
 
-class agent_indicator_v0(ObservationWrapper):
+class agent_indicator_aec(ObservationWrapper):
     def __init__(self, env, type_only=False):
         self.type_only = type_only
         self.indicator_map = agent_ider.get_indicator_map(env.possible_agents, type_only)
@@ -39,7 +39,7 @@ class agent_indicator_v0(ObservationWrapper):
         return new_obs
 
 
-class pad_observations_v0(ObservationWrapper):
+class pad_observations_aec(ObservationWrapper):
     def _check_wrapper_params(self):
         spaces = list(self.observation_spaces.values())
         homogenize_ops.check_homogenize_spaces(spaces)
@@ -185,7 +185,7 @@ class frame_skip_aec(StepAltWrapper):
         self._dones_step_first()
 
 
-class pad_action_space_v0(BaseWrapper):
+class pad_action_space_aec(BaseWrapper):
     def _modify_observation(self, agent, obs):
         return obs
 

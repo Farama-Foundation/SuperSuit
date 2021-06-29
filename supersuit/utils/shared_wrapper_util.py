@@ -11,10 +11,12 @@ class shared_wrapper_aec(PettingzooWrap):
         super().__init__(env)
 
         self.modifiers = {}
+        self.observation_spaces = {}
+        self.action_spaces = {}
         for agent in self.env.possible_agents:
             self.modifiers[agent] = modifier_class()
-            self.observation_spaces[agent] = self.modifiers[agent].modify_obs_space(self.observation_spaces[agent])
-            self.action_spaces[agent] = self.modifiers[agent].modify_action_space(self.action_spaces[agent])
+            self.observation_spaces[agent] = self.modifiers[agent].modify_obs_space(self.env.observation_spaces[agent])
+            self.action_spaces[agent] = self.modifiers[agent].modify_action_space(self.env.action_spaces[agent])
 
     def seed(self, seed=None):
         for agent, mod in sorted(self.modifiers.items()):
@@ -44,10 +46,13 @@ class shared_wrapper_parr(ParallelWraper):
         super().__init__(env)
 
         self.modifiers = {}
+        self.observation_spaces = {}
+        self.action_spaces = {}
         for agent in self.env.possible_agents:
             self.modifiers[agent] = modifier_class()
-            self.observation_spaces[agent] = self.modifiers[agent].modify_obs_space(self.observation_spaces[agent])
-            self.action_spaces[agent] = self.modifiers[agent].modify_action_space(self.action_spaces[agent])
+            self.observation_spaces[agent] = self.modifiers[agent].modify_obs_space(self.env.observation_spaces[agent])
+            print(self.env.observation_spaces[agent])
+            self.action_spaces[agent] = self.modifiers[agent].modify_action_space(self.env.action_spaces[agent])
 
     def seed(self, seed=None):
         for agent, mod in sorted(self.modifiers.items()):

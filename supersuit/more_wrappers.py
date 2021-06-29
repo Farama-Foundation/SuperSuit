@@ -62,9 +62,7 @@ def max_observation_v0(env, memory):
 
         def modify_obs(self, obs):
             self.accumulator.add(obs)
-
-        def get_last_obs(self):
-            return self.accumulator.get()
+            return super().modify_obs(self.accumulator.get())
 
     return shared_wrapper(env, MaxObsModifier)
 
