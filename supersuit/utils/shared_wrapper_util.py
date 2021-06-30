@@ -19,6 +19,7 @@ class shared_wrapper_aec(PettingzooWrap):
             self.action_spaces[agent] = self.modifiers[agent].modify_action_space(self.env.action_spaces[agent])
 
     def seed(self, seed=None):
+        super().seed(seed)
         for agent, mod in sorted(self.modifiers.items()):
             mod.seed(seed)
             if seed is not None:
@@ -33,8 +34,9 @@ class shared_wrapper_aec(PettingzooWrap):
     def step(self, action):
         mod = self.modifiers[self.agent_selection]
         action = mod.modify_action(action)
+        if self.dones[self.agent_selection]:
+            action = None
         super().step(action)
-
         self.modifiers[self.agent_selection].modify_obs(super().observe(self.agent_selection))
 
     def observe(self, agent):
@@ -51,10 +53,10 @@ class shared_wrapper_parr(ParallelWraper):
         for agent in self.env.possible_agents:
             self.modifiers[agent] = modifier_class()
             self.observation_spaces[agent] = self.modifiers[agent].modify_obs_space(self.env.observation_spaces[agent])
-            print(self.env.observation_spaces[agent])
             self.action_spaces[agent] = self.modifiers[agent].modify_action_space(self.env.action_spaces[agent])
 
     def seed(self, seed=None):
+        super().seed(seed)
         for agent, mod in sorted(self.modifiers.items()):
             mod.seed(seed)
             if seed is not None:
@@ -82,6 +84,7 @@ class shared_wrapper_gym(gym.Wrapper):
         self.action_space = self.modifier.modify_action_space(self.action_space)
 
     def seed(self, seed=None):
+        super().seed(seed)
         self.modifier.seed(seed)
 
     def reset(self):
