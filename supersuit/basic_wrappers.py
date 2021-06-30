@@ -1,6 +1,9 @@
 from .utils import basic_transforms
 from .lambda_wrappers import observation_lambda_v0, action_lambda_v1, reward_lambda_v0
 import numpy as np
+from .utils.action_transforms import homogenize_ops
+from .utils import agent_indicator as agent_ider
+from pettingzoo.utils.env import AECEnv, ParallelEnv
 
 def basic_obs_wrapper(env, module, param):
     def change_space(space):
@@ -39,3 +42,36 @@ def clip_actions_v0(env):
 
 def clip_reward_v0(env, lower_bound=-1, upper_bound=1):
     return reward_lambda_v0(env, lambda rew: max(min(rew, upper_bound), lower_bound))
+
+def pad_action_space_v0(env):
+    assert isinstance(env, AECEnv) or isinstance(env, ParallelEnv), "pad_action_space_v0 only accepts an AECEnv or ParallelEnv"
+    homogenize_ops.check_homogenize_spaces(list(env.action_spaces.values()))
+    padded_space = homogenize_ops.homogenize_spaces(list(env.action_spaces.values()))
+    return action_lambda_v1(env,
+        lambda action, act_space: homogenize_ops.dehomogenize_actions(act_space, action),
+        lambda act_space: padded_space)
+
+def pad_observations_v0(env):
+    assert isinstance(env, AECEnv) or isinstance(env, ParallelEnv), "pad_observations_v0 only accepts an AECEnv or ParallelEnv"
+    spaces = list(env.observation_spaces.values())
+    homogenize_ops.check_homogenize_spaces(spaces)
+    padded_space = homogenize_ops.homogenize_spaces(spaces)
+    return observation_lambda_v0(env,
+        lambda obs, obs_space: homogenize_ops.homogenize_observations(obs_space, obs),
+        lambda obs_space: padded_space)
+
+def agent_indicator_v0(env, type_only=False):
+    assert isinstance(env, AECEnv) or isinstance(env, ParallelEnv), "agent_indicator_v0 only accepts an AECEnv or ParallelEnv"
+
+    indicator_map = agent_ider.get_indicator_map(env.possible_agents, type_only)
+    num_indicators = len(set(indicator_map.values()))
+
+    agent_ider.check_params(env.observation_spaces.values())
+
+    return observation_lambda_v0(env,
+        lambda obs, obs_space, agent: agent_ider.change_observation(
+            obs,
+            obs_space,
+            (indicator_map[agent], num_indicators),
+        ),
+        lambda obs_space: agent_ider.change_obs_space(obs_space, num_indicators))
