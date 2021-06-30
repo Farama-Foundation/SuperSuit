@@ -18,10 +18,11 @@ class Deprecated:
     def __call__(self, env, *args, **kwargs):
         raise DeprecatedWrapper(f"{self.name}_{self.old_version} is now Deprecated, use {self.name}_{self.new_version} instead")
 
+
 from .lambda_wrappers import action_lambda_v1, observation_lambda_v0, reward_lambda_v0
 from .basic_wrappers import color_reduction_v0, resize_v0, dtype_v0, \
-        flatten_v0, reshape_v0, normalize_obs_v0, clip_actions_v0, clip_reward_v0, \
-        pad_action_space_v0, pad_observations_v0, agent_indicator_v0
+    flatten_v0, reshape_v0, normalize_obs_v0, clip_actions_v0, clip_reward_v0, \
+    pad_action_space_v0, pad_observations_v0, agent_indicator_v0
 from .more_wrappers import delay_observations_v0, frame_stack_v1, max_observation_v0, sticky_actions_v0
 from .aec_wrappers import agent_indicator_aec, pad_observations_aec, black_death_aec, pad_action_space_aec, frame_skip_aec
 from .gym_wrappers import frame_skip_gym

@@ -22,6 +22,7 @@ def delay_observations_v0(env, delay):
 
 def frame_stack_v1(env, stack_size=4):
     assert isinstance(stack_size, int), "stack size of frame_stack must be an int"
+
     class FrameStackModifier(BaseModifier):
         def modify_obs_space(self, obs_space):
             if isinstance(obs_space, Box):

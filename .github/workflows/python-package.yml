@@ -35,7 +35,7 @@ jobs:
         xvfb-run -s "-screen 0 1400x900x24" pytest
     - name: Lint with flake8
       run: |
-        flake8 supersuit/ --ignore E501,E402,F401,E203
+        flake8 supersuit/ --ignore E501,E402,F401,E203,E128
         flake8 test/ --ignore E501,E402,F401,F841
     - name: Test installation
       run: |
