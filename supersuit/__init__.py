@@ -24,7 +24,7 @@ from .basic_wrappers import color_reduction_v0, resize_v0, dtype_v0, \
     flatten_v0, reshape_v0, normalize_obs_v0, clip_actions_v0, clip_reward_v0, \
     pad_action_space_v0, pad_observations_v0, agent_indicator_v0
 from .more_wrappers import delay_observations_v0, frame_stack_v1, max_observation_v0, sticky_actions_v0
-from .aec_wrappers import agent_indicator_aec, pad_observations_aec, black_death_aec, pad_action_space_aec, frame_skip_aec
+from .aec_wrappers import black_death_aec, frame_skip_aec
 from .gym_wrappers import frame_skip_gym
 
 frame_skip_v0 = WrapperChooser(aec_wrapper=frame_skip_aec, gym_wrapper=frame_skip_gym)
