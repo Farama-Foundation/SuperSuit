@@ -1,5 +1,4 @@
 from . import convert_box
-import cv2
 
 
 def check_param(obs_space, resize):
@@ -14,6 +13,7 @@ def change_obs_space(obs_space, param):
 
 
 def change_observation(obs, obs_space, resize):
+    import cv2
     xsize, ysize, linear_interp = resize
     if len(obs.shape) == 2:
         obs = obs.reshape(obs.shape + (1,))
