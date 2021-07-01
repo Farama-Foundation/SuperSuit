@@ -1,5 +1,5 @@
 from supersuit import concat_vec_envs_v0, pettingzoo_env_to_vec_env_v0
-from supersuit.gym_wrappers import frame_skip_gym
+from supersuit.generic_wrappers.frame_skip.frame_skip_gym import frame_skip_gym
 import gym
 from pettingzoo.mpe import simple_spread_v2
 

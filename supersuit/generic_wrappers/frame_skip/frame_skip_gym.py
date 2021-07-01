@@ -1,9 +1,6 @@
 from gym.spaces import Box, Space, Discrete
-from .utils import basic_transforms
-from .utils.frame_stack import stack_obs_space, stack_init, stack_obs
-from .utils.frame_skip import check_transform_frameskip
-from .utils.obs_delay import Delayer
-from .utils.accumulator import Accumulator
+from supersuit.utils import basic_transforms
+from supersuit.utils.frame_skip import check_transform_frameskip
 import numpy as np
 import gym
 
