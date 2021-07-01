@@ -3,7 +3,7 @@ from .vector import vector_constructors
 from . import aec_vector
 from .utils.wrapper_chooser import WrapperChooser
 
-__version__ = "2.6.5"
+__version__ = "2.6.6"
 
 
 from .generic_wrappers import * # NOQA
