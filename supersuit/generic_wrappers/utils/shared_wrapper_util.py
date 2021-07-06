@@ -1,6 +1,4 @@
 import gym
-import numpy as np
-from gym.spaces import Box, Space, Discrete
 from pettingzoo.utils.wrappers import OrderEnforcingWrapper as PettingzooWrap
 from supersuit.utils.wrapper_chooser import WrapperChooser
 from supersuit.utils.base_parallel_wrapper import ParallelWraper

@@ -1,7 +1,5 @@
 from .utils.base_modifier import BaseModifier
 from .utils.shared_wrapper_util import shared_wrapper
-from gym.spaces import Box, Discrete
-import numpy as np
 import gym
 
 

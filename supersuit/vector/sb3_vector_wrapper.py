@@ -1,5 +1,4 @@
 from stable_baselines3.common.vec_env import VecEnvWrapper
-import warnings
 
 
 class SB3VecEnvWrapper(VecEnvWrapper):

@@ -1,9 +1,8 @@
-import gym
-import numpy as np
-from gym.spaces import Box, Space, Discrete
+from gym.spaces import Space
 from supersuit.utils.base_aec_wrapper import BaseWrapper
 from supersuit.utils.wrapper_chooser import WrapperChooser
 from supersuit.utils.deprecated import Deprecated
+import gym
 
 
 class aec_action_lambda(BaseWrapper):

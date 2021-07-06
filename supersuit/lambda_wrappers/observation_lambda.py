@@ -1,6 +1,6 @@
 import gym
 import numpy as np
-from gym.spaces import Box, Space, Discrete
+from gym.spaces import Box, Space
 from supersuit.utils.base_aec_wrapper import BaseWrapper
 from supersuit.utils.wrapper_chooser import WrapperChooser
 

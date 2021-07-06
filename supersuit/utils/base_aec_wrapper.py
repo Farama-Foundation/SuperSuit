@@ -1,4 +1,3 @@
-from gym.spaces import Box
 from pettingzoo.utils.wrappers import OrderEnforcingWrapper as PettingzooWrap
 
 

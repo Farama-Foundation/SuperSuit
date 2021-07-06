@@ -1,5 +1,5 @@
-from supersuit.utils.base_aec_wrapper import BaseWrapper, PettingzooWrap
-from gym.spaces import Box, Space, Discrete
+from supersuit.utils.base_aec_wrapper import BaseWrapper
+from gym.spaces import Box
 import numpy as np
 import gym
 from supersuit.utils.wrapper_chooser import WrapperChooser

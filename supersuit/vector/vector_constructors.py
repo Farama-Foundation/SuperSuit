@@ -1,7 +1,7 @@
 import gym
 import cloudpickle
 from . import MakeCPUAsyncConstructor, MarkovVectorEnv
-from pettingzoo.utils.env import AECEnv, ParallelEnv
+from pettingzoo.utils.env import ParallelEnv
 import warnings
 
 

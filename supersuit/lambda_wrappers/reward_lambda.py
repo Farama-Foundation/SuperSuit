@@ -1,8 +1,6 @@
-import gym
-import numpy as np
-from gym.spaces import Box, Space, Discrete
 from supersuit.utils.base_aec_wrapper import PettingzooWrap
 from supersuit.utils.wrapper_chooser import WrapperChooser
+import gym
 
 
 class aec_reward_lambda(PettingzooWrap):

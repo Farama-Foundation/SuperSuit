@@ -1,9 +1,6 @@
 from .utils.base_modifier import BaseModifier
 from .utils.shared_wrapper_util import shared_wrapper
 from supersuit.utils.obs_delay import Delayer
-from gym.spaces import Box, Discrete
-import numpy as np
-import gym
 
 
 def delay_observations_v0(env, delay):

@@ -3,8 +3,6 @@ from .utils.shared_wrapper_util import shared_wrapper
 from gym.spaces import Box, Discrete
 from supersuit.utils.frame_stack import stack_obs_space, stack_init, stack_obs
 from supersuit.utils.deprecated import Deprecated
-import numpy as np
-import gym
 
 
 def frame_stack_v1(env, stack_size=4):
