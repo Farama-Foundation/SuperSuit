@@ -1,5 +1,5 @@
 from supersuit.utils import basic_transforms
-from .lambda_wrappers import observation_lambda_v0, action_lambda_v1, reward_lambda_v0
+from supersuit.lambda_wrappers import action_lambda_v1, observation_lambda_v0, reward_lambda_v0
 import numpy as np
 
 
