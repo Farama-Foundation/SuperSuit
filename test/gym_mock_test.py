@@ -51,6 +51,10 @@ wrappers = [
     supersuit.sticky_actions_v0(new_dummy(), 0.75),
     supersuit.delay_observations_v0(new_dummy(), 1),
     supersuit.max_observation_v0(new_dummy(), 3),
+    supersuit.nan_noop_v0(new_dummy(), 0),
+    supersuit.nan_zeros_v0(new_dummy()),
+    supersuit.nan_random_v0(new_dummy()),
+    supersuit.scale_actions_v0(new_continuous_dummy(), 0.5),
 ]
 
 

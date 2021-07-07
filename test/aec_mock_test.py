@@ -9,6 +9,7 @@ from supersuit import (
     pad_action_space_v0,
     pad_observations_v0,
     dtype_v0,
+    scale_actions_v0,
 )
 import supersuit
 import pytest
@@ -129,10 +130,14 @@ wrappers = [
     supersuit.reward_lambda_v0(new_dummy(), lambda x: x / 10),
     supersuit.clip_reward_v0(new_dummy()),
     supersuit.clip_actions_v0(new_continuous_dummy()),
+    supersuit.scale_actions_v0(new_continuous_dummy(), 0.3),
     supersuit.frame_skip_v0(new_dummy(), 4),
     supersuit.sticky_actions_v0(new_dummy(), 0.75),
     supersuit.delay_observations_v0(new_dummy(), 3),
     supersuit.max_observation_v0(new_dummy(), 3),
+    supersuit.nan_noop_v0(new_dummy(), 0),
+    supersuit.nan_zeros_v0(new_dummy()),
+    supersuit.nan_random_v0(new_dummy()),
 ]
 
 
@@ -265,3 +270,54 @@ def test_dehomogenize():
     env.reset()
     assert all([s.n == 6 for s in env.action_spaces.values()])
     env.step(5)
+
+
+class DummyNaNEnv(DummyEnv):
+    metadata = {"render.modes": ["human"]}
+    def step(self, action):
+        super().step(action)
+        assert (not (np.isnan(action))), "Action was a NaN, even though it should not have been."
+
+
+def test_NaN_noop():
+    base_env = DummyNaNEnv(base_obs, base_obs_space, base_act_spaces)
+    wrapped_env = supersuit.nan_noop_v0(base_env, 0)
+    wrapped_env.reset()
+    wrapped_env.step(np.nan)
+
+
+def test_NaN_zeros():
+    base_env = DummyNaNEnv(base_obs, base_obs_space, base_act_spaces)
+    wrapped_env = supersuit.nan_zeros_v0(base_env)
+    wrapped_env.reset()
+    wrapped_env.step(np.nan)
+
+
+def test_NaN_random():
+    base_env = DummyNaNEnv(base_obs, base_obs_space, base_act_spaces)
+    wrapped_env = supersuit.nan_random_v0(base_env)
+    wrapped_env.reset()
+    wrapped_env.step(np.nan)
+
+
+class DummyScaleEnv(DummyEnv):
+    def step(self, action):
+        self._observations[self.agent_selection] = action
+        super().step(action)
+
+
+def test_scale_action_wrapper():
+    base_obs = {"a{}".format(idx): np.zeros([8, 8, 3], dtype=np.float32) + np.arange(3) + idx for idx in range(2)}
+    base_obs_space = {"a{}".format(idx): Box(low=np.float32(0.0), high=np.float32(10.0), shape=[8, 8, 3]) for idx in range(2)}
+    base_act_spaces = {"a{}".format(idx): Box(low=np.float32(0.0), high=np.float32(10.0), shape=[3])  for idx in range(2)}
+    base_env = DummyScaleEnv(base_obs, base_obs_space, base_act_spaces)
+    wrapped_env = scale_actions_v0(base_env, 2)
+    wrapped_env.reset()
+    wrapped_env.step(np.array([2,1,3],dtype=np.float32))
+    scaled_action = wrapped_env.observe(wrapped_env.agents[0])
+    assert (scaled_action == np.array([4,2,6],dtype=np.float32)).all()
+
+    with pytest.raises(AssertionError):
+        base_act_spaces = {"a{}".format(idx): Discrete(5) for idx in range(2)}
+        base_env = DummyScaleEnv(base_obs, base_obs_space, base_act_spaces)
+        wrapped_env = scale_actions_v0(base_env, 2)

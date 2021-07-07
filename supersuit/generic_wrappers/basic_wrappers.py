@@ -1,6 +1,7 @@
 from supersuit.utils import basic_transforms
 from supersuit.lambda_wrappers import action_lambda_v1, observation_lambda_v0, reward_lambda_v0
 import numpy as np
+from gym.spaces import Box
 
 
 def basic_obs_wrapper(env, module, param):
@@ -43,6 +44,15 @@ def clip_actions_v0(env):
     return action_lambda_v1(env,
         lambda action, act_space: np.clip(action, act_space.low, act_space.high),
         lambda act_space: act_space)
+
+
+def scale_actions_v0(env, scale):
+    def change_act_space(act_space):
+        assert isinstance(act_space, Box), "scale_actions_v0 only works with a Box action space"
+        return Box(low=act_space.low * scale, high=act_space.high * scale)
+    return action_lambda_v1(env,
+        lambda action, act_space: np.asarray(action) * scale,
+        lambda act_space: change_act_space(act_space))
 
 
 def clip_reward_v0(env, lower_bound=-1, upper_bound=1):
