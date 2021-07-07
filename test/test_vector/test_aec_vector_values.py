@@ -12,13 +12,13 @@ import supersuit
 
 def mahjong_maker():
     env = mahjong_v3.env()
-    env = supersuit.observation_lambda_v0(env, lambda obs: obs["observation"], lambda obs_space: obs_space["observation"])
+    env = supersuit.observation_lambda_v0(env, lambda obs, obs_space: obs["observation"], lambda obs_space: obs_space["observation"])
     return env
 
 
 def hanabi_maker():
     env = hanabi_v4.env()
-    env = supersuit.observation_lambda_v0(env, lambda obs: obs["observation"], lambda obs_space: obs_space["observation"])
+    env = supersuit.observation_lambda_v0(env, lambda obs, obs_space: obs["observation"], lambda obs_space: obs_space["observation"])
     return env
 
 

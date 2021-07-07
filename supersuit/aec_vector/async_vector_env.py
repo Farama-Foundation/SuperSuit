@@ -1,6 +1,5 @@
 import copy
 import multiprocessing as mp
-from gym.vector.utils import shared_memory
 from pettingzoo.utils.agent_selector import agent_selector
 import numpy as np
 import ctypes

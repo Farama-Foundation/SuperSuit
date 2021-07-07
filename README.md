@@ -55,6 +55,14 @@ You can install SuperSuit via `pip install supersuit`
 
 `resize_v0(env, x_size, y_size, linear_interp=False)` Performs interpolation to up-size or down-size observation image using area interpolation by default. Linear interpolation is also available by setting `linear_interp=True` (it's faster and better for up-sizing). This wrapper is only available for 2D or 3D observations, and only makes sense if the observation is an image.
 
+`nan_noop_v0(env)` If an action is a NaN value for a step, the following wrapper will trigger a warning and perform a no operation action in its place. The noop action is accepted as an argument in the `step(action, no_op_action)` function.
+
+`nan_zeros_v0(env)` If an action is a NaN value for a step, the following wrapper will trigger a warning and perform a zeros action in its place.
+
+`nan_random_v0(env)` If an action is a NaN value for a step, the following wrapper will trigger a warning and perform a random action in its place. The random action will be retrieved from the action mask.
+
+`scale_actions_v0(env, scale)` Scales the high and low bounds of the action space by the `scale` argument in __init__(). Additionally, scales any actions by the same value when step() is called.
+
 
 ## Included Multi-Agent Only Functions
 
@@ -141,7 +149,7 @@ If none of the included in micro-wrappers are suitable for your needs, you can u
 
 `action_lambda_v1(env, change_action_fn, change_space_fn)` allows you to define arbitrary changes to the actions via `change_action_fn(action, space) : action` and to the action spaces with `change_space_fn(action_space) : action_space`. Remember that you are transforming the actions received by the wrapper to the actions expected by the base environment. In multi-agent environments only, the lambda functions can optionally accept an extra `agent` parameter, which lets you know the agent name of the action/action space, e.g. `change_action_fn(action, space, agent) : action`.
 
-`observation_lambda_v0(env, observation_fn, observation_space_fn=None)` allows you to define arbitrary changes to the via `observation_fn(observation) : observation`, and `observation_space_fn(obs_space) : obs_space`. For Box-Box transformations the space transformation will be inferred from `change_observation_fn` if `change_obs_space_fn=None` by passing the `high` and `low` bounds through the `observation_space_fn`. In multi-agent environments only, the lambda functions can optionally accept an `agent` parameter, which lets you know the agent name of the observation/observation space, e.g. `observation_fn(observation, agent) : observation`.
+`observation_lambda_v0(env, observation_fn, observation_space_fn=None)` allows you to define arbitrary changes to the via `observation_fn(observation, obs_space) : observation`, and `observation_space_fn(obs_space) : obs_space`. For Box-Box transformations the space transformation will be inferred from `change_observation_fn` if `change_obs_space_fn=None` by passing the `high` and `low` bounds through the `observation_space_fn`. In multi-agent environments only, the lambda functions can optionally accept an `agent` parameter, which lets you know the agent name of the observation/observation space, e.g. `observation_fn(observation, obs_space, agent) : observation`.
 
 `reward_lambda_v0(env, change_reward_fn)` allows you to make arbitrary changes to rewards by passing in a `change_reward_fn(reward) : reward` function. For Gym environments this is called every step to transform the returned reward. For AECEnv, this function is used to change each element in the rewards dictionary every step.
 

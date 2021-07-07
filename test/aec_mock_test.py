@@ -9,6 +9,7 @@ from supersuit import (
     pad_action_space_v0,
     pad_observations_v0,
     dtype_v0,
+    scale_actions_v0,
 )
 import supersuit
 import pytest
@@ -129,10 +130,14 @@ wrappers = [
     supersuit.reward_lambda_v0(new_dummy(), lambda x: x / 10),
     supersuit.clip_reward_v0(new_dummy()),
     supersuit.clip_actions_v0(new_continuous_dummy()),
+    supersuit.scale_actions_v0(new_continuous_dummy(), 0.3),
     supersuit.frame_skip_v0(new_dummy(), 4),
     supersuit.sticky_actions_v0(new_dummy(), 0.75),
     supersuit.delay_observations_v0(new_dummy(), 3),
     supersuit.max_observation_v0(new_dummy(), 3),
+    supersuit.nan_noop_v0(new_dummy(), 0),
+    supersuit.nan_zeros_v0(new_dummy()),
+    supersuit.nan_random_v0(new_dummy()),
 ]
 
 
@@ -159,7 +164,7 @@ def test_rew_lambda():
 
 
 def test_observation_lambda():
-    def add1(obs):
+    def add1(obs, obs_space):
         return obs + 1
 
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
@@ -172,7 +177,7 @@ def test_observation_lambda():
     obs0, _, _, _ = env.last()
     assert int(obs0[0][0][0]) == 2
 
-    def tile_obs(obs):
+    def tile_obs(obs, obs_space):
         shape_size = len(obs.shape)
         tile_shape = [1] * shape_size
         tile_shape[0] *= 2
@@ -193,7 +198,7 @@ def test_observation_lambda():
     assert obs0.shape == (32, 8, 3)
 
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
-    env = observation_lambda_v0(base_env, lambda obs, agent: obs + base_env.possible_agents.index(agent))
+    env = observation_lambda_v0(base_env, lambda obs, obs_space, agent: obs + base_env.possible_agents.index(agent))
     env.reset()
     obs0 = env.observe(env.agents[0])
     obs1 = env.observe(env.agents[1])
@@ -204,7 +209,7 @@ def test_observation_lambda():
 
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
     env = observation_lambda_v0(base_env,
-                                lambda obs, agent: obs + base_env.possible_agents.index(agent),
+                                lambda obs, obs_space, agent: obs + base_env.possible_agents.index(agent),
                                 lambda obs_space, agent: Box(obs_space.low, obs_space.high + base_env.possible_agents.index(agent)))
     env.reset()
     obs0 = env.observe(env.agents[0])
@@ -265,3 +270,53 @@ def test_dehomogenize():
     env.reset()
     assert all([s.n == 6 for s in env.action_spaces.values()])
     env.step(5)
+
+
+class DummyNaNEnv(DummyEnv):
+    def step(self, action):
+        super().step(action)
+        assert (not (np.isnan(action))), "Action was a NaN, even though it should not have been."
+
+
+def test_NaN_noop():
+    base_env = DummyNaNEnv(base_obs, base_obs_space, base_act_spaces)
+    wrapped_env = supersuit.nan_noop_v0(base_env, 0)
+    wrapped_env.reset()
+    wrapped_env.step(np.nan)
+
+
+def test_NaN_zeros():
+    base_env = DummyNaNEnv(base_obs, base_obs_space, base_act_spaces)
+    wrapped_env = supersuit.nan_zeros_v0(base_env)
+    wrapped_env.reset()
+    wrapped_env.step(np.nan)
+
+
+def test_NaN_random():
+    base_env = DummyNaNEnv(base_obs, base_obs_space, base_act_spaces)
+    wrapped_env = supersuit.nan_random_v0(base_env)
+    wrapped_env.reset()
+    wrapped_env.step(np.nan)
+
+
+class DummyScaleEnv(DummyEnv):
+    def step(self, action):
+        self._observations[self.agent_selection] = action
+        super().step(action)
+
+
+def test_scale_action_wrapper():
+    base_obs = {"a{}".format(idx): np.zeros([8, 8, 3], dtype=np.float32) + np.arange(3) + idx for idx in range(2)}
+    base_obs_space = {"a{}".format(idx): Box(low=np.float32(0.0), high=np.float32(10.0), shape=[8, 8, 3]) for idx in range(2)}
+    base_act_spaces = {"a{}".format(idx): Box(low=np.float32(0.0), high=np.float32(10.0), shape=[3]) for idx in range(2)}
+    base_env = DummyScaleEnv(base_obs, base_obs_space, base_act_spaces)
+    wrapped_env = scale_actions_v0(base_env, 2)
+    wrapped_env.reset()
+    wrapped_env.step(np.array([2, 1, 3], dtype=np.float32))
+    scaled_action = wrapped_env.observe(wrapped_env.agents[0])
+    assert (scaled_action == np.array([4, 2, 6], dtype=np.float32)).all()
+
+    with pytest.raises(AssertionError):
+        base_act_spaces = {"a{}".format(idx): Discrete(5) for idx in range(2)}
+        base_env = DummyScaleEnv(base_obs, base_obs_space, base_act_spaces)
+        wrapped_env = scale_actions_v0(base_env, 2)

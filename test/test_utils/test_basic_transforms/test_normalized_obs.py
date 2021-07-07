@@ -1,4 +1,4 @@
-from supersuit.basic_transforms.normalize_obs import (
+from supersuit.utils.basic_transforms.normalize_obs import (
     check_param,
     change_obs_space,
     change_observation,

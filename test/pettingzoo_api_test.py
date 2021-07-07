@@ -2,6 +2,7 @@ import numpy as np
 from pettingzoo.test import api_test, seed_test, parallel_test
 from pettingzoo.mpe import simple_push_v2, simple_world_comm_v2
 from pettingzoo.butterfly import knights_archers_zombies_v7, prison_v3
+from pettingzoo.classic import chess_v3
 
 import supersuit
 import pytest
@@ -62,6 +63,12 @@ wrappers = [
     supersuit.reward_lambda_v0(knights_archers_zombies_v7.env(), lambda x: x / 10),
     supersuit.clip_reward_v0(knights_archers_zombies_v7.env()),
     supersuit.clip_actions_v0(prison_v3.env(continuous=True)),
+    supersuit.scale_actions_v0(prison_v3.env(continuous=True), 0.5),
+    supersuit.nan_noop_v0(knights_archers_zombies_v7.env(), 0),
+    supersuit.nan_zeros_v0(knights_archers_zombies_v7.env()),
+    supersuit.nan_zeros_v0(prison_v3.env(continuous=True)),
+    supersuit.nan_random_v0(chess_v3.env()),
+    supersuit.nan_random_v0(knights_archers_zombies_v7.env()),
     supersuit.frame_skip_v0(knights_archers_zombies_v7.env(), 4),
     supersuit.sticky_actions_v0(knights_archers_zombies_v7.env(), 0.75),
     supersuit.delay_observations_v0(knights_archers_zombies_v7.env(), 3),

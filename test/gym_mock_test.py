@@ -51,6 +51,10 @@ wrappers = [
     supersuit.sticky_actions_v0(new_dummy(), 0.75),
     supersuit.delay_observations_v0(new_dummy(), 1),
     supersuit.max_observation_v0(new_dummy(), 3),
+    supersuit.nan_noop_v0(new_dummy(), 0),
+    supersuit.nan_zeros_v0(new_dummy()),
+    supersuit.nan_random_v0(new_dummy()),
+    supersuit.scale_actions_v0(new_continuous_dummy(), 0.5),
 ]
 
 
@@ -67,7 +71,7 @@ def test_basic_wrappers(env):
 
 
 def test_lambda():
-    def add1(obs):
+    def add1(obs, obs_space):
         return obs + 1
 
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
@@ -78,7 +82,7 @@ def test_lambda():
     obs0 = env.reset()
     assert int(obs0[0][0][0]) == 2
 
-    def tile_obs(obs):
+    def tile_obs(obs, obs_space):
         shape_size = len(obs.shape)
         tile_shape = [1] * shape_size
         tile_shape[0] *= 2

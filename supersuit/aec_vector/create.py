@@ -3,7 +3,7 @@ from .vector_env import SyncAECVectorEnv
 import cloudpickle
 
 
-def vectorize_aec_env(aec_env, num_envs, num_cpus=0):
+def vectorize_aec_env_v0(aec_env, num_envs, num_cpus=0):
     def env_fn():
         return cloudpickle.loads(cloudpickle.dumps(aec_env))
 

@@ -1,5 +1,3 @@
-import numpy as np
-from gym.spaces import Box
 from . import convert_box
 
 

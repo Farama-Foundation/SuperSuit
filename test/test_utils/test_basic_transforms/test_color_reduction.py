@@ -1,4 +1,4 @@
-from supersuit.basic_transforms.color_reduction import check_param, change_observation
+from supersuit.utils.basic_transforms.color_reduction import check_param, change_observation
 from gym.spaces import Box
 import numpy as np
 import pytest
