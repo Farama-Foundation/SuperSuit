@@ -182,6 +182,8 @@ env = action_lambda_v1(env,
     lambda act_space : gym.spaces.Discrete(act_space.shape[0]))
 ```
 
+Note that many of the supersuit wrappers are implemented with a lambda wrapper behind the scenes. See [here](https://github.com/PettingZoo-Team/SuperSuit/blob/master/supersuit/generic_wrappers/basic_wrappers.py) for some examples.
+
 ## Citation
 
 If you use this in your research, please cite:
