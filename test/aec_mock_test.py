@@ -273,7 +273,6 @@ def test_dehomogenize():
 
 
 class DummyNaNEnv(DummyEnv):
-    metadata = {"render.modes": ["human"]}
     def step(self, action):
         super().step(action)
         assert (not (np.isnan(action))), "Action was a NaN, even though it should not have been."
@@ -309,13 +308,13 @@ class DummyScaleEnv(DummyEnv):
 def test_scale_action_wrapper():
     base_obs = {"a{}".format(idx): np.zeros([8, 8, 3], dtype=np.float32) + np.arange(3) + idx for idx in range(2)}
     base_obs_space = {"a{}".format(idx): Box(low=np.float32(0.0), high=np.float32(10.0), shape=[8, 8, 3]) for idx in range(2)}
-    base_act_spaces = {"a{}".format(idx): Box(low=np.float32(0.0), high=np.float32(10.0), shape=[3])  for idx in range(2)}
+    base_act_spaces = {"a{}".format(idx): Box(low=np.float32(0.0), high=np.float32(10.0), shape=[3]) for idx in range(2)}
     base_env = DummyScaleEnv(base_obs, base_obs_space, base_act_spaces)
     wrapped_env = scale_actions_v0(base_env, 2)
     wrapped_env.reset()
-    wrapped_env.step(np.array([2,1,3],dtype=np.float32))
+    wrapped_env.step(np.array([2, 1, 3], dtype=np.float32))
     scaled_action = wrapped_env.observe(wrapped_env.agents[0])
-    assert (scaled_action == np.array([4,2,6],dtype=np.float32)).all()
+    assert (scaled_action == np.array([4, 2, 6], dtype=np.float32)).all()
 
     with pytest.raises(AssertionError):
         base_act_spaces = {"a{}".format(idx): Discrete(5) for idx in range(2)}
