@@ -51,10 +51,10 @@ def concat_vec_envs_v0(vec_env, num_vec_envs, num_cpus=0, base_class='gym'):
     if base_class == "gym":
         return vec_env
     elif base_class == "stable_baselines":
-        from .vector.sb_vector_wrapper import SBVecEnvWrapper
+        from .sb_vector_wrapper import SBVecEnvWrapper
         return SBVecEnvWrapper(vec_env)
     elif base_class == "stable_baselines3":
-        from .vector.sb3_vector_wrapper import SB3VecEnvWrapper
+        from .sb3_vector_wrapper import SB3VecEnvWrapper
         return SB3VecEnvWrapper(vec_env)
     else:
         raise ValueError("supersuit_vec_env only supports 'gym', 'stable_baselines', and 'stable_baselines3' for its base_class")
