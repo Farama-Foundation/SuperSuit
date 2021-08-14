@@ -27,13 +27,13 @@ class black_death_aec(ObservationWrapper):
         self._agent_idx = 0
         self.agent_selection = self.possible_agents[self._agent_idx]
         self.agents = self.possible_agents[:]
+        self._cumulative_rewards = {agent: 0 for agent in self.agents}
         self._update_items()
 
     def _update_items(self):
         self.dones = {}
         self.infos = {}
         self.rewards = {}
-        self._cumulative_rewards = {}
 
         _env_finishing = self._agent_idx == len(self.possible_agents) - 1 and all(self.env.dones.values())
 
@@ -41,7 +41,9 @@ class black_death_aec(ObservationWrapper):
             self.dones[agent] = _env_finishing
             self.rewards[agent] = self.env.rewards.get(agent, 0)
             self.infos[agent] = self.env.infos.get(agent, {})
-            self._cumulative_rewards[agent] = self.env._cumulative_rewards.get(agent, 0)
+            self._cumulative_rewards[agent] += self.env.rewards.get(agent, 0)
+
+            # self._cumulative_rewards[agent] = self.env._cumulative_rewards.get(agent, 0)
 
     def step(self, action):
         self._has_updated = True
@@ -49,10 +51,12 @@ class black_death_aec(ObservationWrapper):
             return self._was_done_step(action)
 
         cur_agent = self.agent_selection
+        self._cumulative_rewards[cur_agent] = 0
         if cur_agent == self.env.agent_selection:
             assert cur_agent in self.env.dones
             if self.env.dones[cur_agent]:
                 action = None
+
             self.env.step(action)
 
         self._update_items()
@@ -63,5 +67,6 @@ class black_death_aec(ObservationWrapper):
         self._dones_step_first()
 
 
-black_death_v0 = Deprecated("black_death", "v0", "v1")
-black_death_v1 = WrapperChooser(aec_wrapper=black_death_aec)
+black_death_v0 = Deprecated("black_death", "v0", "v2")
+black_death_v1 = Deprecated("black_death", "v1", "v2")
+black_death_v2 = WrapperChooser(aec_wrapper=black_death_aec)

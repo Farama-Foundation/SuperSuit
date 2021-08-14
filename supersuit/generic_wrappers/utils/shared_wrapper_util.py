@@ -68,9 +68,9 @@ class shared_wrapper_parr(ParallelWraper):
         return observations
 
     def step(self, actions):
-        actions = {agent: mod.modify_action(actions[agent]) for agent, mod in self.modifiers.items()}
+        actions = {agent: self.modifiers[agent].modify_action(action) for agent, action in actions.items()}
         observations, rewards, dones, infos = super().step(actions)
-        observations = {agent: mod.modify_obs(observations[agent]) for agent, mod in self.modifiers.items()}
+        observations = {agent: self.modifiers[agent].modify_obs(obs) for agent, obs in observations.items()}
         return observations, rewards, dones, infos
 
 
