@@ -1,9 +1,8 @@
 from supersuit import vectorize_aec_env_v0
-from pettingzoo.classic import rps_v1
-from pettingzoo.classic import mahjong_v3, hanabi_v4
+from pettingzoo.classic import rps_v2
+from pettingzoo.classic import mahjong_v4, hanabi_v4
 from pettingzoo.butterfly import knights_archers_zombies_v7
 from pettingzoo.mpe import simple_world_comm_v2
-from pettingzoo.classic import chess_v0
 import numpy as np
 import random
 import time
@@ -11,7 +10,7 @@ import supersuit
 
 
 def mahjong_maker():
-    env = mahjong_v3.env()
+    env = mahjong_v4.env()
     env = supersuit.observation_lambda_v0(env, lambda obs, obs_space: obs["observation"], lambda obs_space: obs_space["observation"])
     return env
 
@@ -63,7 +62,7 @@ def test_all():
             return act_space.sample()
 
     for num_cpus in [0, 1]:
-        test_vec_env(vectorize_aec_env_v0(rps_v1.env(), NUM_ENVS, num_cpus=num_cpus))
+        test_vec_env(vectorize_aec_env_v0(rps_v2.env(), NUM_ENVS, num_cpus=num_cpus))
         test_vec_env(vectorize_aec_env_v0(mahjong_maker(), NUM_ENVS, num_cpus=num_cpus))
         test_infos(vectorize_aec_env_v0(hanabi_maker(), NUM_ENVS, num_cpus=num_cpus))
         test_some_done(vectorize_aec_env_v0(mahjong_maker(), NUM_ENVS, num_cpus=num_cpus))
