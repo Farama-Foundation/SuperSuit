@@ -18,5 +18,5 @@ def pad_observations_v0(env):
     homogenize_ops.check_homogenize_spaces(spaces)
     padded_space = homogenize_ops.homogenize_spaces(spaces)
     return observation_lambda_v0(env,
-        lambda obs, obs_space: homogenize_ops.homogenize_observations(obs_space, obs),
+        lambda obs, obs_space: homogenize_ops.homogenize_observations(padded_space, obs),
         lambda obs_space: padded_space)
