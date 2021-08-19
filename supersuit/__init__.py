@@ -13,7 +13,7 @@ from .vector.vector_constructors import gym_vec_env_v0, stable_baselines_vec_env
 from .aec_vector import vectorize_aec_env_v0 # NOQA
 
 
-__version__ = "3.0.1"
+__version__ = "3.1.0"
 
 
 import warnings
