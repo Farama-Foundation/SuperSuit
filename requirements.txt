@@ -1,3 +1,2 @@
 pettingzoo[butterfly]>=1.9.0
-pettingzoo[sisl]>=1.9.0
 opencv-python~=3.4.0

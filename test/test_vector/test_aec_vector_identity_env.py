@@ -1,6 +1,5 @@
 from pettingzoo.butterfly import knights_archers_zombies_v7
 from pettingzoo.mpe import simple_push_v2
-from pettingzoo.sisl import waterworld_v3
 from supersuit import frame_skip_v0, vectorize_aec_env_v0
 import numpy as np
 
