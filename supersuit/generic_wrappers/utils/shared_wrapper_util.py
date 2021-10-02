@@ -7,13 +7,11 @@ from pettingzoo.utils import BaseParallelWraper
 class shared_wrapper_aec(PettingzooWrap):
     def __init__(self, env, modifier_class):
         super().__init__(env)
+        self.modifier_class = modifier_class
 
         self.modifiers = {}
-        for agent in self.env.possible_agents:
-            self.modifiers[agent] = modifier_class()
-            # populate modifier spaces
-            self.observation_space(agent)
-            self.action_space(agent)
+        if hasattr(self.env, 'possible_agents'):
+            self.add_modifiers(self.env.possible_agents)
 
     def observation_space(self, agent):
         return self.modifiers[agent].modify_obs_space(self.env.observation_space(agent))
@@ -28,10 +26,20 @@ class shared_wrapper_aec(PettingzooWrap):
             if seed is not None:
                 seed += 1
 
+    def add_modifiers(self, agents_list):
+        for agent in agents_list:
+            if agent not in self.modifiers:
+                self.modifiers[agent] = self.modifier_class()
+                # populate modifier spaces
+                self.observation_space(agent)
+                self.action_space(agent)
+                self.modifiers[agent].reset()
+
     def reset(self):
         for mod in self.modifiers.values():
             mod.reset()
         super().reset()
+        self.add_modifiers(self.agents)
         self.modifiers[self.agent_selection].modify_obs(super().observe(self.agent_selection))
 
     def step(self, action):
@@ -40,6 +48,7 @@ class shared_wrapper_aec(PettingzooWrap):
         if self.dones[self.agent_selection]:
             action = None
         super().step(action)
+        self.add_modifiers(self.agents)
         self.modifiers[self.agent_selection].modify_obs(super().observe(self.agent_selection))
 
     def observe(self, agent):
@@ -50,18 +59,26 @@ class shared_wrapper_parr(BaseParallelWraper):
     def __init__(self, env, modifier_class):
         super().__init__(env)
 
+        self.modifier_class = modifier_class
         self.modifiers = {}
-        for agent in self.env.possible_agents:
-            self.modifiers[agent] = modifier_class()
-            # populate modifier spaces
-            self.observation_space(agent)
-            self.action_space(agent)
+
+        if hasattr(self.env, 'possible_agents'):
+            self.add_modifiers(self.env.possible_agents)
 
     def observation_space(self, agent):
         return self.modifiers[agent].modify_obs_space(self.env.observation_space(agent))
 
     def action_space(self, agent):
         return self.modifiers[agent].modify_action_space(self.env.action_space(agent))
+
+    def add_modifiers(self, agents_list):
+        for agent in agents_list:
+            if agent not in self.modifiers:
+                self.modifiers[agent] = self.modifier_class()
+                # populate modifier spaces
+                self.observation_space(agent)
+                self.action_space(agent)
+                self.modifiers[agent].reset()
 
     def seed(self, seed=None):
         super().seed(seed)
@@ -72,14 +89,16 @@ class shared_wrapper_parr(BaseParallelWraper):
 
     def reset(self):
         observations = super().reset()
+        self.add_modifiers(self.agents)
         for agent, mod in self.modifiers.items():
             mod.reset()
-            observations[agent] = mod.modify_obs(observations[agent])
+        observations = {agent: self.modifiers[agent].modify_obs(obs) for agent, obs in observations.items()}
         return observations
 
     def step(self, actions):
         actions = {agent: self.modifiers[agent].modify_action(action) for agent, action in actions.items()}
         observations, rewards, dones, infos = super().step(actions)
+        self.add_modifiers(self.agents)
         observations = {agent: self.modifiers[agent].modify_obs(obs) for agent, obs in observations.items()}
         return observations, rewards, dones, infos
 

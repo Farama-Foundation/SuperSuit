@@ -2,6 +2,7 @@ from supersuit.utils.frame_skip import check_transform_frameskip
 from supersuit.utils.wrapper_chooser import WrapperChooser
 from pettingzoo.utils.wrappers import BaseWrapper
 import gym
+from supersuit.utils.make_defaultdict import make_defaultdict
 
 
 class frame_skip_gym(gym.Wrapper):
@@ -47,13 +48,13 @@ class frame_skip_aec(StepAltWrapper):
     def reset(self):
         super().reset()
         self.agents = self.env.agents[:]
-        self.dones = {agent: False for agent in self.agents}
-        self.rewards = {agent: 0. for agent in self.agents}
-        self._cumulative_rewards = {agent: 0. for agent in self.agents}
-        self.infos = {agent: {} for agent in self.agents}
-        self.skip_num = {agent: 0 for agent in self.agents}
-        self.old_actions = {agent: None for agent in self.agents}
-        self._final_observations = {agent: None for agent in self.agents}
+        self.dones = make_defaultdict({agent: False for agent in self.agents})
+        self.rewards = make_defaultdict({agent: 0. for agent in self.agents})
+        self._cumulative_rewards = make_defaultdict({agent: 0. for agent in self.agents})
+        self.infos = make_defaultdict({agent: {} for agent in self.agents})
+        self.skip_num = make_defaultdict({agent: 0 for agent in self.agents})
+        self.old_actions = make_defaultdict({agent: None for agent in self.agents})
+        self._final_observations = make_defaultdict({agent: None for agent in self.agents})
 
     def observe(self, agent):
         fin_observe = self._final_observations[agent]
@@ -68,7 +69,7 @@ class frame_skip_aec(StepAltWrapper):
             return
         cur_agent = self.agent_selection
         self._cumulative_rewards[cur_agent] = 0
-        self.rewards = {a: 0. for a in self.agents}
+        self.rewards = make_defaultdict({a: 0. for a in self.agents})
         self.skip_num[cur_agent] = self.num_frames
         self.old_actions[cur_agent] = action
         while self.old_actions[self.env.agent_selection] is not None:
@@ -95,9 +96,12 @@ class frame_skip_aec(StepAltWrapper):
             if self.skip_num[step_agent] == 0:
                 self.old_actions[step_agent] = None
 
+        my_agent_set = set(self.agents)
         for agent in self.env.agents:
             self.dones[agent] = self.env.dones[agent]
             self.infos[agent] = self.env.infos[agent]
+            if agent not in my_agent_set:
+                self.agents.append(agent)
         self.agent_selection = self.env.agent_selection
         self._accumulate_rewards()
         self._dones_step_first()

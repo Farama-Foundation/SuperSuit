@@ -13,9 +13,11 @@ class ObservationWrapper(BaseWrapper):
 
 class black_death_aec(ObservationWrapper):
     def _check_wrapper_params(self):
-        if hasattr(self, 'observation_spaces'):
-            for space in self.observation_spaces.values():
-                assert isinstance(space, gym.spaces.Box), f"observation sapces for black death must be Box spaces, is {space}"
+        if not hasattr(self, 'observation_spaces') or not hasattr(self, 'possible_agents'):
+            raise AssertionError("black death wrapper only supports environments with a fixed number of agents. Add possible_agents and observation_spaces attributes to your environment to proceed")
+
+        for space in self.observation_spaces.values():
+            assert isinstance(space, gym.spaces.Box), f"observation sapces for black death must be Box spaces, is {space}"
 
     def observation_space(self, agent):
         old_obs_space = self.env.observation_space(agent)
