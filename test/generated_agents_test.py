@@ -1,6 +1,6 @@
 import numpy as np
 from pettingzoo.test import api_test, seed_test, parallel_test
-from .example_envs import generated_agents_parallel_v0, generated_agents_env_v0
+from pettingzoo.test.example_envs import generated_agents_parallel_v0, generated_agents_env_v0
 
 import supersuit
 from supersuit import dtype_v0
@@ -71,3 +71,24 @@ parallel_wrappers = wrappers = [
 @pytest.mark.parametrize("env", parallel_wrappers)
 def test_pettingzoo_parallel_api_gen(env):
     parallel_test.parallel_api_test(env, num_cycles=50)
+
+
+
+wrapper_fns = [
+    lambda: supersuit.black_death_v2(generated_agents_parallel_v0.env()),
+    lambda: supersuit.pad_action_space_v0(generated_agents_parallel_v0.env()),
+    lambda: supersuit.pad_observations_v0(generated_agents_parallel_v0.env()),
+    lambda: supersuit.agent_indicator_v0(generated_agents_parallel_v0.env()),
+    lambda: supersuit.vectorize_aec_env_v0(generated_agents_parallel_v0.env(), 2),
+    lambda: supersuit.black_death_v2(generated_agents_parallel_v0.parallel_env()),
+    lambda: supersuit.pad_action_space_v0(generated_agents_parallel_v0.parallel_env()),
+    lambda: supersuit.pad_observations_v0(generated_agents_parallel_v0.parallel_env()),
+    lambda: supersuit.agent_indicator_v0(generated_agents_parallel_v0.parallel_env()),
+    lambda: supersuit.pettingzoo_env_to_vec_env_v0(generated_agents_parallel_v0.parallel_env()),
+]
+
+
+@pytest.mark.parametrize("wrapper_fn", wrapper_fns)
+def test_pettingzoo_missing_optional_error_message(wrapper_fn):
+    with pytest.raises(AssertionError, match=" must have "):
+        wrapper_fn()
