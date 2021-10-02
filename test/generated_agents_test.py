@@ -67,6 +67,7 @@ parallel_wrappers = wrappers = [
     supersuit.max_observation_v0(generated_agents_parallel_v0.parallel_env(), 3),
 ]
 
+
 @pytest.mark.parametrize("env", parallel_wrappers)
 def test_pettingzoo_parallel_api_gen(env):
     parallel_test.parallel_api_test(env, num_cycles=50)
