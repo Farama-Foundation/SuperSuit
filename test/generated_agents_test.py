@@ -26,7 +26,7 @@ wrappers = [
 
 @pytest.mark.parametrize("env", wrappers)
 def test_pettingzoo_aec_api_par_gen(env):
-    api_test(env)
+    api_test(env, num_cycles=50)
 
 
 wrappers = [
@@ -48,7 +48,7 @@ wrappers = [
 
 @pytest.mark.parametrize("env", wrappers)
 def test_pettingzoo_aec_api_aec_gen(env):
-    api_test(env)
+    api_test(env, num_cycles=50)
 
 
 parallel_wrappers = wrappers = [
@@ -61,7 +61,7 @@ parallel_wrappers = wrappers = [
     supersuit.nan_noop_v0(generated_agents_parallel_v0.parallel_env(), 0),
     supersuit.nan_zeros_v0(generated_agents_parallel_v0.parallel_env()),
     supersuit.nan_random_v0(generated_agents_parallel_v0.parallel_env()),
-    supersuit.frame_skip_v0(generated_agents_parallel_v0.parallel_env(), 4),
+    supersuit.frame_skip_v0(generated_agents_parallel_v0.parallel_env(), 4, 0),
     supersuit.sticky_actions_v0(generated_agents_parallel_v0.parallel_env(), 0.75),
     supersuit.delay_observations_v0(generated_agents_parallel_v0.parallel_env(), 3),
     supersuit.max_observation_v0(generated_agents_parallel_v0.parallel_env(), 3),
@@ -69,4 +69,4 @@ parallel_wrappers = wrappers = [
 
 @pytest.mark.parametrize("env", parallel_wrappers)
 def test_pettingzoo_parallel_api_gen(env):
-    parallel_test.parallel_api_test(env)
+    parallel_test.parallel_api_test(env, num_cycles=50)

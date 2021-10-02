@@ -1,6 +1,6 @@
 from supersuit.utils.frame_skip import check_transform_frameskip
 from supersuit.utils.wrapper_chooser import WrapperChooser
-from pettingzoo.utils.wrappers import BaseWrapper
+from pettingzoo.utils.wrappers import BaseWrapper, BaseParallelWraper
 import gym
 from supersuit.utils.make_defaultdict import make_defaultdict
 
@@ -107,4 +107,57 @@ class frame_skip_aec(StepAltWrapper):
         self._dones_step_first()
 
 
-frame_skip_v0 = WrapperChooser(aec_wrapper=frame_skip_aec, gym_wrapper=frame_skip_gym)
+class frame_skip_par(BaseParallelWraper):
+    def __init__(self, env, num_frames, default_action=None):
+        super().__init__(env)
+        self.num_frames = check_transform_frameskip(num_frames)
+        self.np_random, seed = gym.utils.seeding.np_random(None)
+        self.default_action = default_action
+
+    def seed(self, seed=None):
+        self.np_random, seed = gym.utils.seeding.np_random(seed)
+        super().seed(seed)
+
+    def step(self, action):
+        action = {**action}
+        low, high = self.num_frames
+        num_skips = int(self.np_random.randint(low, high + 1))
+        self.agents = self.env.agents[:]
+        orig_agents = set(action.keys())
+
+        for x in range(num_skips):
+            obs, rews, done, info = super().step(action)
+            if x == 0:
+                total_reward = make_defaultdict({agent: 0.0 for agent in self.env.agents})
+                total_dones = {}
+                total_infos = {}
+                total_obs = {}
+
+            for agent, rew in rews.items():
+                total_reward[agent] += rew
+                total_dones[agent] = done[agent]
+                total_infos[agent] = info[agent]
+                total_obs[agent] = obs[agent]
+
+            for agent in self.env.agents:
+                if agent not in action:
+                    assert self.default_action is not None, "parallel environments that use frame_skip_v0 must provide a `default_action` argument for steps between an agent being generated and an agent taking its first step"
+                    action[agent] = self.default_action
+
+            if all(done.values()):
+                break
+
+        # delete any values created by agents which were
+        # generated and deleted before they took any actions
+        final_agents = set(self.agents)
+        for agent in list(total_reward):
+            if agent not in final_agents and agent not in orig_agents:
+                del total_reward[agent]
+                del total_dones[agent]
+                del total_infos[agent]
+                del total_obs[agent]
+
+        return total_obs, total_reward, total_dones, total_infos
+
+
+frame_skip_v0 = WrapperChooser(aec_wrapper=frame_skip_aec, gym_wrapper=frame_skip_gym, parallel_wrapper=frame_skip_par)
