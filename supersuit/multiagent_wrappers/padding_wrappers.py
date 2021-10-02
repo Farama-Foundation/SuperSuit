@@ -5,6 +5,7 @@ from supersuit import observation_lambda_v0, action_lambda_v1
 
 def pad_action_space_v0(env):
     assert isinstance(env, AECEnv) or isinstance(env, ParallelEnv), "pad_action_space_v0 only accepts an AECEnv or ParallelEnv"
+    assert hasattr(env, 'action_spaces'), "environment passed to pad_observations must have a action_spaces dict."
     homogenize_ops.check_homogenize_spaces(list(env.action_spaces.values()))
     padded_space = homogenize_ops.homogenize_spaces(list(env.action_spaces.values()))
     return action_lambda_v1(env,
@@ -14,6 +15,7 @@ def pad_action_space_v0(env):
 
 def pad_observations_v0(env):
     assert isinstance(env, AECEnv) or isinstance(env, ParallelEnv), "pad_observations_v0 only accepts an AECEnv or ParallelEnv"
+    assert hasattr(env, 'observation_spaces'), "environment passed to pad_observations must have a observation_spaces dict."
     spaces = list(env.observation_spaces.values())
     homogenize_ops.check_homogenize_spaces(spaces)
     padded_space = homogenize_ops.homogenize_spaces(spaces)

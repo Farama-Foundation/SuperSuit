@@ -1,7 +1,7 @@
 import gym
 from pettingzoo.utils.wrappers import OrderEnforcingWrapper as PettingzooWrap
 from supersuit.utils.wrapper_chooser import WrapperChooser
-from supersuit.utils.base_parallel_wrapper import ParallelWraper
+from pettingzoo.utils import BaseParallelWraper
 
 
 class shared_wrapper_aec(PettingzooWrap):
@@ -9,12 +9,17 @@ class shared_wrapper_aec(PettingzooWrap):
         super().__init__(env)
 
         self.modifiers = {}
-        self.observation_spaces = {}
-        self.action_spaces = {}
         for agent in self.env.possible_agents:
             self.modifiers[agent] = modifier_class()
-            self.observation_spaces[agent] = self.modifiers[agent].modify_obs_space(self.env.observation_spaces[agent])
-            self.action_spaces[agent] = self.modifiers[agent].modify_action_space(self.env.action_spaces[agent])
+            # populate modifier spaces
+            self.observation_space(agent)
+            self.action_space(agent)
+
+    def observation_space(self, agent):
+        return self.modifiers[agent].modify_obs_space(self.env.observation_space(agent))
+
+    def action_space(self, agent):
+        return self.modifiers[agent].modify_action_space(self.env.action_space(agent))
 
     def seed(self, seed=None):
         super().seed(seed)
@@ -41,17 +46,22 @@ class shared_wrapper_aec(PettingzooWrap):
         return self.modifiers[agent].get_last_obs()
 
 
-class shared_wrapper_parr(ParallelWraper):
+class shared_wrapper_parr(BaseParallelWraper):
     def __init__(self, env, modifier_class):
         super().__init__(env)
 
         self.modifiers = {}
-        self.observation_spaces = {}
-        self.action_spaces = {}
         for agent in self.env.possible_agents:
             self.modifiers[agent] = modifier_class()
-            self.observation_spaces[agent] = self.modifiers[agent].modify_obs_space(self.env.observation_spaces[agent])
-            self.action_spaces[agent] = self.modifiers[agent].modify_action_space(self.env.action_spaces[agent])
+            # populate modifier spaces
+            self.observation_space(agent)
+            self.action_space(agent)
+
+    def observation_space(self, agent):
+        return self.modifiers[agent].modify_obs_space(self.env.observation_space(agent))
+
+    def action_space(self, agent):
+        return self.modifiers[agent].modify_action_space(self.env.action_space(agent))
 
     def seed(self, seed=None):
         super().seed(seed)

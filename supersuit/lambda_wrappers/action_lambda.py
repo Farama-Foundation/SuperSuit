@@ -10,47 +10,31 @@ class aec_action_lambda(BaseWrapper):
         assert callable(change_action_fn), "change_action_fn needs to be a function. It is {}".format(change_action_fn)
         assert callable(change_space_fn), "change_space_fn needs to be a function. It is {}".format(change_space_fn)
 
-        old_space_fn = change_space_fn
-        old_action_fn = change_action_fn
-
-        def space_fn_ignore(space, agent):
-            return old_space_fn(space)
-
-        def action_fn_ignore(action, space, agent):
-            return old_action_fn(action, space)
-
-        agent0 = env.possible_agents[0]
-        agent0_space = env.action_spaces[agent0]
-
-        try:
-            new_space0 = change_space_fn(agent0_space, agent0)
-        except TypeError:
-            change_space_fn = space_fn_ignore
-            new_space0 = change_space_fn(agent0_space, agent0)
-
-        try:
-            change_action_fn(new_space0.sample(), agent0_space, agent0)
-        except TypeError:
-            change_action_fn = action_fn_ignore
-
         self.change_action_fn = change_action_fn
         self.change_space_fn = change_space_fn
 
         super().__init__(env)
+        if hasattr(self, 'action_spaces'):
+            for agent in self.action_spaces:
+                # call any validation logic in this function
+                self.action_space(agent)
 
     def _modify_observation(self, agent, observation):
         return observation
 
-    def _modify_spaces(self):
-        new_spaces = {}
-        for agent, space in self.action_spaces.items():
-            new_spaces[agent] = self.change_space_fn(space, agent)
-            assert isinstance(new_spaces[agent], Space), "output of change_space_fn argument to action_lambda_wrapper must be a gym space"
-
-        self.action_spaces = new_spaces
+    def action_space(self, agent):
+        old_act_space = self.env.action_space(agent)
+        try:
+            return self.change_space_fn(old_act_space, agent)
+        except TypeError:
+            return self.change_space_fn(old_act_space)
 
     def _modify_action(self, agent, action):
-        return self.change_action_fn(action, self.env.action_spaces[agent], agent)
+        old_act_space = self.env.action_space(agent)
+        try:
+            return self.change_action_fn(action, old_act_space, agent)
+        except TypeError:
+            return self.change_action_fn(action, old_act_space)
 
 
 class gym_action_lambda(gym.Wrapper):
