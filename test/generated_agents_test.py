@@ -73,7 +73,6 @@ def test_pettingzoo_parallel_api_gen(env):
     parallel_test.parallel_api_test(env, num_cycles=50)
 
 
-
 wrapper_fns = [
     lambda: supersuit.black_death_v2(generated_agents_parallel_v0.env()),
     lambda: supersuit.pad_action_space_v0(generated_agents_parallel_v0.env()),
