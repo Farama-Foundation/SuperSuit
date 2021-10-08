@@ -74,6 +74,20 @@ You can install SuperSuit via `pip install supersuit`
 
 `pad_observations_v0(env)` pads observations to be of the shape of the largest observation of any agent with 0s, per the algorithm posed in *Parameter Sharing is Surprisingly Useful for Deep Reinforcement Learning*. This enables MARL methods that require homogeneous observations from all agents to work in environments with heterogeneous observations. This currently supports Discrete and Box observation spaces.
 
+### Required multiagent environment attributes
+
+Many wrappers require an environment to support the optional `possible_agents`, `observation_spaces`, and `action_spaces` attributes. These are required because the
+wrapper needs to know all the spaces in advance. The following is a complete list of
+wrappers which require these attributes:
+
+* black_death_v2
+* pad_action_space_v0
+* pad_observations_v0
+* agent_indicator_v0
+* pettingzoo_env_to_vec_env_v0
+* vectorize_aec_env_v0
+
+
 ## Environment Vectorization
 
 These functions turn plain Gym environments into vectorized environments, for every common vector environment spec.
