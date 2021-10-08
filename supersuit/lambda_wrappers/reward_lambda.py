@@ -1,6 +1,7 @@
 from supersuit.utils.base_aec_wrapper import PettingzooWrap
 from supersuit.utils.wrapper_chooser import WrapperChooser
 import gym
+from supersuit.utils.make_defaultdict import make_defaultdict
 
 
 class aec_reward_lambda(PettingzooWrap):
@@ -19,7 +20,7 @@ class aec_reward_lambda(PettingzooWrap):
     def reset(self):
         super().reset()
         self.rewards = {agent: self._change_reward_fn(reward) for agent, reward in self.rewards.items()}
-        self.__cumulative_rewards = {a: 0 for a in self.agents}
+        self.__cumulative_rewards = make_defaultdict({a: 0 for a in self.agents})
         self._accumulate_rewards()
 
     def step(self, action):

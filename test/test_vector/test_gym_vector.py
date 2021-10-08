@@ -42,7 +42,7 @@ def check_vec_env_equivalency(venv1, venv2, check_info=True):
 
 
 def test_gym_supersuit_equivalency():
-    env = gym.make("Pendulum-v0")
+    env = gym.make("Pendulum-v1")
     num_envs = 3
     venv1 = concat_vec_envs_v0(env, num_envs)
     venv2 = gym_vec_env_v0(env, num_envs)
@@ -58,7 +58,7 @@ def test_inital_state_dissimilarity():
 
 # we really don't want to have a stable baselines dependency even in tests
 # def test_stable_baselines_supersuit_equivalency():
-#     env = gym.make("Pendulum-v0")
+#     env = gym.make("Pendulum-v1")
 #     num_envs = 3
 #     venv1 = supersuit_vec_env(env, num_envs, base_class='stable_baselines3')
 #     venv2 = stable_baselines3_vec_env(env, num_envs)
