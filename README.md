@@ -129,7 +129,7 @@ env_2_agent_3
 ...
 ```
 
-So you can for example train 4 copies of pettingzoo's pistonball environment in parallel with some code like:
+So you can for example train 8 copies of pettingzoo's pistonball environment in parallel with some code like:
 
 ```
 from stable_baselines3 import PPO
