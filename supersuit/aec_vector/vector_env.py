@@ -14,8 +14,6 @@ class SyncAECVectorEnv(VectorAECEnv):
         self.env = self.envs[0]
         self.max_num_agents = self.env.max_num_agents
         self.possible_agents = self.env.possible_agents
-        self.observation_spaces = copy.copy(self.env.observation_spaces)
-        self.action_spaces = copy.copy(self.env.action_spaces)
         self._agent_selector = agent_selector(self.possible_agents)
 
     def _find_active_agent(self):
@@ -58,7 +56,7 @@ class SyncAECVectorEnv(VectorAECEnv):
     def observe(self, agent):
         observations = []
         for env in self.envs:
-            obs = env.observe(agent) if agent in env.dones else np.zeros_like(self.observation_spaces[agent].low)
+            obs = env.observe(agent) if agent in env.dones else np.zeros_like(env.observation_space(agent).low)
             observations.append(obs)
         return np.stack(observations)
 

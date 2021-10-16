@@ -14,8 +14,8 @@ class aec_action_lambda(BaseWrapper):
         self.change_space_fn = change_space_fn
 
         super().__init__(env)
-        if hasattr(self, 'action_spaces'):
-            for agent in self.action_spaces:
+        if hasattr(self, 'possible_agents'):
+            for agent in self.possible_agents:
                 # call any validation logic in this function
                 self.action_space(agent)
 

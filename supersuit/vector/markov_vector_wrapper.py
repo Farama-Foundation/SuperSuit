@@ -16,13 +16,13 @@ class MarkovVectorEnv(gym.vector.VectorEnv):
         """
         self.par_env = par_env
         self.metadata = par_env.metadata
-        self.observation_space = list(par_env.observation_spaces.values())[0]
-        self.action_space = list(par_env.action_spaces.values())[0]
+        self.observation_space = par_env.observation_space(par_env.possible_agents[0])
+        self.action_space = par_env.action_space(par_env.possible_agents[0])
         assert all(
-            self.observation_space == obs_space for obs_space in par_env.observation_spaces.values()
+            self.observation_space == par_env.observation_space(agent) for agent in par_env.possible_agents
         ), "observation spaces not consistent. Perhaps you should wrap with `supersuit.aec_wrappers.pad_observations`?"
         assert all(
-            self.action_space == obs_space for obs_space in par_env.action_spaces.values()
+            self.action_space == par_env.action_space(agent) for agent in par_env.possible_agents
         ), "action spaces not consistent. Perhaps you should wrap with `supersuit.aec_wrappers.pad_actions`?"
         self.num_envs = len(par_env.possible_agents)
         self.black_death = black_death
