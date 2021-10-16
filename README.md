@@ -75,7 +75,7 @@ You can install SuperSuit via `pip install supersuit`
 
 ### Required multiagent environment attributes
 
-Many wrappers require an environment to support the optional `possible_agents`, `observation_spaces`, and `action_spaces` attributes. These are required because the
+Many wrappers require an environment to support the optional `possible_agents` attribute. These are required because the
 wrapper needs to know all the spaces in advance. The following is a complete list of
 wrappers which require these attributes:
 

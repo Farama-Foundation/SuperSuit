@@ -30,7 +30,7 @@ def test_all():
         obs, rew, agent_done, env_done, agent_passes, infos = vec_env.last()
         print(np.asarray(obs).shape)
         assert len(obs) == NUM_ENVS
-        act_space = vec_env.action_spaces[vec_env.agent_selection]
+        act_space = vec_env.action_space(vec_env.agent_selection)
         assert np.all(np.equal(obs, vec_env.observe(vec_env.agent_selection)))
         assert len(vec_env.observe(vec_env.agent_selection)) == NUM_ENVS
         vec_env.step([act_space.sample() for _ in range(NUM_ENVS)])
@@ -47,7 +47,7 @@ def test_all():
 
     def test_some_done(vec_env):
         vec_env.reset()
-        act_space = vec_env.action_spaces[vec_env.agent_selection]
+        act_space = vec_env.action_space(vec_env.agent_selection)
         assert not any(done for dones in vec_env.dones.values() for done in dones)
         vec_env.step([act_space.sample() for _ in range(NUM_ENVS)])
         assert any(done for dones in vec_env.dones.values() for done in dones)
@@ -58,7 +58,7 @@ def test_all():
         if False and not passes[i] and "legal_moves" in my_info:
             return random.choice(my_info["legal_moves"])
         else:
-            act_space = vec_env.action_spaces[vec_env.agent_selection]
+            act_space = vec_env.action_space(vec_env.agent_selection)
             return act_space.sample()
 
     for num_cpus in [0, 1]:

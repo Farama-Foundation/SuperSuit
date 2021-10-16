@@ -15,8 +15,8 @@ class aec_observation_lambda(BaseWrapper):
 
         super().__init__(env)
 
-        if hasattr(self, 'observation_spaces'):
-            for agent in self.observation_spaces:
+        if hasattr(self, 'possible_agents'):
+            for agent in self.possible_agents:
                 # call any validation logic in this function
                 self.observation_space(agent)
 
@@ -24,10 +24,9 @@ class aec_observation_lambda(BaseWrapper):
         return action
 
     def _check_wrapper_params(self):
-        if self.change_obs_space_fn is None and hasattr(self, 'observation_spaces'):
-            spaces = self.observation_spaces.values()
-            for space in spaces:
-                assert isinstance(space, Box), "the observation_lambda_wrapper only allows the change_obs_space_fn argument to be optional for Box observation spaces"
+        if self.change_obs_space_fn is None and hasattr(self, 'possible_agents'):
+            for agent in self.possible_agents:
+                assert isinstance(self.observation_space(agent), Box), "the observation_lambda_wrapper only allows the change_obs_space_fn argument to be optional for Box observation spaces"
 
     def observation_space(self, agent):
         if self.change_obs_space_fn is None:

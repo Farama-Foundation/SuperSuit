@@ -29,7 +29,7 @@ def test_pettingzoo_frame_skip():
     x = 0
     for agent in env.agent_iter(25):
         assert env.env.steps == (x // 2) * 3
-        action = env.action_spaces[env.agent_selection].sample()
+        action = env.action_space(env.agent_selection).sample()
         next_obs = env.step(action)
         x += 1
 

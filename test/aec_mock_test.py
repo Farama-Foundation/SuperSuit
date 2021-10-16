@@ -40,7 +40,7 @@ def test_frame_stack():
     env = frame_stack_v1(base_env, 4)
     obs = env.reset()
     obs, _, _, _ = env.last()
-    assert env.observation_spaces[env.agent_selection].n == 5 ** 4
+    assert env.observation_space(env.agent_selection).n == 5 ** 4
     env.step(2)
     first_obs, _, _, _ = env.last()
     assert first_obs == 4
@@ -73,14 +73,14 @@ def test_agent_indicator():
     env.reset()
     obs, _, _, _ = env.last()
     assert obs.shape == (2, 3, 3)
-    assert env.observation_spaces["a_0"].shape == (2, 3, 3)
+    assert env.observation_space("a_0").shape == (2, 3, 3)
     first_obs = env.step(2)
 
     env = supersuit.agent_indicator_v0(base_env, type_only=False)
     env.reset()
     obs, _, _, _ = env.last()
     assert obs.shape == (2, 3, 4)
-    assert env.observation_spaces["a_0"].shape == (2, 3, 4)
+    assert env.observation_space("a_0").shape == (2, 3, 4)
     env.step(2)
 
 
@@ -146,14 +146,14 @@ def test_basic_wrappers(env):
     env.seed(5)
     env.reset()
     obs, _, _, _ = env.last()
-    act_space = env.action_spaces[env.agent_selection]
-    obs_space = env.observation_spaces[env.agent_selection]
+    act_space = env.action_space(env.agent_selection)
+    obs_space = env.observation_space(env.agent_selection)
     first_obs = env.observe("a_0")
     assert obs_space.contains(first_obs)
     assert first_obs.dtype == obs_space.dtype
     env.step(act_space.sample())
     for agent in env.agent_iter():
-        act_space = env.action_spaces[env.agent_selection]
+        act_space = env.action_space(env.agent_selection)
         env.step(act_space.sample() if not env.dones[agent] else None)
 
 
@@ -186,7 +186,7 @@ def test_observation_lambda():
     env = observation_lambda_v0(env, tile_obs)
     env.reset()
     obs0, _, _, _ = env.last()
-    assert env.observation_spaces[env.agent_selection].shape == (16, 8, 3)
+    assert env.observation_space(env.agent_selection).shape == (16, 8, 3)
 
     def change_shape_fn(obs_space):
         return Box(low=0, high=1, shape=(32, 8, 3))
@@ -194,7 +194,7 @@ def test_observation_lambda():
     env = observation_lambda_v0(env, tile_obs)
     env.reset()
     obs0, _, _, _ = env.last()
-    assert env.observation_spaces[env.agent_selection].shape == (32, 8, 3)
+    assert env.observation_space(env.agent_selection).shape == (32, 8, 3)
     assert obs0.shape == (32, 8, 3)
 
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
@@ -205,7 +205,7 @@ def test_observation_lambda():
 
     assert int(obs0[0][0][0]) == 0
     assert int(obs1[0][0][0]) == 2
-    assert (env.observation_spaces[env.agents[0]].high + 1 == env.observation_spaces[env.agents[1]].high).all()
+    assert (env.observation_space(env.agents[0]).high + 1 == env.observation_space(env.agents[1]).high).all()
 
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
     env = observation_lambda_v0(base_env,
@@ -217,7 +217,7 @@ def test_observation_lambda():
 
     assert int(obs0[0][0][0]) == 0
     assert int(obs1[0][0][0]) == 2
-    assert (env.observation_spaces[env.agents[0]].high + 1 == env.observation_spaces[env.agents[1]].high).all()
+    assert (env.observation_space(env.agents[0]).high + 1 == env.observation_space(env.agents[1]).high).all()
 
 
 def test_action_lambda():
@@ -244,7 +244,7 @@ def test_action_lambda():
         lambda action, act_space: one_hot(action, act_space.shape[0]),
         lambda act_space: Discrete(act_space.shape[0]),
     )
-    assert env.action_spaces[env.possible_agents[0]].n == 15
+    assert env.action_space(env.possible_agents[0]).n == 15
 
     env.reset()
     env.step(2)
@@ -256,8 +256,8 @@ def test_action_lambda():
         lambda action, act_space, agent: one_hot(action + base_env.possible_agents.index(agent), act_space.shape[0]),
         lambda act_space, agent: Discrete(act_space.shape[0] + base_env.possible_agents.index(agent)),
     )
-    assert env.action_spaces[env.possible_agents[0]].n == 15
-    assert env.action_spaces[env.possible_agents[1]].n == 16
+    assert env.action_space(env.possible_agents[0]).n == 15
+    assert env.action_space(env.possible_agents[1]).n == 16
     env.reset()
     env.step(2)
 
@@ -268,7 +268,7 @@ def test_dehomogenize():
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
     env = pad_action_space_v0(base_env)
     env.reset()
-    assert all([s.n == 6 for s in env.action_spaces.values()])
+    assert all([env.action_space(agent).n == 6 for agent in env.possible_agents])
     env.step(5)
 
 
