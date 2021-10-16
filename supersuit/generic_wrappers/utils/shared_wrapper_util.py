@@ -16,6 +16,15 @@ class shared_wrapper_aec(PettingzooWrap):
     def observation_space(self, agent):
         return self.modifiers[agent].modify_obs_space(self.env.observation_space(agent))
 
+    @property
+    def observation_spaces(self):
+        # NOTE: this is going to get deprecated in base class
+        observations = {
+            agent: self.modifiers[agent].modify_obs_space(obs)
+            for agent, obs in self.env.observation_spaces.items()
+        }
+        return observations
+
     def action_space(self, agent):
         return self.modifiers[agent].modify_action_space(self.env.action_space(agent))
 
@@ -67,6 +76,15 @@ class shared_wrapper_parr(BaseParallelWraper):
 
     def observation_space(self, agent):
         return self.modifiers[agent].modify_obs_space(self.env.observation_space(agent))
+
+    @property
+    def observation_spaces(self):
+        # NOTE: this is going to get deprecated in base class
+        observations = {
+            agent: self.modifiers[agent].modify_obs_space(obs)
+            for agent, obs in self.env.observation_spaces.items()
+        }
+        return observations
 
     def action_space(self, agent):
         return self.modifiers[agent].modify_action_space(self.env.action_space(agent))
