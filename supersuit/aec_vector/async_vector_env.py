@@ -1,4 +1,3 @@
-import copy
 import multiprocessing as mp
 from pettingzoo.utils.agent_selector import agent_selector
 import numpy as np

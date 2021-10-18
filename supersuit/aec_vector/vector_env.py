@@ -1,4 +1,3 @@
-import copy
 from pettingzoo.utils.agent_selector import agent_selector
 import numpy as np
 from .base_aec_vec_env import VectorAECEnv
