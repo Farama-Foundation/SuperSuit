@@ -1,3 +1,4 @@
+import functools
 from supersuit.utils.base_aec_wrapper import BaseWrapper
 from gym.spaces import Box
 import numpy as np
@@ -13,12 +14,14 @@ class ObservationWrapper(BaseWrapper):
 
 class black_death_aec(ObservationWrapper):
     def _check_wrapper_params(self):
-        if not hasattr(self, 'observation_spaces') or not hasattr(self, 'possible_agents'):
-            raise AssertionError("environment passed to black death wrapper must have the possible_agents and observation_spaces attributes.")
+        if not hasattr(self, 'possible_agents'):
+            raise AssertionError("environment passed to black death wrapper must have the possible_agents attribute.")
 
-        for space in self.observation_spaces.values():
+        for agent in self.possible_agents:
+            space = self.observation_space(agent)
             assert isinstance(space, gym.spaces.Box), f"observation sapces for black death must be Box spaces, is {space}"
 
+    @functools.lru_cache(maxsize=None)
     def observation_space(self, agent):
         old_obs_space = self.env.observation_space(agent)
         return Box(low=np.minimum(0, old_obs_space.low), high=np.maximum(0, old_obs_space.high), dtype=old_obs_space.dtype)
