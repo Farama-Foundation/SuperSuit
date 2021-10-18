@@ -1,3 +1,4 @@
+import functools
 from supersuit.utils.base_aec_wrapper import BaseWrapper
 from gym.spaces import Box
 import numpy as np
@@ -20,6 +21,7 @@ class black_death_aec(ObservationWrapper):
             space = self.observation_space(agent)
             assert isinstance(space, gym.spaces.Box), f"observation sapces for black death must be Box spaces, is {space}"
 
+    @functools.lru_cache(maxsize=None)
     def observation_space(self, agent):
         old_obs_space = self.env.observation_space(agent)
         return Box(low=np.minimum(0, old_obs_space.low), high=np.maximum(0, old_obs_space.high), dtype=old_obs_space.dtype)

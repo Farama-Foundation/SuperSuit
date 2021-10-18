@@ -1,3 +1,4 @@
+import functools
 import gym
 import numpy as np
 from gym.spaces import Box, Space
@@ -28,6 +29,7 @@ class aec_observation_lambda(BaseWrapper):
             for agent in self.possible_agents:
                 assert isinstance(self.observation_space(agent), Box), "the observation_lambda_wrapper only allows the change_obs_space_fn argument to be optional for Box observation spaces"
 
+    @functools.lru_cache(maxsize=None)
     def observation_space(self, agent):
         if self.change_obs_space_fn is None:
             space = self.env.observation_space(agent)

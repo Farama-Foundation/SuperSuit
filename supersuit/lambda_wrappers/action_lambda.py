@@ -1,3 +1,4 @@
+import functools
 from gym.spaces import Space
 from supersuit.utils.base_aec_wrapper import BaseWrapper
 from supersuit.utils.wrapper_chooser import WrapperChooser
@@ -22,6 +23,7 @@ class aec_action_lambda(BaseWrapper):
     def _modify_observation(self, agent, observation):
         return observation
 
+    @functools.lru_cache(maxsize=None)
     def action_space(self, agent):
         old_act_space = self.env.action_space(agent)
         try:
