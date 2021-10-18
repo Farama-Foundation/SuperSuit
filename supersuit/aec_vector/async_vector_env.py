@@ -365,6 +365,12 @@ class AsyncAECVectorEnv(VectorAECEnv):
 
         self._receive_info()
 
+    def action_space(self, agent):
+        return self.env.action_space(agent)
+
+    def observation_space(self, agent):
+        return self.env.observation_space(agent)
+
     def __del__(self):
         for cin in self.con_ins:
             cin.send(("terminate", None))

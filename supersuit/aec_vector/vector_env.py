@@ -16,6 +16,12 @@ class SyncAECVectorEnv(VectorAECEnv):
         self.possible_agents = self.env.possible_agents
         self._agent_selector = agent_selector(self.possible_agents)
 
+    def action_space(self, agent):
+        return self.env.action_space(agent)
+
+    def observation_space(self, agent):
+        return self.env.observation_space(agent)
+
     def _find_active_agent(self):
         cur_selection = self.agent_selection
         while not any(cur_selection == env.agent_selection for env in self.envs):
