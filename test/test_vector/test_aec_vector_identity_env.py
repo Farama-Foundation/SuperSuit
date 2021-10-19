@@ -24,7 +24,7 @@ def test_identical():
     env2.reset()
 
     def policy(obs, agent):
-        return [env1.action_spaces[agent].sample() for i in range(env1.num_envs)]
+        return [env1.action_space(agent).sample() for i in range(env1.num_envs)]
 
     envs_done = 0
     for agent in env1.agent_iter(200000):

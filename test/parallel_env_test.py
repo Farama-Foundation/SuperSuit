@@ -10,20 +10,26 @@ class DummyParEnv(ParallelEnv):
     def __init__(self, observations, observation_spaces, action_spaces):
         super().__init__()
         self._observations = observations
-        self.observation_spaces = observation_spaces
+        self._observation_spaces = observation_spaces
 
         self.agents = [x for x in observation_spaces.keys()]
         self.possible_agents = self.agents
         self.agent_selection = self.agents[0]
-        self.action_spaces = action_spaces
+        self._action_spaces = action_spaces
 
         self.rewards = {a: 1 for a in self.agents}
         self.dones = {a: False for a in self.agents}
         self.infos = {a: {} for a in self.agents}
 
+    def observation_space(self, agent):
+        return self._observation_spaces[agent]
+
+    def action_space(self, agent):
+        return self._action_spaces[agent]
+
     def step(self, actions):
         for agent, action in actions.items():
-            assert action in self.action_spaces[agent]
+            assert action in self.action_space(agent)
         return self._observations, self.rewards, self.dones, self.infos
 
     def reset(self):
@@ -44,5 +50,5 @@ def test_basic():
     env = supersuit.dtype_v0(env, np.uint8)
     orig_obs = env.reset()
     for i in range(10):
-        action = {agent: env.action_spaces[agent].sample() for agent in env.agents}
+        action = {agent: env.action_space(agent).sample() for agent in env.agents}
         obs, rew, done, info = env.step(action)

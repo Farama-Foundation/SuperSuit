@@ -1,3 +1,4 @@
+import functools
 import gym
 from pettingzoo.utils.wrappers import OrderEnforcingWrapper as PettingzooWrap
 from supersuit.utils.wrapper_chooser import WrapperChooser
@@ -13,9 +14,11 @@ class shared_wrapper_aec(PettingzooWrap):
         if hasattr(self.env, 'possible_agents'):
             self.add_modifiers(self.env.possible_agents)
 
+    @functools.lru_cache(maxsize=None)
     def observation_space(self, agent):
         return self.modifiers[agent].modify_obs_space(self.env.observation_space(agent))
 
+    @functools.lru_cache(maxsize=None)
     def action_space(self, agent):
         return self.modifiers[agent].modify_action_space(self.env.action_space(agent))
 
@@ -65,9 +68,11 @@ class shared_wrapper_parr(BaseParallelWraper):
         if hasattr(self.env, 'possible_agents'):
             self.add_modifiers(self.env.possible_agents)
 
+    @functools.lru_cache(maxsize=None)
     def observation_space(self, agent):
         return self.modifiers[agent].modify_obs_space(self.env.observation_space(agent))
 
+    @functools.lru_cache(maxsize=None)
     def action_space(self, agent):
         return self.modifiers[agent].modify_action_space(self.env.action_space(agent))
 

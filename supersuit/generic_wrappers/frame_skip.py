@@ -125,13 +125,13 @@ class frame_skip_par(BaseParallelWraper):
         self.agents = self.env.agents[:]
         orig_agents = set(action.keys())
 
+        total_reward = make_defaultdict({agent: 0.0 for agent in self.agents})
+        total_dones = {}
+        total_infos = {}
+        total_obs = {}
+
         for x in range(num_skips):
             obs, rews, done, info = super().step(action)
-            if x == 0:
-                total_reward = make_defaultdict({agent: 0.0 for agent in self.env.agents})
-                total_dones = {}
-                total_infos = {}
-                total_obs = {}
 
             for agent, rew in rews.items():
                 total_reward[agent] += rew
@@ -157,6 +157,7 @@ class frame_skip_par(BaseParallelWraper):
                 del total_infos[agent]
                 del total_obs[agent]
 
+        self.agents = self.env.agents[:]
         return total_obs, total_reward, total_dones, total_infos
 
 

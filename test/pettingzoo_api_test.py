@@ -29,7 +29,7 @@ def test_pettingzoo_frame_skip():
     x = 0
     for agent in env.agent_iter(25):
         assert env.env.steps == (x // 2) * 3
-        action = env.action_spaces[env.agent_selection].sample()
+        action = env.action_space(env.agent_selection).sample()
         next_obs = env.step(action)
         x += 1
 
@@ -84,13 +84,17 @@ def test_pettingzoo_aec_api(env):
 
 parallel_wrappers = [
     supersuit.frame_stack_v1(combined_arms_v5.parallel_env(), 8),
+    supersuit.frame_stack_v1(simple_push_v2.parallel_env(), 8),
     supersuit.reward_lambda_v0(combined_arms_v5.parallel_env(), lambda x: x / 10),
     supersuit.delay_observations_v0(combined_arms_v5.parallel_env(), 3),
+    supersuit.delay_observations_v0(simple_push_v2.parallel_env(), 3),
     supersuit.dtype_v0(combined_arms_v5.parallel_env(), np.int32),
     supersuit.color_reduction_v0(knights_archers_zombies_v7.parallel_env(), "R"),
     supersuit.frame_skip_v0(combined_arms_v5.parallel_env(), 4),
+    supersuit.frame_skip_v0(simple_push_v2.parallel_env(), 4),
     supersuit.max_observation_v0(combined_arms_v5.parallel_env(), 4),
     supersuit.black_death_v2(combined_arms_v5.parallel_env()),
+    supersuit.black_death_v2(simple_push_v2.parallel_env()),
 ]
 
 

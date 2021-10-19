@@ -1,4 +1,3 @@
-import copy
 import multiprocessing as mp
 from pettingzoo.utils.agent_selector import agent_selector
 import numpy as np
@@ -72,7 +71,7 @@ class _SeperableAECWrapper:
         self.env = self.envs[0]
         self.possible_agents = self.env.possible_agents
         self.agent_indexes = {agent: i for i, agent in enumerate(self.env.possible_agents)}
-        self.dead_obss = {agent: np.zeros_like(SpaceWrapper(obs_space).low) for agent, obs_space in self.env.observation_spaces.items()}
+        self.dead_obss = {agent: np.zeros_like(SpaceWrapper(self.env.observation_space(agent)).low) for agent in self.env.possible_agents}
 
     def reset(self):
         for env in self.envs:
@@ -174,7 +173,7 @@ def env_worker(env_constructors, total_num_envs, idx_start, my_num_envs, agent_a
         env = _SeperableAECWrapper(env_constructors, my_num_envs)
         shared_datas = {
             agent: AgentSharedData(
-                total_num_envs, SpaceWrapper(env.env.observation_spaces[agent]), SpaceWrapper(env.env.action_spaces[agent]), agent_arrays[agent]
+                total_num_envs, SpaceWrapper(env.env.observation_space(agent)), SpaceWrapper(env.env.action_space(agent)), agent_arrays[agent]
             )
             for agent in env.possible_agents
         }
@@ -238,8 +237,6 @@ class AsyncAECVectorEnv(VectorAECEnv):
         self.env = env = env_constructors[0]()
         self.max_num_agents = len(self.env.possible_agents)
         self.possible_agents = self.env.possible_agents
-        self.observation_spaces = copy.copy(self.env.observation_spaces)
-        self.action_spaces = copy.copy(self.env.action_spaces)
         self.order_is_nondeterministic = False
         self.num_envs = num_envs
 
@@ -250,14 +247,14 @@ class AsyncAECVectorEnv(VectorAECEnv):
         all_arrays = {
             agent: create_shared_data(
                 num_envs,
-                SpaceWrapper(self.observation_spaces[agent]),
-                SpaceWrapper(self.action_spaces[agent]),
+                SpaceWrapper(self.observation_space(agent)),
+                SpaceWrapper(self.action_space(agent)),
             )
             for agent in self.possible_agents
         }
 
         self.shared_datas = {
-            agent: AgentSharedData(num_envs, SpaceWrapper(env.observation_spaces[agent]), SpaceWrapper(env.action_spaces[agent]), all_arrays[agent])
+            agent: AgentSharedData(num_envs, SpaceWrapper(env.observation_space(agent)), SpaceWrapper(env.action_space(agent)), all_arrays[agent])
             for agent in env.possible_agents
         }
 
@@ -366,6 +363,12 @@ class AsyncAECVectorEnv(VectorAECEnv):
             cin.send(("seed", seed + start if seed is not None else None))
 
         self._receive_info()
+
+    def action_space(self, agent):
+        return self.env.action_space(agent)
+
+    def observation_space(self, agent):
+        return self.env.observation_space(agent)
 
     def __del__(self):
         for cin in self.con_ins:

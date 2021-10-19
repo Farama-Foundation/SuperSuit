@@ -9,15 +9,21 @@ class DummyEnv(AECEnv):
     def __init__(self, observations, observation_spaces, action_spaces):
         super().__init__()
         self._observations = observations
-        self.observation_spaces = observation_spaces
+        self._observation_spaces = observation_spaces
 
         self.agents = sorted([x for x in observation_spaces.keys()])
         self.possible_agents = self.agents[:]
         self._agent_selector = agent_selector(self.agents)
         self.agent_selection = self._agent_selector.reset()
-        self.action_spaces = action_spaces
+        self._action_spaces = action_spaces
 
         self.steps = 0
+
+    def observation_space(self, agent):
+        return self._observation_spaces[agent]
+
+    def action_space(self, agent):
+        return self._action_spaces[agent]
 
     def seed(self, seed=None):
         pass
