@@ -18,8 +18,8 @@ def get_version():
 setuptools.setup(
     name="SuperSuit",
     version=get_version(),
-    author="PettingZoo Team",
-    author_email="justinkterry@gmail.com",
+    author="SuperSuit Community",
+    author_email="jkterry@umd.edu",
     description="Wrappers for Gym and PettingZoo",
     long_description=long_description,
     long_description_content_type="text/markdown",
