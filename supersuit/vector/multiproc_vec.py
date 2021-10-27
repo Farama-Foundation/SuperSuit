@@ -1,3 +1,5 @@
+import copy
+
 from .utils.shared_array import SharedArray
 from .utils.space_wrapper import SpaceWrapper
 import multiprocessing as mp
@@ -114,7 +116,7 @@ class ProcConcatVec(gym.vector.VectorEnv):
         self._receive_info()
 
         observations = self.shared_obs.np_arr
-        return observations
+        return observations.copy()
 
     def step_async(self, actions):
         self.shared_act.np_arr[:] = actions
@@ -138,7 +140,7 @@ class ProcConcatVec(gym.vector.VectorEnv):
         observations = self.shared_obs.np_arr
         rewards = self.shared_rews.np_arr
         dones = self.shared_dones.np_arr
-        return observations, rewards, dones, infos
+        return observations.copy(), rewards.copy(), dones.copy(), copy.deepcopy(infos)
 
     def step(self, actions):
         self.step_async(actions)
