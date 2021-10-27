@@ -30,13 +30,13 @@ def test_good_env():
             assert all(dones)
         obss = new_obss
 
+
 def test_good_vecenv():
     num_envs = 2
     env = simple_spread_v2.parallel_env()
     max_num_agents = len(env.possible_agents) * num_envs
     env = pettingzoo_env_to_vec_env_v0(env)
     env = concat_vec_envs_v0(env, num_envs)
-
 
     obss = env.reset()
     for i in range(55):
