@@ -1,3 +1,5 @@
+import copy
+
 from supersuit import gym_vec_env_v0, stable_baselines3_vec_env_v0, concat_vec_envs_v0, pettingzoo_env_to_vec_env_v0
 from pettingzoo.mpe import simple_spread_v2
 import gym
@@ -79,3 +81,21 @@ def test_multiagent_mutliproc_single_proc_equivalency():
     venv1 = concat_vec_envs_v0(env, num_envs, num_cpus=0)  # uses single threaded vector environment
     venv2 = concat_vec_envs_v0(env, num_envs, num_cpus=4)  # uses multiprocessing vector environment
     check_vec_env_equivalency(venv1, venv2)
+
+
+def test_multiproc_buffer():
+    num_envs = 2
+    env = gym.make("CartPole-v0")
+    env = concat_vec_envs_v0(env, num_envs, num_cpus=2)
+
+    obss = env.reset()
+    for i in range(55):
+        actions = [env.action_space.sample() for i in range(env.num_envs)]
+
+        # Check we're not passing a thing that gets mutated
+        keep_obs = copy.deepcopy(obss)
+        new_obss, rews, dones, infos = env.step(actions)
+
+        assert hash(str(keep_obs)) == hash(str(obss))
+
+        obss = new_obss
