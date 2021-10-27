@@ -26,7 +26,7 @@ class ConcatVecEnv(gym.vector.VectorEnv):
             endidx = idx + venv.num_envs
             self.obs_buffer[idx:endidx] = obs
             idx = endidx
-        return self.obs_buffer
+        return self.obs_buffer.copy()
 
     def seed(self, seed=None):
         if seed is None:
