@@ -1,6 +1,6 @@
 import copy
 
-from supersuit import gym_vec_env_v0, stable_baselines3_vec_env_v0, concat_vec_envs_v0, pettingzoo_env_to_vec_env_v0
+from supersuit import gym_vec_env_v0, stable_baselines3_vec_env_v0, concat_vec_envs_v1, pettingzoo_env_to_vec_env_v1
 from pettingzoo.mpe import simple_spread_v2
 import gym
 import numpy as np
@@ -46,14 +46,14 @@ def check_vec_env_equivalency(venv1, venv2, check_info=True):
 def test_gym_supersuit_equivalency():
     env = gym.make("MountainCarContinuous-v0")
     num_envs = 3
-    venv1 = concat_vec_envs_v0(env, num_envs)
+    venv1 = concat_vec_envs_v1(env, num_envs)
     venv2 = gym_vec_env_v0(env, num_envs)
     check_vec_env_equivalency(venv1, venv2)
 
 
 def test_inital_state_dissimilarity():
     env = gym.make("CartPole-v0")
-    venv = concat_vec_envs_v0(env, 2)
+    venv = concat_vec_envs_v1(env, 2)
     observations = venv.reset()
     assert not np.equal(observations[0], observations[1]).all()
 
@@ -69,24 +69,24 @@ def test_inital_state_dissimilarity():
 def test_mutliproc_single_proc_equivalency():
     env = gym.make("CartPole-v0")
     num_envs = 3
-    venv1 = concat_vec_envs_v0(env, num_envs, num_cpus=0)  # uses single threaded vector environment
-    venv2 = concat_vec_envs_v0(env, num_envs, num_cpus=4)  # uses multiprocessing vector environment
+    venv1 = concat_vec_envs_v1(env, num_envs, num_cpus=0)  # uses single threaded vector environment
+    venv2 = concat_vec_envs_v1(env, num_envs, num_cpus=4)  # uses multiprocessing vector environment
     check_vec_env_equivalency(venv1, venv2)
 
 
 def test_multiagent_mutliproc_single_proc_equivalency():
     env = simple_spread_v2.parallel_env(max_cycles=10)
-    env = pettingzoo_env_to_vec_env_v0(env)
+    env = pettingzoo_env_to_vec_env_v1(env)
     num_envs = 3
-    venv1 = concat_vec_envs_v0(env, num_envs, num_cpus=0)  # uses single threaded vector environment
-    venv2 = concat_vec_envs_v0(env, num_envs, num_cpus=4)  # uses multiprocessing vector environment
+    venv1 = concat_vec_envs_v1(env, num_envs, num_cpus=0)  # uses single threaded vector environment
+    venv2 = concat_vec_envs_v1(env, num_envs, num_cpus=4)  # uses multiprocessing vector environment
     check_vec_env_equivalency(venv1, venv2)
 
 
 def test_multiproc_buffer():
     num_envs = 2
     env = gym.make("CartPole-v0")
-    env = concat_vec_envs_v0(env, num_envs, num_cpus=2)
+    env = concat_vec_envs_v1(env, num_envs, num_cpus=2)
 
     obss = env.reset()
     for i in range(55):

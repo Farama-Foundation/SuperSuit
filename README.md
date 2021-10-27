@@ -97,7 +97,7 @@ These functions turn plain Gym environments into vectorized environments, for ev
 
 `stable_baselines3_vec_env_v0(env, num_envs, multiprocessing=False)` creates a stable_baselines vector environment with num_envs copies of the environment. If `multiprocessing` is True, SubprocVecEnv is used instead of DummyVecEnv. Needs stable_baselines3 to be installed to work.
 
-`concat_vec_envs_v0(vec_env, num_vec_envs, num_cpus=0, base_class='gym')` takes in an `vec_env` which is vector environment (should not have multithreading enabled). Creates a new vector environment with `num_vec_envs` copies of that vector environment concatenated together and runs them on `num_cpus` cpus as balanced as possible between cpus. `num_cpus=0` or `num_cpus=1` means to create 0 new threads, i.e. run the process in an efficient single threaded manner. A use case for this function is given below. If the base class of the resulting vector environment matters as it does for stable baselines, you can use the `base_class` parameter to switch between `"gym"` base class and `"stable_baselines3"`'s base class. Note that both have identical functionality.
+`concat_vec_envs_v1(vec_env, num_vec_envs, num_cpus=0, base_class='gym')` takes in an `vec_env` which is vector environment (should not have multithreading enabled). Creates a new vector environment with `num_vec_envs` copies of that vector environment concatenated together and runs them on `num_cpus` cpus as balanced as possible between cpus. `num_cpus=0` or `num_cpus=1` means to create 0 new threads, i.e. run the process in an efficient single threaded manner. A use case for this function is given below. If the base class of the resulting vector environment matters as it does for stable baselines, you can use the `base_class` parameter to switch between `"gym"` base class and `"stable_baselines3"`'s base class. Note that both have identical functionality.
 
 ### Parallel Environment vectorization
 
@@ -116,7 +116,7 @@ The following function performs this conversion.
 
 `pettingzoo_env_to_vec_env_v0(env)`: Takes a PettingZoo ParallelEnv with the following assumptions: no agent death or generation, homogeneous action and observation spaces. Returns a gym vector environment where each "environment" in the vector represents one agent. An arbitrary PettingZoo parallel environment can be enforced to have these assumptions by wrapping it with the pad_action_space, pad_observations, and the black_death wrapper). This conversion to a vector environment can be used to train appropriate pettingzoo environments with standard single agent RL methods such as stable baselines's A2C out of box (example below).
 
-You can also use the `concat_vec_envs_v0` functionality to train on several vector environments in parallel, forming a vector which looks like
+You can also use the `concat_vec_envs_v1` functionality to train on several vector environments in parallel, forming a vector which looks like
 
 ```
 env_1_agent_1
@@ -139,7 +139,7 @@ env = ss.color_reduction_v0(env, mode='B')
 env = ss.resize_v0(env, x_size=84, y_size=84)
 env = ss.frame_stack_v1(env, 3)
 env = ss.pettingzoo_env_to_vec_env_v0(env)
-env = ss.concat_vec_envs_v0(env, 8, num_cpus=4, base_class='stable_baselines3')
+env = ss.concat_vec_envs_v1(env, 8, num_cpus=4, base_class='stable_baselines3')
 model = PPO('CnnPolicy', env, verbose=3, n_steps=16)
 model.learn(total_timesteps=2000000)
 ```

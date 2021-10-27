@@ -8,7 +8,7 @@ from supersuit.generic_wrappers import frame_skip_v0, color_reduction_v0, resize
     sticky_actions_v0 # NOQA
 
 from .vector.vector_constructors import gym_vec_env_v0, stable_baselines_vec_env_v0, \
-    stable_baselines3_vec_env_v0, concat_vec_envs_v0, pettingzoo_env_to_vec_env_v0 # NOQA
+    stable_baselines3_vec_env_v0, concat_vec_envs_v1, pettingzoo_env_to_vec_env_v0 # NOQA
 
 from .aec_vector import vectorize_aec_env_v0 # NOQA
 
