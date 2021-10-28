@@ -83,7 +83,7 @@ wrapper_fns = [
     lambda: supersuit.pad_action_space_v0(generated_agents_parallel_v0.parallel_env()),
     lambda: supersuit.pad_observations_v0(generated_agents_parallel_v0.parallel_env()),
     lambda: supersuit.agent_indicator_v0(generated_agents_parallel_v0.parallel_env()),
-    lambda: supersuit.pettingzoo_env_to_vec_env_v0(generated_agents_parallel_v0.parallel_env()),
+    lambda: supersuit.pettingzoo_env_to_vec_env_v1(generated_agents_parallel_v0.parallel_env()),
 ]
 
 
