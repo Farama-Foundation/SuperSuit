@@ -40,10 +40,10 @@ class MarkovVectorEnv(gym.vector.VectorEnv):
                     self.obs_buffer[i] = obs_dict[agent]
             else:
                 if agent not in obs_dict:
-                    raise AssertionError("environment has agent death. Not allowed for pettingzoo_env_to_vec_env_v0 unless black_death is True")
+                    raise AssertionError("environment has agent death. Not allowed for pettingzoo_env_to_vec_env_v1 unless black_death is True")
                 self.obs_buffer[i] = obs_dict[agent]
 
-        return self.obs_buffer
+        return self.obs_buffer.copy()
 
     def step_async(self, actions):
         self._saved_actions = actions
