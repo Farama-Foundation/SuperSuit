@@ -16,5 +16,5 @@ class SharedArray:
         return (self.shared_arr, self.dtype, self.shape)
 
     def __setstate__(self, state):
-        self.shared_arr = state
+        self.shared_arr, self.dtype, self.shape = state
         self._set_np_arr()
