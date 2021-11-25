@@ -13,4 +13,34 @@ from .vector.vector_constructors import gym_vec_env_v0, stable_baselines_vec_env
 from .aec_vector import vectorize_aec_env_v0 # NOQA
 
 
+class DeprecatedWrapper(ImportError):
+    pass
+
+
+def __getattr__(wrapper_name):
+    """
+    Gives error that looks like this when trying to import old version of wrapper:
+    File "./supersuit/__init__.py", line 38, in __getattr__
+    raise DeprecatedWrapper(f"{base}{version_num} is now deprecated, use {base}{act_version_num} instead")
+    supersuit.DeprecatedWrapper: concat_vec_envs_v0 is now deprecated, use concat_vec_envs_v1 instead
+    """
+    start_v = wrapper_name.rfind("_v") + 2
+    version = wrapper_name[start_v:]
+    base = wrapper_name[:start_v]
+    try:
+        version_num = int(version)
+        is_valid_version = True
+    except ValueError:
+        is_valid_version = False
+
+    globs = globals()
+    if is_valid_version:
+        for act_version_num in range(1000):
+            if f"{base}{act_version_num}" in globs:
+                if version_num < act_version_num:
+                    raise DeprecatedWrapper(f"{base}{version_num} is now deprecated, use {base}{act_version_num} instead")
+
+    raise ImportError(f"cannot import name '{wrapper_name}' from 'supersuit'")
+
+
 __version__ = "3.3.1"

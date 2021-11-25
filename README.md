@@ -83,7 +83,7 @@ wrappers which require these attributes:
 * pad_action_space_v0
 * pad_observations_v0
 * agent_indicator_v0
-* pettingzoo_env_to_vec_env_v0
+* pettingzoo_env_to_vec_env_v1
 * vectorize_aec_env_v0
 
 
@@ -114,7 +114,7 @@ Where each agent's observation, reward, done, and info will be that environment'
 
 The following function performs this conversion.
 
-`pettingzoo_env_to_vec_env_v0(env)`: Takes a PettingZoo ParallelEnv with the following assumptions: no agent death or generation, homogeneous action and observation spaces. Returns a gym vector environment where each "environment" in the vector represents one agent. An arbitrary PettingZoo parallel environment can be enforced to have these assumptions by wrapping it with the pad_action_space, pad_observations, and the black_death wrapper). This conversion to a vector environment can be used to train appropriate pettingzoo environments with standard single agent RL methods such as stable baselines's A2C out of box (example below).
+`pettingzoo_env_to_vec_env_v1(env)`: Takes a PettingZoo ParallelEnv with the following assumptions: no agent death or generation, homogeneous action and observation spaces. Returns a gym vector environment where each "environment" in the vector represents one agent. An arbitrary PettingZoo parallel environment can be enforced to have these assumptions by wrapping it with the pad_action_space, pad_observations, and the black_death wrapper). This conversion to a vector environment can be used to train appropriate pettingzoo environments with standard single agent RL methods such as stable baselines's A2C out of box (example below).
 
 You can also use the `concat_vec_envs_v1` functionality to train on several vector environments in parallel, forming a vector which looks like
 
@@ -138,7 +138,7 @@ env = pistonball_v4.parallel_env()
 env = ss.color_reduction_v0(env, mode='B')
 env = ss.resize_v0(env, x_size=84, y_size=84)
 env = ss.frame_stack_v1(env, 3)
-env = ss.pettingzoo_env_to_vec_env_v0(env)
+env = ss.pettingzoo_env_to_vec_env_v1(env)
 env = ss.concat_vec_envs_v1(env, 8, num_cpus=4, base_class='stable_baselines3')
 model = PPO('CnnPolicy', env, verbose=3, n_steps=16)
 model.learn(total_timesteps=2000000)
