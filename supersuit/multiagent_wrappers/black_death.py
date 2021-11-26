@@ -4,7 +4,6 @@ from gym.spaces import Box
 import numpy as np
 import gym
 from supersuit.utils.wrapper_chooser import WrapperChooser
-from supersuit.utils.deprecated import Deprecated
 
 
 class ObservationWrapper(BaseWrapper):
@@ -73,7 +72,4 @@ class black_death_aec(ObservationWrapper):
 
         self._dones_step_first()
 
-
-black_death_v0 = Deprecated("black_death", "v0", "v2")
-black_death_v1 = Deprecated("black_death", "v1", "v2")
 black_death_v2 = WrapperChooser(aec_wrapper=black_death_aec)
