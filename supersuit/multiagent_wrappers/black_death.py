@@ -72,4 +72,5 @@ class black_death_aec(ObservationWrapper):
 
         self._dones_step_first()
 
+
 black_death_v2 = WrapperChooser(aec_wrapper=black_death_aec)
