@@ -43,4 +43,4 @@ def __getattr__(wrapper_name):
     raise ImportError(f"cannot import name '{wrapper_name}' from 'supersuit'")
 
 
-__version__ = "3.3.1"
+__version__ = "3.3.2"
