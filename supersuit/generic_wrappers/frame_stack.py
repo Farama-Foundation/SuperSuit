@@ -2,7 +2,6 @@ from .utils.base_modifier import BaseModifier
 from .utils.shared_wrapper_util import shared_wrapper
 from gym.spaces import Box, Discrete
 from supersuit.utils.frame_stack import stack_obs_space, stack_init, stack_obs
-from supersuit.utils.deprecated import Deprecated
 
 
 def frame_stack_v1(env, stack_size=4):
@@ -37,6 +36,3 @@ def frame_stack_v1(env, stack_size=4):
             return self.stack
 
     return shared_wrapper(env, FrameStackModifier)
-
-
-frame_stack_v0 = Deprecated("frame_stack", "v0", "v1")
