@@ -51,7 +51,9 @@ class MarkovVectorEnv(gym.vector.VectorEnv):
     def step_wait(self):
         return self.step(self._saved_actions)
 
-    def reset(self):
+    def reset(self, seed=None):
+        if seed:
+            self.seed(seed=seed)
         return self.concat_obs(self.par_env.reset())
 
     def step(self, actions):

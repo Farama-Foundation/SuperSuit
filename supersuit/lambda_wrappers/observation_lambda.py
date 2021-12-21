@@ -94,7 +94,9 @@ class gym_observation_lambda(gym.Wrapper):
         observation = self._modify_observation(observation)
         return observation, rew, done, info
 
-    def reset(self):
+    def reset(self, seed=None):
+        if seed:
+            self.env.seed(seed=seed)
         observation = self.env.reset()
         observation = self._modify_observation(observation)
         return observation

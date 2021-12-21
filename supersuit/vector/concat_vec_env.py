@@ -37,7 +37,9 @@ class ConcatVecEnv(gym.vector.VectorEnv):
                 env.seed(seed)
                 seed += env.num_envs
 
-    def reset(self):
+    def reset(self, seed=None):
+        if seed:
+            self.seed(seed=seed)
         return self.concat_obs([vec_env.reset() for vec_env in self.vec_envs])
 
     def step_async(self, actions):

@@ -28,8 +28,8 @@ class black_death_aec(ObservationWrapper):
     def observe(self, agent):
         return np.zeros_like(self.observation_space(agent).low) if agent not in self.env.dones else self.env.observe(agent)
 
-    def reset(self):
-        super().reset()
+    def reset(self, seed=None):
+        super().reset(seed=seed)
         self._agent_idx = 0
         self.agent_selection = self.possible_agents[self._agent_idx]
         self.agents = self.possible_agents[:]

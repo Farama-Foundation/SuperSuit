@@ -38,7 +38,9 @@ class shared_wrapper_aec(PettingzooWrap):
                 self.action_space(agent)
                 self.modifiers[agent].reset()
 
-    def reset(self):
+    def reset(self, seed=None):
+        if seed:
+            self.seed(seed=seed)
         for mod in self.modifiers.values():
             mod.reset()
         super().reset()
@@ -92,7 +94,9 @@ class shared_wrapper_parr(BaseParallelWraper):
             if seed is not None:
                 seed += 1
 
-    def reset(self):
+    def reset(self, seed=None):
+        if seed:
+            self.seed(seed=seed)
         observations = super().reset()
         self.add_modifiers(self.agents)
         for agent, mod in self.modifiers.items():
@@ -119,7 +123,9 @@ class shared_wrapper_gym(gym.Wrapper):
         super().seed(seed)
         self.modifier.seed(seed)
 
-    def reset(self):
+    def reset(self, seed=None):
+        if seed:
+            self.seed(seed=seed)
         self.modifier.reset()
         obs = super().reset()
         obs = self.modifier.modify_obs(obs)

@@ -1,5 +1,5 @@
 class VectorAECEnv:
-    def reset(self):
+    def reset(self, seed=None):
         """
         resets all environments
         """

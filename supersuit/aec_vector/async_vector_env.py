@@ -73,7 +73,9 @@ class _SeperableAECWrapper:
         self.agent_indexes = {agent: i for i, agent in enumerate(self.env.possible_agents)}
         self.dead_obss = {agent: np.zeros_like(SpaceWrapper(self.env.observation_space(agent)).low) for agent in self.env.possible_agents}
 
-    def reset(self):
+    def reset(self, seed=None):
+        if seed:
+            self.seed(seed=seed)
         for env in self.envs:
             env.reset()
 
@@ -333,7 +335,9 @@ class AsyncAECVectorEnv(VectorAECEnv):
         obs = self.observe(last_agent) if observe else None
         return obs, self._cumulative_rewards[last_agent], self.dones[last_agent], self.env_dones, self.passes, self.infos[last_agent]
 
-    def reset(self, observe=True):
+    def reset(self, observe=True, seed=None):
+        if seed:
+            self.seed(seed=seed)
         for cin in self.con_ins:
             cin.send(("reset", observe))
 

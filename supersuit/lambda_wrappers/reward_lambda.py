@@ -17,8 +17,8 @@ class aec_reward_lambda(PettingzooWrap):
     def _modify_spaces(self):
         pass
 
-    def reset(self):
-        super().reset()
+    def reset(self, seed=None):
+        super().reset(seed=seed)
         self.rewards = {agent: self._change_reward_fn(reward) for agent, reward in self.rewards.items()}
         self.__cumulative_rewards = make_defaultdict({a: 0 for a in self.agents})
         self._accumulate_rewards()

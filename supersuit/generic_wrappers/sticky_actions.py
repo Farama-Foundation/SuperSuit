@@ -10,7 +10,9 @@ def sticky_actions_v0(env, repeat_action_probability):
         def __init__(self):
             self.seed(None)
 
-        def reset(self):
+        def reset(self, seed=None):
+            if seed:
+                self.seed(seed=seed)
             self.old_action = None
 
         def seed(self, seed):

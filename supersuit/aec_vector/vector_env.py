@@ -41,10 +41,12 @@ class SyncAECVectorEnv(VectorAECEnv):
         }
         self.infos = {agent: [env.infos[agent] if agent in env.infos else {} for env in self.envs] for agent in self.possible_agents}
 
-    def reset(self):
+    def reset(self, seed=None):
         """
         returns: list of observations
         """
+        if seed:
+            self.seed(seed=seed)
         for env in self.envs:
             env.reset()
 
