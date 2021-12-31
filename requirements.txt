@@ -1,2 +1,3 @@
+git+https://github.com/openai/gym
 pettingzoo[butterfly]>=1.13.1
 opencv-python~=3.4.0

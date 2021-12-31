@@ -1,11 +1,20 @@
 import numpy as np
 from .single_vec_env import SingleVecEnv
 import gym.vector
-from gym.vector.utils import concatenate
+from gym.vector.utils import concatenate, iterate, create_empty_array
+from gym.spaces import Discrete
 
 
 def transpose(ll):
     return [[ll[i][j] for i in range(len(ll))] for j in range(len(ll[0]))]
+
+
+@iterate.register(Discrete)
+def iterate_discrete(space, items):
+    try:
+        return iter(items)
+    except TypeError:
+        raise TypeError(f"Unable to iterate over the following elements: {items}")
 
 
 class ConcatVecEnv(gym.vector.VectorEnv):
@@ -30,7 +39,21 @@ class ConcatVecEnv(gym.vector.VectorEnv):
                 seed += env.num_envs
 
     def reset(self):
-        return concatenate([vec_env.reset() for vec_env in self.vec_envs], None, self.observation_space)
+        return self.concat_obs([vec_env.reset() for vec_env in self.vec_envs])
+
+    def concat_obs(self, observations):
+        return concatenate(
+            [item for obs in observations for item in iterate(self.observation_space, obs)],
+            create_empty_array(self.observation_space, n=self.num_envs),
+            self.observation_space,
+        )
+
+    def concatenate_actions(self, actions, n_actions):
+        return concatenate(
+            actions,
+            create_empty_array(self.action_space, n=n_actions),
+            self.action_space,
+        )
 
     def step_async(self, actions):
         self._saved_actions = actions
@@ -41,11 +64,12 @@ class ConcatVecEnv(gym.vector.VectorEnv):
     def step(self, actions):
         data = []
         idx = 0
+        actions = list(iterate(self.action_space, actions))
         for venv in self.vec_envs:
-            data.append(venv.step(actions[idx: idx + venv.num_envs]))
+            data.append(venv.step(self.concatenate_actions(actions[idx: idx + venv.num_envs], venv.num_envs)))
             idx += venv.num_envs
         observations, rewards, dones, infos = transpose(data)
-        observations = concatenate([vec_env.reset() for vec_env in self.vec_envs], None, self.observation_space)
+        observations = self.concat_obs(observations)
         rewards = np.concatenate(rewards, axis=0)
         dones = np.concatenate(dones, axis=0)
         infos = sum(infos, [])
