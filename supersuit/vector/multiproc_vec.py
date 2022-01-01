@@ -1,7 +1,6 @@
 import copy
 
 from .utils.shared_array import SharedArray
-from .utils.space_wrapper import SpaceWrapper
 import multiprocessing as mp
 import numpy as np
 import traceback
@@ -33,7 +32,7 @@ def write_observations(vec_env, env_start_idx, shared_obs, obs):
     obs = list(iterate(vec_env.observation_space, obs))
     for i in range(vec_env.num_envs):
         write_to_shared_memory(
-            env_start_idx+i, obs[i], shared_obs, vec_env.observation_space
+            env_start_idx + i, obs[i], shared_obs, vec_env.observation_space
         )
 
 
@@ -161,7 +160,7 @@ class ProcConcatVec(gym.vector.VectorEnv):
     def step_async(self, actions):
         actions = list(iterate(self.action_space, actions))
         for i, pipe in enumerate(self.pipes):
-            start, end = self.idx_starts[i: i+2]
+            start, end = self.idx_starts[i: i + 2]
             pipe.send(("step", actions[start:end]))
 
     def _receive_info(self):
