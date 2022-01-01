@@ -75,16 +75,16 @@ def test_single_threaded_concatenate():
     env = concat_vec_envs_v1(env, 2, num_cpus=1)
     dict_vec_env_test(env)
 
-#
-# def test_multi_threaded_concatenate():
-#     env = make_env()
-#     env = pettingzoo_env_to_vec_env_v1(env)
-#     env = concat_vec_envs_v1(env, 2, num_cpus=2)
-#     dict_vec_env_test(env)
+
+def test_multi_threaded_concatenate():
+    env = make_env()
+    env = pettingzoo_env_to_vec_env_v1(env)
+    env = concat_vec_envs_v1(env, 2, num_cpus=2)
+    dict_vec_env_test(env)
 
 
 if __name__ == "__main__":
     from pettingzoo.test import parallel_api_test
 
-    test_pettingzoo_vec_env()
+    test_multi_threaded_concatenate()
     exit(0)
