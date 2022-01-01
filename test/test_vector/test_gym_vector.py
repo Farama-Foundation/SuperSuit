@@ -24,11 +24,8 @@ def check_vec_env_equivalency(venv1, venv2, check_info=True):
     # assert venv1.observation_space == venv2.observation_space
     # assert venv1.action_space == venv2.action_space
 
-    venv1.seed(51)
-    venv2.seed(51)
-
-    obs1 = venv1.reset()
-    obs2 = venv2.reset()
+    obs1 = venv1.reset(seed=42)
+    obs2 = venv2.reset(seed=42)
 
     for i in range(400):
         action = [venv1.action_space.sample() for env in range(venv1.num_envs)]

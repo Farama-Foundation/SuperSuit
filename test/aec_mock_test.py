@@ -143,8 +143,7 @@ wrappers = [
 
 @pytest.mark.parametrize("env", wrappers)
 def test_basic_wrappers(env):
-    env.seed(5)
-    env.reset()
+    env.reset(seed=5)
     obs, _, _, _ = env.last()
     act_space = env.action_space(env.agent_selection)
     obs_space = env.observation_space(env.agent_selection)

@@ -9,11 +9,10 @@ class frame_skip_gym(gym.Wrapper):
     def __init__(self, env, num_frames):
         super().__init__(env)
         self.num_frames = check_transform_frameskip(num_frames)
-        self.np_random, seed = gym.utils.seeding.np_random(None)
 
-    def seed(self, seed=None):
+    def reset(self, seed=None):
         self.np_random, seed = gym.utils.seeding.np_random(seed)
-        super().seed(seed)
+        return super().reset(seed)
 
     def step(self, action):
         low, high = self.num_frames
@@ -111,12 +110,11 @@ class frame_skip_par(BaseParallelWraper):
     def __init__(self, env, num_frames, default_action=None):
         super().__init__(env)
         self.num_frames = check_transform_frameskip(num_frames)
-        self.np_random, seed = gym.utils.seeding.np_random(None)
         self.default_action = default_action
 
-    def seed(self, seed=None):
+    def reset(self, seed=None):
         self.np_random, seed = gym.utils.seeding.np_random(seed)
-        super().seed(seed)
+        return super().reset(seed)
 
     def step(self, action):
         action = {**action}

@@ -10,9 +10,6 @@ class BaseModifier:
         self.cur_obs = obs
         return obs
 
-    def seed(self, seed):
-        pass
-
     def get_last_obs(self):
         return self.cur_obs
 

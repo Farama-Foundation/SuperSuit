@@ -12,5 +12,5 @@ class DummyEnv(gym.Env):
     def step(self, action):
         return self._observation, 1, False, {}
 
-    def reset(self):
+    def reset(self, seed=None):
         return self._observation

@@ -9,8 +9,6 @@ def max_observation_v0(env, memory):
 
     class MaxObsModifier(BaseModifier):
         def reset(self, seed=None):
-            if seed:
-                self.seed(seed=seed)
             self.accumulator = Accumulator(self.observation_space, memory, np.maximum)
 
         def modify_obs(self, obs):

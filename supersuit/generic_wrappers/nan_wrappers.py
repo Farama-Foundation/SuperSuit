@@ -8,9 +8,9 @@ import gym
 
 def nan_random_v0(env):
     class NanRandomModifier(BaseModifier):
-        def __init__(self):
-            super().__init__()
-            self.seed()
+        def reset(self, seed=None):
+            self.np_random, seed = gym.utils.seeding.np_random(seed)
+            return super().reset(seed)
 
         def modify_action(self, action):
             if action is not None and np.isnan(action).any():
@@ -22,9 +22,6 @@ def nan_random_v0(env):
                     warnings.warn("[WARNING]: Step received an NaN action {}. Environment is {}. Taking a random action.".format(action, self))
                     action = self.action_space.sample()
             return action
-
-        def seed(self, seed=None):
-            self.np_random, seed = gym.utils.seeding.np_random(seed)
 
     return shared_wrapper(env, NanRandomModifier)
 

@@ -60,8 +60,7 @@ wrappers = [
 
 @pytest.mark.parametrize("env", wrappers)
 def test_basic_wrappers(env):
-    env.seed(5)
-    obs = env.reset()
+    obs = env.reset(seed=5)
     act_space = env.action_space
     obs_space = env.observation_space
     assert obs_space.contains(obs)

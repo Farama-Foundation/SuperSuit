@@ -6,8 +6,6 @@ from supersuit.utils.obs_delay import Delayer
 def delay_observations_v0(env, delay):
     class DelayObsModifier(BaseModifier):
         def reset(self, seed=None):
-            if seed:
-                self.seed(seed=seed)
             self.delayer = Delayer(self.observation_space, delay)
 
         def modify_obs(self, obs):

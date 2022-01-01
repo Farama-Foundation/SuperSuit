@@ -18,10 +18,8 @@ def test_identical():
     # single threaded
     env1 = vectorize_aec_env_v0(knights_archers_zombies_v7.env(), n_envs)
     env2 = vectorize_aec_env_v0(knights_archers_zombies_v7.env(), n_envs, num_cpus=1)
-    env1.seed(42)
-    env2.seed(42)
-    env1.reset()
-    env2.reset()
+    env1.reset(seed=42)
+    env2.reset(seed=42)
 
     def policy(obs, agent):
         return [env1.action_space(agent).sample() for i in range(env1.num_envs)]
