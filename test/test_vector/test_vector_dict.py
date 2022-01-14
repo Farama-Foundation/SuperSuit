@@ -2,7 +2,7 @@ from ..dummy_aec_env import DummyEnv
 from gym.spaces import Box, Discrete, Dict, Tuple
 from gym.vector.utils import concatenate, create_empty_array
 import numpy as np
-from pettingzoo.utils.conversions import to_parallel
+from pettingzoo.utils.conversions import aec_to_parallel
 from supersuit import pettingzoo_env_to_vec_env_v1, concat_vec_envs_v1
 
 n_agents = 5
@@ -37,7 +37,7 @@ def make_env():
         },
     )
     test_env.metadata["is_parallelizable"] = True
-    return to_parallel(test_env)
+    return aec_to_parallel(test_env)
 
 
 def dict_vec_env_test(env):
