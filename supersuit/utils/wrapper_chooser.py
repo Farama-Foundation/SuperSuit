@@ -1,6 +1,6 @@
 import gym
 from pettingzoo.utils.env import AECEnv, ParallelEnv
-from pettingzoo.utils.conversions import to_parallel, from_parallel
+from pettingzoo.utils.conversions import aec_to_parallel, parallel_to_aec
 
 
 class WrapperChooser:
@@ -19,11 +19,11 @@ class WrapperChooser:
             if self.aec_wrapper is not None:
                 return self.aec_wrapper(env, *args, **kwargs)
             else:
-                return from_parallel(self.parallel_wrapper(to_parallel(env), *args, **kwargs))
+                return parallel_to_aec(self.parallel_wrapper(aec_to_parallel(env), *args, **kwargs))
         elif isinstance(env, ParallelEnv):
             if self.parallel_wrapper is not None:
                 return self.parallel_wrapper(env, *args, **kwargs)
             else:
-                return to_parallel(self.aec_wrapper(from_parallel(env), *args, **kwargs))
+                return aec_to_parallel(self.aec_wrapper(parallel_to_aec(env), *args, **kwargs))
         else:
             raise ValueError("environment passed to supersuit wrapper must either be a gym environment or a pettingzoo environment")

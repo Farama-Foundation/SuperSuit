@@ -1,12 +1,12 @@
 from supersuit import gym_vec_env_v0
 import gym
 import numpy as np
-from pettingzoo.butterfly import pistonball_v5
+from pettingzoo.butterfly import pistonball_v6
 from supersuit import concat_vec_envs_v1, pettingzoo_env_to_vec_env_v1
 
 
 def make_env():
-    env = pistonball_v5.parallel_env()
+    env = pistonball_v6.parallel_env()
     env = pettingzoo_env_to_vec_env_v1(env)
     return env
 
