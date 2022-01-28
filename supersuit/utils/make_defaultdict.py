@@ -1,4 +1,5 @@
 from collections import defaultdict
+import warnings
 
 
 def make_defaultdict(d):
@@ -8,4 +9,5 @@ def make_defaultdict(d):
             dd[k] = v
         return dd
     except StopIteration:
+        warnings.warn("No agents left in the environment!")
         return {}
