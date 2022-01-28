@@ -74,10 +74,11 @@ class _SeperableAECWrapper:
         self.dead_obss = {agent: np.zeros_like(SpaceWrapper(self.env.observation_space(agent)).low) for agent in self.env.possible_agents}
 
     def reset(self, seed=None):
-        if seed:
-            self.seed(seed=seed)
+        self._cur_seed = seed
         for env in self.envs:
-            env.reset()
+            env.reset(self._cur_seed)
+            if self._cur_seed is not None:
+                self._cur_seed += 1
 
         self.rewards = {agent: [env.rewards.get(agent, 0) for env in self.envs] for agent in self.possible_agents}
         self._cumulative_rewards = {agent: [env._cumulative_rewards.get(agent, 0) for env in self.envs] for agent in self.possible_agents}
@@ -90,10 +91,6 @@ class _SeperableAECWrapper:
             observations.append(env.observe(agent) if agent in env.dones else self.dead_obss[agent])
         return observations
 
-    def seed(self, seed=None):
-        for i, env in enumerate(self.envs):
-            env.seed(seed + i)
-
     def step(self, agent_step, actions):
         assert len(actions) == len(self.envs)
 
@@ -102,7 +99,9 @@ class _SeperableAECWrapper:
             env_done = not env.agents
             env_dones.append(env_done)
             if env_done:
-                env.reset()
+                env.reset(self._cur_seed)
+                if self._cur_seed is not None:
+                    self._cur_seed += 1
             elif env.agent_selection == agent_step:
                 if env.dones[agent_step]:
                     act = None
@@ -185,7 +184,8 @@ def env_worker(env_constructors, total_num_envs, idx_start, my_num_envs, agent_a
         while True:
             instruction, data = pipe.recv()
             if instruction == "reset":
-                env.reset()
+                seed = data
+                env.reset(seed)
                 write_out_data(env.rewards, env._cumulative_rewards, env.dones, my_num_envs, idx_start, shared_datas)
                 env_dones = np.zeros(my_num_envs, dtype=np.uint8)
                 write_env_data(env_dones, env.get_agent_indexes(), my_num_envs, idx_start, env_datas)

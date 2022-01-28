@@ -27,6 +27,7 @@ class MarkovVectorEnv(gym.vector.VectorEnv):
         self.num_envs = len(par_env.possible_agents)
         self.black_death = black_death
         self.obs_buffer = np.empty((self.num_envs,) + self.observation_space.shape, dtype=self.observation_space.dtype)
+        self._prev_seed = None
 
     def seed(self, seed=None):
         self.par_env.seed(seed)
@@ -52,8 +53,12 @@ class MarkovVectorEnv(gym.vector.VectorEnv):
         return self.step(self._saved_actions)
 
     def reset(self, seed=None):
-        if seed:
+        if seed is not None:
             self.seed(seed=seed)
+            self._prev_seed = seed
+        elif self._prev_seed is not None:
+            self.seed(seed=self._prev_seed + 1000000)
+
         return self.concat_obs(self.par_env.reset())
 
     def step(self, actions):

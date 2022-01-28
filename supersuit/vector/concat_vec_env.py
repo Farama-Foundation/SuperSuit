@@ -19,6 +19,7 @@ class ConcatVecEnv(gym.vector.VectorEnv):
         tot_num_envs = sum(env.num_envs for env in vec_envs)
         self.num_envs = tot_num_envs
         self.obs_buffer = np.empty((self.num_envs,) + self.observation_space.shape, dtype=self.observation_space.dtype)
+        self._prev_seed = None
 
     def concat_obs(self, obs_list):
         idx = 0
@@ -38,8 +39,12 @@ class ConcatVecEnv(gym.vector.VectorEnv):
                 seed += env.num_envs
 
     def reset(self, seed=None):
-        if seed:
+        if seed is not None:
             self.seed(seed=seed)
+            self._prev_seed = seed
+        elif self._prev_seed is not None:
+            self.seed(seed=self._prev_seed + 1000000)
+
         return self.concat_obs([vec_env.reset() for vec_env in self.vec_envs])
 
     def step_async(self, actions):

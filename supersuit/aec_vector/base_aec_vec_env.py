@@ -4,11 +4,6 @@ class VectorAECEnv:
         resets all environments
         """
 
-    def seed(self, seed=None):
-        """
-        seeds all environments
-        """
-
     def observe(self, agent):
         """
         returns observation for agent from all environments (if agent is alive, else all zeros)

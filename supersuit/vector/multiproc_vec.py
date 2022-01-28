@@ -108,10 +108,15 @@ class ProcConcatVec(gym.vector.VectorEnv):
 
         assert num_envs == tot_num_envs
         self.idx_starts = idx_starts
+        self._prev_seed = None
 
     def reset(self, seed=None):
-        if seed:
+        if seed is not None:
             self.seed(seed=seed)
+            self._prev_seed = seed
+        elif self._prev_seed is not None:
+            self.seed(seed=self._prev_seed + 1000000)
+
         for pipe in self.pipes:
             pipe.send("reset")
 

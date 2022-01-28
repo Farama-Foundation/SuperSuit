@@ -14,6 +14,7 @@ class SyncAECVectorEnv(VectorAECEnv):
         self.max_num_agents = self.env.max_num_agents
         self.possible_agents = self.env.possible_agents
         self._agent_selector = agent_selector(self.possible_agents)
+        self._prev_seed = None
 
     def action_space(self, agent):
         return self.env.action_space(agent)
@@ -42,11 +43,11 @@ class SyncAECVectorEnv(VectorAECEnv):
         self.infos = {agent: [env.infos[agent] if agent in env.infos else {} for env in self.envs] for agent in self.possible_agents}
 
     def reset(self, seed=None):
-        """
-        returns: list of observations
-        """
-        if seed:
+        if seed is not None:
             self.seed(seed=seed)
+        elif self._prev_seed is not None:
+            self.seed(seed=self._prev_seed + 1000000)
+
         for env in self.envs:
             env.reset()
 
@@ -57,6 +58,7 @@ class SyncAECVectorEnv(VectorAECEnv):
         self.envs_dones = np.zeros(self.num_envs)
 
     def seed(self, seed=None):
+        self._prev_seed = seed
         for i, env in enumerate(self.envs):
             env.seed(seed + i)
 

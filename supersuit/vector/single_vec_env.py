@@ -10,10 +10,15 @@ class SingleVecEnv:
         self.action_space = self.gym_env.action_space
         self.num_envs = 1
         self.metadata = self.gym_env.metadata
+        self._prev_seed = None
 
     def reset(self, seed=None):
-        if seed:
+        if seed is not None:
+            self._prev_seed = seed
             self.seed(seed=seed)
+        elif self._prev_seed is not None:
+            self.seed(seed=self._prev_seed + 1000000)
+
         return np.expand_dims(self.gym_env.reset(), 0)
 
     def step_async(self, actions):
