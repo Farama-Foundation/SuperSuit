@@ -26,7 +26,7 @@ class black_death_aec(ObservationWrapper):
         return Box(low=np.minimum(0, old_obs_space.low), high=np.maximum(0, old_obs_space.high), dtype=old_obs_space.dtype)
 
     def observe(self, agent):
-        return np.zeros_like(self.observation_space(agent).low) if agent not in self.env.dones else self.env.observe(agent)
+        return np.zeros_like(self.observation_space(agent).low) if self.env.dones[agent] else self.env.observe(agent)
 
     def reset(self):
         super().reset()
