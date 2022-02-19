@@ -19,9 +19,7 @@ def test_param_check():
 
 def test_change_observation():
     cur_val = test_val
-    # print(cur_val)
     cur_val = cur_val.astype(np.uint8)
-    # print(cur_val)
     new_obs = change_observation(cur_val, test_obs_space, (3, 2, False))
     new_obs = change_observation(cur_val, test_obs_space, (3, 2, True))
     test_obs = np.array(

@@ -1,5 +1,6 @@
 import numpy as np
 import gym.vector
+from gym.vector.utils import concatenate, iterate, create_empty_array
 
 
 class MarkovVectorEnv(gym.vector.VectorEnv):
@@ -26,24 +27,22 @@ class MarkovVectorEnv(gym.vector.VectorEnv):
         ), "action spaces not consistent. Perhaps you should wrap with `supersuit.aec_wrappers.pad_actions`?"
         self.num_envs = len(par_env.possible_agents)
         self.black_death = black_death
-        self.obs_buffer = np.empty((self.num_envs,) + self.observation_space.shape, dtype=self.observation_space.dtype)
 
     def seed(self, seed=None):
         self.par_env.seed(seed)
 
     def concat_obs(self, obs_dict):
-        if self.black_death:
-            self.obs_buffer[:] = 0
+        obs_list = []
         for i, agent in enumerate(self.par_env.possible_agents):
-            if self.black_death:
-                if agent in obs_dict:
-                    self.obs_buffer[i] = obs_dict[agent]
-            else:
-                if agent not in obs_dict:
-                    raise AssertionError("environment has agent death. Not allowed for pettingzoo_env_to_vec_env_v1 unless black_death is True")
-                self.obs_buffer[i] = obs_dict[agent]
+            if agent not in obs_dict:
+                raise AssertionError("environment has agent death. Not allowed for pettingzoo_env_to_vec_env_v1 unless black_death is True")
+            obs_list.append(obs_dict[agent])
 
-        return self.obs_buffer.copy()
+        return concatenate(
+            obs_list,
+            create_empty_array(self.observation_space, self.num_envs),
+            self.observation_space,
+        )
 
     def step_async(self, actions):
         self._saved_actions = actions
@@ -55,6 +54,7 @@ class MarkovVectorEnv(gym.vector.VectorEnv):
         return self.concat_obs(self.par_env.reset())
 
     def step(self, actions):
+        actions = list(iterate(self.action_space, actions))
         agent_set = set(self.par_env.agents)
         act_dict = {agent: actions[i] for i, agent in enumerate(self.par_env.possible_agents) if agent in agent_set}
         observations, rewards, dones, infos = self.par_env.step(act_dict)
