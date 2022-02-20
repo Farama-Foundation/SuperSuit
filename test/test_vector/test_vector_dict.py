@@ -48,9 +48,9 @@ def dict_vec_env_test(env):
     for i in range(55):
         actions = [env.action_space.sample() for i in range(env.num_envs)]
         actions = concatenate(
+            env.action_space,
             actions,
             create_empty_array(env.action_space, env.num_envs),
-            env.action_space,
         )
         obss, rews, dones, infos = env.step(actions)
         assert obss["feature"][1][0] == 1

@@ -43,16 +43,16 @@ class ConcatVecEnv(gym.vector.VectorEnv):
 
     def concat_obs(self, observations):
         return concatenate(
+            self.observation_space,
             [item for obs in observations for item in iterate(self.observation_space, obs)],
             create_empty_array(self.observation_space, n=self.num_envs),
-            self.observation_space,
         )
 
     def concatenate_actions(self, actions, n_actions):
         return concatenate(
+            self.action_space,
             actions,
             create_empty_array(self.action_space, n=n_actions),
-            self.action_space,
         )
 
     def step_async(self, actions):

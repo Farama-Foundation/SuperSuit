@@ -32,7 +32,7 @@ def write_observations(vec_env, env_start_idx, shared_obs, obs):
     obs = list(iterate(vec_env.observation_space, obs))
     for i in range(vec_env.num_envs):
         write_to_shared_memory(
-            env_start_idx + i, obs[i], shared_obs, vec_env.observation_space
+            vec_env.observation_space, env_start_idx + i, obs[i], shared_obs,
         )
 
 
@@ -72,9 +72,9 @@ def async_loop(vec_env_constr, inpt_p, pipe, shared_obs, shared_rews, shared_don
                 elif name == "step":
                     actions = data
                     actions = concatenate(
+                        vec_env.action_space,
                         actions,
                         create_empty_array(vec_env.action_space, n=len(actions)),
-                        vec_env.action_space,
                     )
                     observations, rewards, dones, infos = vec_env.step(actions)
                     write_observations(vec_env, env_start_idx, shared_obs, observations)
@@ -106,18 +106,17 @@ class ProcConcatVec(gym.vector.VectorEnv):
         self.num_envs = num_envs = tot_num_envs
         self.metadata = metadata
 
-        ctx = mp.get_context()
         self.shared_obs = create_shared_memory(
-            self.observation_space, n=self.num_envs, ctx=ctx
+            self.observation_space, n=self.num_envs
         )
         self.shared_act = create_shared_memory(
-            self.action_space, n=self.num_envs, ctx=ctx
+            self.action_space, n=self.num_envs
         )
         self.shared_rews = SharedArray((num_envs,), dtype=np.float32)
         self.shared_dones = SharedArray((num_envs,), dtype=np.uint8)
 
         self.observations_buffers = read_from_shared_memory(
-            self.shared_obs, self.observation_space, n=self.num_envs
+            self.observation_space, self.shared_obs, n=self.num_envs
         )
 
         pipes = []

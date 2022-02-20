@@ -39,9 +39,9 @@ class MarkovVectorEnv(gym.vector.VectorEnv):
             obs_list.append(obs_dict[agent])
 
         return concatenate(
+            self.observation_space,
             obs_list,
             create_empty_array(self.observation_space, self.num_envs),
-            self.observation_space,
         )
 
     def step_async(self, actions):
