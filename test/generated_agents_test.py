@@ -74,12 +74,12 @@ def test_pettingzoo_parallel_api_gen(env):
 
 
 wrapper_fns = [
-    lambda: supersuit.black_death_v2(generated_agents_parallel_v0.env()),
+    lambda: supersuit.black_death_v3(generated_agents_parallel_v0.env()),
     lambda: supersuit.pad_action_space_v0(generated_agents_parallel_v0.env()),
     lambda: supersuit.pad_observations_v0(generated_agents_parallel_v0.env()),
     lambda: supersuit.agent_indicator_v0(generated_agents_parallel_v0.env()),
     lambda: supersuit.vectorize_aec_env_v0(generated_agents_parallel_v0.env(), 2),
-    lambda: supersuit.black_death_v2(generated_agents_parallel_v0.parallel_env()),
+    lambda: supersuit.black_death_v3(generated_agents_parallel_v0.parallel_env()),
     lambda: supersuit.pad_action_space_v0(generated_agents_parallel_v0.parallel_env()),
     lambda: supersuit.pad_observations_v0(generated_agents_parallel_v0.parallel_env()),
     lambda: supersuit.agent_indicator_v0(generated_agents_parallel_v0.parallel_env()),

@@ -2,7 +2,7 @@ import copy
 
 from pettingzoo.mpe import simple_spread_v2, simple_world_comm_v2
 from pettingzoo.butterfly import knights_archers_zombies_v8
-from supersuit import pettingzoo_env_to_vec_env_v1, black_death_v2, concat_vec_envs_v1
+from supersuit import pettingzoo_env_to_vec_env_v1, black_death_v3, concat_vec_envs_v1
 import pytest
 
 
@@ -76,7 +76,7 @@ def test_env_black_death_assertion():
 
 def test_env_black_death_wrapper():
     env = knights_archers_zombies_v8.parallel_env(spawn_rate=50, max_cycles=300)
-    env = black_death_v2(env)
+    env = black_death_v3(env)
     env = pettingzoo_env_to_vec_env_v1(env)
     env.reset()
     for i in range(300):
