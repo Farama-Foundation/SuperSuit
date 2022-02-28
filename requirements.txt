@@ -1,2 +1,3 @@
+gym>=0.22.0
 pettingzoo[butterfly]>=1.13.1
 opencv-python~=3.4.0

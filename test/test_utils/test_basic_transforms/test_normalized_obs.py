@@ -31,7 +31,6 @@ def test_change_obs_space():
 
 
 def test_change_observation():
-    print(change_observation(test_val, test_obs_space, (1, 2)))
     assert np.all(
         np.equal(
             change_observation(test_val, test_obs_space, (1, 2)),

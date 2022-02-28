@@ -33,7 +33,6 @@ class DummyEnv(AECEnv):
 
     def step(self, action, observe=True):
         if self.dones[self.agent_selection]:
-            print(self.agent_selection)
             return self._was_done_step(action)
         self._cumulative_rewards[self.agent_selection] = 0
         self.agent_selection = self._agent_selector.next()
