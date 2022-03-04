@@ -19,7 +19,7 @@ setuptools.setup(
     name="SuperSuit",
     version=get_version(),
     author="SuperSuit Community",
-    author_email="jkterry@umd.edu",
+    author_email="jkterry@farama.org",
     description="Wrappers for Gym and PettingZoo",
     long_description=long_description,
     long_description_content_type="text/markdown",
