@@ -50,7 +50,10 @@ def test_all():
         act_space = vec_env.action_space(vec_env.agent_selection)
         assert not any(done for dones in vec_env.dones.values() for done in dones)
         vec_env.step([act_space.sample() for _ in range(NUM_ENVS)])
-        assert any(done for dones in vec_env.dones.values() for done in dones)
+        any_done_first = any(done for dones in vec_env.dones.values() for done in dones)
+        vec_env.step([act_space.sample() for _ in range(NUM_ENVS)])
+        any_done_second = any(done for dones in vec_env.dones.values() for done in dones)
+        assert any_done_first and any_done_second
         assert any(rew != 0 for rews in vec_env.rewards.values() for rew in rews)
 
     def select_action(vec_env, passes, i):
