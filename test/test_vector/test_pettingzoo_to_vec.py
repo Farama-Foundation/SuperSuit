@@ -1,7 +1,7 @@
 import copy
 
 from pettingzoo.mpe import simple_spread_v2, simple_world_comm_v2
-from pettingzoo.butterfly import knights_archers_zombies_v8
+from pettingzoo.butterfly import knights_archers_zombies_v9
 from supersuit import pettingzoo_env_to_vec_env_v1, black_death_v2, concat_vec_envs_v1
 import pytest
 
@@ -64,7 +64,7 @@ def test_bad_action_spaces_env():
 
 
 def test_env_black_death_assertion():
-    env = knights_archers_zombies_v8.parallel_env(spawn_rate=50, max_cycles=2000)
+    env = knights_archers_zombies_v9.parallel_env(spawn_rate=50, max_cycles=2000)
     env = pettingzoo_env_to_vec_env_v1(env)
     with pytest.raises(AssertionError):
         for i in range(100):
@@ -75,7 +75,7 @@ def test_env_black_death_assertion():
 
 
 def test_env_black_death_wrapper():
-    env = knights_archers_zombies_v8.parallel_env(spawn_rate=50, max_cycles=300)
+    env = knights_archers_zombies_v9.parallel_env(spawn_rate=50, max_cycles=300)
     env = black_death_v2(env)
     env = pettingzoo_env_to_vec_env_v1(env)
     env.reset()
