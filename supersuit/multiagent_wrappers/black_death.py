@@ -4,23 +4,20 @@ import gym
 from supersuit.utils.wrapper_chooser import WrapperChooser
 
 
-def _check_valid_for_black_death(env):
-    if not hasattr(env, 'possible_agents'):
-        raise AssertionError("environment passed to black death wrapper must have the possible_agents attribute.")
-
-    for agent in env.possible_agents:
-        space = env.observation_space(agent)
-        assert isinstance(space, gym.spaces.Box), f"observation sapces for black death must be Box spaces, is {space}"
-
 
 class black_death_par(BaseParallelWraper):
     def __init__(self, env):
         super().__init__(env)
-        _check_valid_for_black_death(self)
+
+    def _check_valid_for_black_death(self):
+        for agent in self.agents:
+            space = self.observation_space(agent)
+            assert isinstance(space, gym.spaces.Box), f"observation sapces for black death must be Box spaces, is {space}"
 
     def reset(self):
         obss = self.env.reset()
         self.agents = self.env.agents[:]
+        self._check_valid_for_black_death()
         black_obs = {agent: np.zeros_like(self.observation_space(agent).low) for agent in self.agents if agent not in obss}
         return {**obss, **black_obs}
 
