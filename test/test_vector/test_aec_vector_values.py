@@ -1,7 +1,7 @@
 from supersuit import vectorize_aec_env_v0
 from pettingzoo.classic import rps_v2
 from pettingzoo.classic import mahjong_v4, hanabi_v4
-from pettingzoo.butterfly import knights_archers_zombies_v8
+from pettingzoo.butterfly import knights_archers_zombies_v9
 from pettingzoo.mpe import simple_world_comm_v2
 import numpy as np
 import random
@@ -50,8 +50,11 @@ def test_all():
         act_space = vec_env.action_space(vec_env.agent_selection)
         assert not any(done for dones in vec_env.dones.values() for done in dones)
         vec_env.step([act_space.sample() for _ in range(NUM_ENVS)])
-        assert any(done for dones in vec_env.dones.values() for done in dones)
         assert any(rew != 0 for rews in vec_env.rewards.values() for rew in rews)
+        any_done_first = any(done for dones in vec_env.dones.values() for done in dones)
+        vec_env.step([act_space.sample() for _ in range(NUM_ENVS)])
+        any_done_second = any(done for dones in vec_env.dones.values() for done in dones)
+        assert any_done_first and any_done_second
 
     def select_action(vec_env, passes, i):
         my_info = vec_env.infos[vec_env.agent_selection][i]
@@ -66,5 +69,5 @@ def test_all():
         test_vec_env(vectorize_aec_env_v0(mahjong_maker(), NUM_ENVS, num_cpus=num_cpus))
         test_infos(vectorize_aec_env_v0(hanabi_maker(), NUM_ENVS, num_cpus=num_cpus))
         test_some_done(vectorize_aec_env_v0(mahjong_maker(), NUM_ENVS, num_cpus=num_cpus))
-        test_vec_env(vectorize_aec_env_v0(knights_archers_zombies_v8.env(), NUM_ENVS, num_cpus=num_cpus))
+        test_vec_env(vectorize_aec_env_v0(knights_archers_zombies_v9.env(), NUM_ENVS, num_cpus=num_cpus))
         test_vec_env(vectorize_aec_env_v0(simple_world_comm_v2.env(), NUM_ENVS, num_cpus=num_cpus))

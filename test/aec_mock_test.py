@@ -31,7 +31,6 @@ def test_frame_stack():
     assert obs.shape == (2, 3, 4)
     env.step(2)
     first_obs, _, _, _ = env.last()
-    print(first_obs[:, :, -1])
     assert np.all(np.equal(first_obs[:, :, -1], base_obs["a1"]))
     assert np.all(np.equal(first_obs[:, :, :-1], 0))
 
