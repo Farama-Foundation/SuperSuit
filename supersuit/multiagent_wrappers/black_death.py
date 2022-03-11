@@ -4,7 +4,6 @@ import gym
 from supersuit.utils.wrapper_chooser import WrapperChooser
 
 
-
 class black_death_par(BaseParallelWraper):
     def __init__(self, env):
         super().__init__(env)
