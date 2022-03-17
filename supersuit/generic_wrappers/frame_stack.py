@@ -22,6 +22,7 @@ def frame_stack_v1(env, stack_size=4):
 
         def reset(self):
             self.stack = stack_init(self.old_obs_space, stack_size)
+            self.reset_flag = True
 
         def modify_obs(self, obs):
             self.stack = stack_obs(
@@ -30,6 +31,10 @@ def frame_stack_v1(env, stack_size=4):
                 self.old_obs_space,
                 stack_size,
             )
+            if self.reset_flag:
+                self.stack[:] = self.stack[:,:,-1:]
+                self.reset = False
+
             return self.stack
 
         def get_last_obs(self):
