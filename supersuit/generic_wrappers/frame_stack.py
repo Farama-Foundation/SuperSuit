@@ -33,7 +33,7 @@ def frame_stack_v1(env, stack_size=4):
             )
             if self.reset_flag:
                 self.stack[:] = self.stack[:,:,-1:]
-                self.reset = False
+                self.reset_flag = False
 
             return self.stack
 
