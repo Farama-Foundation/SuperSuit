@@ -9,4 +9,4 @@ from .frame_stack import frame_stack_v1 # NOQA
 from .max_observation import max_observation_v0 # NOQA
 from .sticky_actions import sticky_actions_v0 # NOQA
 
-from .no_op_reset import noop_reset_v0
+# from .no_op_reset import noop_reset_v0

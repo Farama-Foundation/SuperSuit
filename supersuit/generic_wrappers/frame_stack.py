@@ -25,19 +25,23 @@ def frame_stack_v1(env, stack_size=4):
             self.reset_flag = True
 
         def modify_obs(self, obs):
-            self.stack = stack_obs(
-                self.stack,
-                obs,
-                self.old_obs_space,
-                stack_size,
-            )
             if self.reset_flag:
-                obs_dim = len(self.old_obs_space)
-                if obs_dim == 1:
-                    self.stack[:] = self.stack[-1:]
-                elif obs_dim == 2 or obs_dim == 3:
-                    self.stack[:] = self.stack[:,:,-1:]
+                for _ in range(stack_size):
+                    self.stack = stack_obs(
+                        self.stack,
+                        obs,
+                        self.old_obs_space,
+                        stack_size,
+                    )
+                    
                 self.reset_flag = False
+            else:
+                self.stack = stack_obs(
+                    self.stack,
+                    obs,
+                    self.old_obs_space,
+                    stack_size,
+                )
 
             return self.stack
 
