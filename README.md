@@ -46,6 +46,8 @@ You can install SuperSuit via `pip install supersuit`
 
 `frame_stack_v1(env, num_frames=4)` stacks the most recent frames. For vector games observed via plain vectors (1D arrays), the output is just concatenated to a longer 1D array. 2D or 3D arrays are stacked to be taller 3D arrays. At the start of the game, frames that don't yet exist are filled with 0s. `num_frames=1` is analogous to not using this function.
 
+`frame_stack_v2(env, num_frames=4)` stacks the most recent frames. For vector games observed via plain vectors (1D arrays), the output is just concatenated to a longer 1D array. 2D or 3D arrays are stacked to be taller 3D arrays. At the start of the game, frames that don't yet exist are filled with the copies of the first frame. `num_frames=1` is analogous to not using this function.
+
 `max_observation_v0(env, memory)` the resulting observation becomes the max over `memory` number of prior frames. This is important for Atari environments, as many games have elements that are intermitently flashed on the instead of being constant, due to the peculiarities of the console and CRT TVs. The OpenAI baselines MaxAndSkip Atari wrapper is equivalent to doing `memory=2` and then a  `frame_skip` of 4.
 
 `normalize_obs_v0(env, env_min=0, env_max=1)` linearly scales observations to the range `env_min` (default 0) to `env_max` (default 1), given the known minimum and maximum observation values defined in the observation space. Only works on Box observations with float32 or float64 dtypes and finite bounds. If you wish to normalize another type, you can first apply the dtype wrapper to convert your type to float32 or float64.

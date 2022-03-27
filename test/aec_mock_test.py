@@ -3,6 +3,7 @@ from .dummy_aec_env import DummyEnv
 import numpy as np
 from supersuit import (
     frame_stack_v1,
+    frame_stack_v2,
     reshape_v0,
     observation_lambda_v0,
     action_lambda_v1,
@@ -22,6 +23,7 @@ base_act_spaces = {"a{}".format(idx): Discrete(5) for idx in range(2)}
 
 
 def test_frame_stack():
+    # frame_stack_v0 test
     base_obs_space = {"a{}".format(idx): Box(low=np.float32(0.0), high=np.float32(10.0), shape=[2, 3]) for idx in range(2)}
     base_obs = {"a{}".format(idx): np.float32(np.zeros([2, 3]) + np.arange(3) + idx) for idx in range(2)}
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
@@ -36,6 +38,36 @@ def test_frame_stack():
     base_obs = {"a{}".format(idx): idx + 3 for idx in range(2)}
     base_env = DummyEnv(base_obs, base_act_spaces, base_act_spaces)
     env = frame_stack_v1(base_env, 4)
+    obs = env.reset()
+    obs, _, _, _ = env.last()
+    assert env.observation_space(env.agent_selection).n == 5 ** 4
+    env.step(2)
+    first_obs, _, _, _ = env.last()
+    assert first_obs == 4
+    env.step(2)
+    second_obs, _, _, _ = env.last()
+    assert second_obs == 3 * 5 + 3
+    for x in range(8):
+        nth_obs = env.step(2)
+        nth_obs, _, _, _ = env.last()
+    assert nth_obs == ((3 * 5 + 3) * 5 + 3) * 5 + 3
+
+    # frame_stack_v1 test
+    base_obs_space = {"a{}".format(idx): Box(low=np.float32(0.0), high=np.float32(10.0), shape=[2, 3]) for idx in range(2)}
+    base_obs = {"a{}".format(idx): np.float32(np.zeros([2, 3]) + np.arange(3) + idx) for idx in range(2)}
+    base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
+    env = frame_stack_v2(base_env, 4)
+    obs = env.reset()
+    obs, _, _, _ = env.last()
+    assert obs.shape == (2, 3, 4)
+    env.step(2)
+    first_obs, _, _, _ = env.last()
+    assert np.all(np.equal(first_obs[:, :, -1], base_obs["a1"], dtype=np.float32))
+
+
+    base_obs = {"a{}".format(idx): idx + 3 for idx in range(2)}
+    base_env = DummyEnv(base_obs, base_act_spaces, base_act_spaces)
+    env = frame_stack_v2(base_env, 4)
     obs = env.reset()
     obs, _, _, _ = env.last()
     assert env.observation_space(env.agent_selection).n == 5 ** 4
