@@ -2,26 +2,41 @@ import numpy as np
 from gym.spaces import Box, Discrete
 
 
-def get_tile_shape(shape, stack_size):
+def get_tile_shape(shape, stack_size, stack_dim0=False):
     obs_dim = len(shape)
 
-    if obs_dim == 1:
-        tile_shape = (stack_size,)
-        new_shape = shape
-    elif obs_dim == 3:
-        tile_shape = (1, 1, stack_size)
-        new_shape = shape
-    # stack 2-D frames
-    elif obs_dim == 2:
-        tile_shape = (1, 1, stack_size)
-        new_shape = shape + (1,)
+    if not stack_dim0:
+        if obs_dim == 1:
+            tile_shape = (stack_size,)
+            new_shape = shape
+        elif obs_dim == 3:
+            tile_shape = (1, 1, stack_size)
+            new_shape = shape
+        # stack 2-D frames
+        elif obs_dim == 2:
+            tile_shape = (1, 1, stack_size)
+            new_shape = shape + (1,)
+        else:
+            assert False, "Stacking is only avaliable for 1,2 or 3 dimentional arrays"
+
     else:
-        assert False, "Stacking is only avaliable for 1,2 or 3 dimentional arrays"
+        if obs_dim == 1:
+            tile_shape = (stack_size,)
+            new_shape = shape
+        elif obs_dim == 3:
+            tile_shape = (stack_size,1,1)
+            new_shape = shape
+        # stack 2-D frames
+        elif obs_dim == 2:
+            tile_shape = (stack_size,1,1)
+            new_shape = (1,) + shape
+        else:
+            assert False, "Stacking is only avaliable for 1,2 or 3 dimentional arrays"
 
     return tile_shape, new_shape
 
 
-def stack_obs_space(obs_space, stack_size):
+def stack_obs_space(obs_space, stack_size, stack_dim0=False):
     """
     obs_space_dict: Dictionary of observations spaces of agents
     stack_size: Number of frames in the observation stack
@@ -31,7 +46,7 @@ def stack_obs_space(obs_space, stack_size):
     if isinstance(obs_space, Box):
         dtype = obs_space.dtype
         # stack 1-D frames and 3-D frames
-        tile_shape, new_shape = get_tile_shape(obs_space.low.shape, stack_size)
+        tile_shape, new_shape = get_tile_shape(obs_space.low.shape, stack_size, stack_dim0)
 
         low = np.tile(obs_space.low.reshape(new_shape), tile_shape)
         high = np.tile(obs_space.high.reshape(new_shape), tile_shape)
@@ -43,15 +58,15 @@ def stack_obs_space(obs_space, stack_size):
         assert False, "Stacking is currently only allowed for Box and Discrete observation spaces. The given observation space is {}".format(obs_space)
 
 
-def stack_init(obs_space, stack_size):
+def stack_init(obs_space, stack_size, stack_dim0=False):
     if isinstance(obs_space, Box):
-        tile_shape, new_shape = get_tile_shape(obs_space.low.shape, stack_size)
+        tile_shape, new_shape = get_tile_shape(obs_space.low.shape, stack_size, stack_dim0)
         return np.tile(np.zeros(new_shape, dtype=obs_space.dtype), tile_shape)
     else:
         return 0
 
 
-def stack_obs(frame_stack, obs, obs_space, stack_size):
+def stack_obs(frame_stack, obs, obs_space, stack_size, stack_dim0):
     """
     Parameters
     ----------
@@ -69,13 +84,27 @@ def stack_obs(frame_stack, obs, obs_space, stack_size):
             size = obs_shape[0]
             agent_fs[:-size] = agent_fs[size:]
             agent_fs[-size:] = obs
+        
         elif len(obs_shape) == 2:
-            agent_fs[:, :, :-1] = agent_fs[:, :, 1:]
-            agent_fs[:, :, -1] = obs
+            if not stack_dim0: 
+                agent_fs[:, :, :-1] = agent_fs[:, :, 1:]
+                agent_fs[:, :, -1] = obs
+            else:
+                agent_fs[:-1] = agent_fs[1:]
+                agent_fs[:-1] = obs
+
         elif len(obs_shape) == 3:
-            nchannels = obs_shape[-1]
-            agent_fs[:, :, :-nchannels] = agent_fs[:, :, nchannels:]
-            agent_fs[:, :, -nchannels:] = obs
+            if not stack_dim0:
+                nchannels = obs_shape[-1]
+                agent_fs[:, :, :-nchannels] = agent_fs[:, :, nchannels:]
+                agent_fs[:, :, -nchannels:] = obs 
+            else:
+                nchannels = obs_shape[0]
+                agent_fs[:-nchannels] = agent_fs[nchannels:]
+                agent_fs[-nchannels:] = obs 
+            
         return agent_fs
+
     elif isinstance(obs_space, Discrete):
         return (frame_stack * obs_space.n + obs) % (obs_space.n ** stack_size)
+

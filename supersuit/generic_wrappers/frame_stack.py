@@ -4,7 +4,7 @@ from gym.spaces import Box, Discrete
 from supersuit.utils.frame_stack import stack_obs_space, stack_init, stack_obs
 
 
-def frame_stack_v1(env, stack_size=4):
+def frame_stack_v1(env, stack_size=4, stack_dim0=False):
     assert isinstance(stack_size, int), "stack size of frame_stack must be an int"
 
     class FrameStackModifier(BaseModifier):
@@ -17,11 +17,11 @@ def frame_stack_v1(env, stack_size=4):
                 assert False, "Stacking is currently only allowed for Box and Discrete observation spaces. The given observation space is {}".format(obs_space)
 
             self.old_obs_space = obs_space
-            self.observation_space = stack_obs_space(obs_space, stack_size)
+            self.observation_space = stack_obs_space(obs_space, stack_size, stack_dim0)
             return self.observation_space
 
         def reset(self):
-            self.stack = stack_init(self.old_obs_space, stack_size)
+            self.stack = stack_init(self.old_obs_space, stack_size, stack_dim0)
             self.reset_flag = True
 
         def modify_obs(self, obs):
@@ -30,6 +30,7 @@ def frame_stack_v1(env, stack_size=4):
                 obs,
                 self.old_obs_space,
                 stack_size,
+                stack_dim0
             )
 
             return self.stack
@@ -40,7 +41,7 @@ def frame_stack_v1(env, stack_size=4):
     return shared_wrapper(env, FrameStackModifier)
 
 
-def frame_stack_v2(env, stack_size=4):
+def frame_stack_v2(env, stack_size=4, stack_dim0=False):
     assert isinstance(stack_size, int), "stack size of frame_stack must be an int"
 
     class FrameStackModifier(BaseModifier):
@@ -53,11 +54,11 @@ def frame_stack_v2(env, stack_size=4):
                 assert False, "Stacking is currently only allowed for Box and Discrete observation spaces. The given observation space is {}".format(obs_space)
 
             self.old_obs_space = obs_space
-            self.observation_space = stack_obs_space(obs_space, stack_size)
+            self.observation_space = stack_obs_space(obs_space, stack_size, stack_dim0)
             return self.observation_space
 
         def reset(self):
-            self.stack = stack_init(self.old_obs_space, stack_size)
+            self.stack = stack_init(self.old_obs_space, stack_size, stack_dim0)
             self.reset_flag = True
 
         def modify_obs(self, obs):
@@ -68,6 +69,7 @@ def frame_stack_v2(env, stack_size=4):
                         obs,
                         self.old_obs_space,
                         stack_size,
+                        stack_dim0
                     )
                     
                 self.reset_flag = False
@@ -77,6 +79,7 @@ def frame_stack_v2(env, stack_size=4):
                     obs,
                     self.old_obs_space,
                     stack_size,
+                    stack_dim0
                 )
 
             return self.stack
