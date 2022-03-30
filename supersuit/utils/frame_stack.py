@@ -66,7 +66,7 @@ def stack_init(obs_space, stack_size, stack_dim0=False):
         return 0
 
 
-def stack_obs(frame_stack, obs, obs_space, stack_size, stack_dim0):
+def stack_obs(frame_stack, obs, obs_space, stack_size, stack_dim0=False):
     """
     Parameters
     ----------
