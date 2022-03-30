@@ -24,11 +24,11 @@ def get_tile_shape(shape, stack_size, stack_dim0=False):
             tile_shape = (stack_size,)
             new_shape = shape
         elif obs_dim == 3:
-            tile_shape = (stack_size,1,1)
+            tile_shape = (stack_size, 1, 1)
             new_shape = shape
         # stack 2-D frames
         elif obs_dim == 2:
-            tile_shape = (stack_size,1,1)
+            tile_shape = (stack_size, 1, 1)
             new_shape = (1,) + shape
         else:
             assert False, "Stacking is only avaliable for 1,2 or 3 dimentional arrays"
@@ -84,9 +84,9 @@ def stack_obs(frame_stack, obs, obs_space, stack_size, stack_dim0=False):
             size = obs_shape[0]
             agent_fs[:-size] = agent_fs[size:]
             agent_fs[-size:] = obs
-        
+
         elif len(obs_shape) == 2:
-            if not stack_dim0: 
+            if not stack_dim0:
                 agent_fs[:, :, :-1] = agent_fs[:, :, 1:]
                 agent_fs[:, :, -1] = obs
             else:
@@ -97,14 +97,13 @@ def stack_obs(frame_stack, obs, obs_space, stack_size, stack_dim0=False):
             if not stack_dim0:
                 nchannels = obs_shape[-1]
                 agent_fs[:, :, :-nchannels] = agent_fs[:, :, nchannels:]
-                agent_fs[:, :, -nchannels:] = obs 
+                agent_fs[:, :, -nchannels:] = obs
             else:
                 nchannels = obs_shape[0]
                 agent_fs[:-nchannels] = agent_fs[nchannels:]
-                agent_fs[-nchannels:] = obs 
-            
+                agent_fs[-nchannels:] = obs
+
         return agent_fs
 
     elif isinstance(obs_space, Discrete):
         return (frame_stack * obs_space.n + obs) % (obs_space.n ** stack_size)
-
