@@ -71,7 +71,6 @@ def frame_stack_v2(env, stack_size=4, stack_dim0=False):
                         stack_size,
                         stack_dim0
                     )
-                    
                 self.reset_flag = False
             else:
                 self.stack = stack_obs(

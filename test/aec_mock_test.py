@@ -64,7 +64,6 @@ def test_frame_stack():
     first_obs, _, _, _ = env.last()
     assert np.all(np.equal(first_obs[:, :, -1], base_obs["a1"], dtype=np.float32))
 
-
     base_obs = {"a{}".format(idx): idx + 3 for idx in range(2)}
     base_env = DummyEnv(base_obs, base_act_spaces, base_act_spaces)
     env = frame_stack_v2(base_env, 4)
