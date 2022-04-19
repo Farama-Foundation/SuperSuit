@@ -121,7 +121,7 @@ class frame_skip_par(BaseParallelWraper):
     def step(self, action):
         action = {**action}
         low, high = self.num_frames
-        num_skips = int(self.np_random.randint(low, high + 1))
+        num_skips = int(self.np_random.integers(low, high + 1))
         self.agents = self.env.agents[:]
         orig_agents = set(action.keys())
 
