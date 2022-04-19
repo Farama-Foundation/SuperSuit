@@ -52,7 +52,7 @@ You can install SuperSuit via `pip install supersuit`
 
 `reshape_v0(env, shape)` reshapes observations into given shape.
 
-`resize_v0(env, x_size, y_size, linear_interp=False)` Performs interpolation to up-size or down-size observation image using area interpolation by default. Linear interpolation is also available by setting `linear_interp=True` (it's faster and better for up-sizing). This wrapper is only available for 2D or 3D observations, and only makes sense if the observation is an image.
+`resize_v0(env, x_size, y_size, linear_interp=True)` Performs interpolation to up-size or down-size observation image using area interpolation by default. Nearest interpolation is also available by setting `linear_interp=False` (it's faster but lower quality). This wrapper is only available for 2D or 3D observations, and only makes sense if the observation is an image.
 
 `nan_noop_v0(env)` If an action is a NaN value for a step, the following wrapper will trigger a warning and perform a no operation action in its place. The noop action is accepted as an argument in the `step(action, no_op_action)` function.
 

@@ -1,4 +1,5 @@
 from . import convert_box
+import numpy as np
 
 
 def check_param(obs_space, resize):
@@ -13,12 +14,12 @@ def change_obs_space(obs_space, param):
 
 
 def change_observation(obs, obs_space, resize):
-    import cv2
+    import tinyscaler
     xsize, ysize, linear_interp = resize
     if len(obs.shape) == 2:
         obs = obs.reshape(obs.shape + (1,))
-    interp_method = cv2.INTER_LINEAR if linear_interp else cv2.INTER_AREA
-    obs = cv2.resize(obs, (xsize, ysize), interpolation=interp_method)
+    interp_method = 'bilinear' if linear_interp else 'nearest'
+    obs = tinyscaler.scale(src=np.ascontiguousarray(obs), size=(xsize, ysize), mode=interp_method)
     if len(obs_space.shape) == 2:
         obs = obs.reshape(obs.shape[:2])
     return obs
