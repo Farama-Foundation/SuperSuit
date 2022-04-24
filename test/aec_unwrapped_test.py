@@ -1,6 +1,6 @@
-from .dummy_aec_env import DummyEnv
 import numpy as np
 from gym import spaces
+
 from supersuit import (
     agent_indicator_v0,
     black_death_v3,
@@ -21,6 +21,8 @@ from supersuit import (
     scale_actions_v0,
     sticky_actions_v0,
 )
+
+from .dummy_aec_env import DummyEnv
 
 
 def observation_homogenizable(env, agents):
