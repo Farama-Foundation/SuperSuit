@@ -59,8 +59,10 @@ def async_loop(vec_env_constr, inpt_p, pipe, shared_obs, shared_rews, shared_don
             instr = pipe.recv()
             comp_infos = []
             if instr == "reset":
+                # TODO: need to figure out how this works
                 observations = vec_env.reset()
-                write_observations(vec_env, env_start_idx, shared_obs, observations)
+                write_observations(vec_env, env_start_idx,
+                                   shared_obs, observations)
                 shared_dones.np_arr[env_start_idx:env_end_idx] = False
                 shared_rews.np_arr[env_start_idx:env_end_idx] = 0.0
             elif instr == "close":
@@ -74,10 +76,12 @@ def async_loop(vec_env_constr, inpt_p, pipe, shared_obs, shared_rews, shared_don
                     actions = concatenate(
                         vec_env.action_space,
                         actions,
-                        create_empty_array(vec_env.action_space, n=len(actions)),
+                        create_empty_array(
+                            vec_env.action_space, n=len(actions)),
                     )
                     observations, rewards, dones, infos = vec_env.step(actions)
-                    write_observations(vec_env, env_start_idx, shared_obs, observations)
+                    write_observations(vec_env, env_start_idx,
+                                       shared_obs, observations)
                     shared_dones.np_arr[env_start_idx:env_end_idx] = dones
                     shared_rews.np_arr[env_start_idx:env_end_idx] = rewards
                     comp_infos = compress_info(infos)
@@ -125,7 +129,8 @@ class ProcConcatVec(gym.vector.VectorEnv):
             inpt, outpt = mp.Pipe()
             constr = gym.vector.async_vector_env.CloudpickleWrapper(constr)
             proc = mp.Process(
-                target=async_loop, args=(constr, inpt, outpt, self.shared_obs, self.shared_rews, self.shared_dones)
+                target=async_loop, args=(
+                    constr, inpt, outpt, self.shared_obs, self.shared_rews, self.shared_dones)
             )
             proc.start()
             outpt.close()
@@ -148,7 +153,13 @@ class ProcConcatVec(gym.vector.VectorEnv):
         assert num_envs == tot_num_envs
         self.idx_starts = idx_starts
 
-    def reset(self):
+    def reset(self, seed=None):
+        if seed is not None:
+            for i, pipe in enumerate(self.pipes):
+                pipe.send(("seed", seed + self.idx_starts[i]))
+
+            self._receive_info()
+
         for pipe in self.pipes:
             pipe.send("reset")
 
@@ -175,7 +186,8 @@ class ProcConcatVec(gym.vector.VectorEnv):
 
     def step_wait(self):
         compressed_infos = self._receive_info()
-        infos = decompress_info(self.num_envs, self.idx_starts, compressed_infos)
+        infos = decompress_info(
+            self.num_envs, self.idx_starts, compressed_infos)
         rewards = self.shared_rews.np_arr
         dones = self.shared_dones.np_arr
         return numpy_deepcopy(self.observations_buffers), rewards.copy(), dones.copy(), copy.deepcopy(infos)
@@ -183,12 +195,6 @@ class ProcConcatVec(gym.vector.VectorEnv):
     def step(self, actions):
         self.step_async(actions)
         return self.step_wait()
-
-    def seed(self, seed=None):
-        for i, pipe in enumerate(self.pipes):
-            pipe.send(("seed", seed + self.idx_starts[i]))
-
-        self._receive_info()
 
     def __del__(self):
         for pipe in self.pipes:
@@ -218,7 +224,8 @@ class ProcConcatVec(gym.vector.VectorEnv):
             try:
                 pipe.recv()
             except EOFError:
-                raise RuntimeError("only one multiproccessing vector environment can open a window over the duration of a process")
+                raise RuntimeError(
+                    "only one multiproccessing vector environment can open a window over the duration of a process")
             except ConnectionError:
                 pass
 

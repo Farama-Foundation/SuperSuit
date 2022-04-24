@@ -27,12 +27,15 @@ class SharedData:
     def __init__(self, array, num_envs, shape, dtype):
         self.array = array
         self.num_envs = num_envs
-        self.np_arr = np.frombuffer(array, dtype=dtype).reshape((num_envs,) + shape)
+        self.np_arr = np.frombuffer(
+            array, dtype=dtype).reshape((num_envs,) + shape)
 
 
 def create_shared_data(num_envs, obs_space, act_space):
-    obs_array = mp.Array(np.ctypeslib.as_ctypes_type(obs_space.dtype), int(num_envs * np.prod(obs_space.shape)), lock=False)
-    act_array = mp.Array(np.ctypeslib.as_ctypes_type(act_space.dtype), int(num_envs * np.prod(act_space.shape)), lock=False)
+    obs_array = mp.Array(np.ctypeslib.as_ctypes_type(obs_space.dtype), int(
+        num_envs * np.prod(obs_space.shape)), lock=False)
+    act_array = mp.Array(np.ctypeslib.as_ctypes_type(act_space.dtype), int(
+        num_envs * np.prod(act_space.shape)), lock=False)
     rew_array = mp.Array(ctypes.c_float, num_envs, lock=False)
     cum_rew_array = mp.Array(ctypes.c_float, num_envs, lock=False)
     done_array = mp.Array(ctypes.c_bool, num_envs, lock=False)
@@ -51,10 +54,13 @@ class AgentSharedData:
         self.num_envs = num_envs
 
         obs_array, act_array, rew_array, cum_rew_array, done_array = data
-        self.obs = SharedData(obs_array, num_envs, obs_space.shape, obs_space.dtype)
-        self.act = SharedData(act_array, num_envs, act_space.shape, act_space.dtype)
+        self.obs = SharedData(obs_array, num_envs,
+                              obs_space.shape, obs_space.dtype)
+        self.act = SharedData(act_array, num_envs,
+                              act_space.shape, act_space.dtype)
         self.rewards = SharedData(rew_array, num_envs, (), np.float32)
-        self._cumulative_rewards = SharedData(cum_rew_array, num_envs, (), np.float32)
+        self._cumulative_rewards = SharedData(
+            cum_rew_array, num_envs, (), np.float32)
         self.dones = SharedData(done_array, num_envs, (), np.uint8)
 
 
@@ -62,7 +68,8 @@ class EnvSharedData:
     def __init__(self, num_envs, data):
         env_dones, agent_idx_array = data
         self.env_dones = SharedData(env_dones, num_envs, (), np.uint8)
-        self.agent_sel_idx = SharedData(agent_idx_array, num_envs, (), np.uint32)
+        self.agent_sel_idx = SharedData(
+            agent_idx_array, num_envs, (), np.uint32)
 
 
 class _SeperableAECWrapper:
@@ -70,27 +77,34 @@ class _SeperableAECWrapper:
         self.envs = [env_constructor() for env_constructor in env_constructors]
         self.env = self.envs[0]
         self.possible_agents = self.env.possible_agents
-        self.agent_indexes = {agent: i for i, agent in enumerate(self.env.possible_agents)}
-        self.dead_obss = {agent: np.zeros_like(SpaceWrapper(self.env.observation_space(agent)).low) for agent in self.env.possible_agents}
+        self.agent_indexes = {agent: i for i,
+                              agent in enumerate(self.env.possible_agents)}
+        self.dead_obss = {agent: np.zeros_like(SpaceWrapper(
+            self.env.observation_space(agent)).low) for agent in self.env.possible_agents}
 
-    def reset(self):
-        for env in self.envs:
-            env.reset()
+    def reset(self, seed=None):
+        if seed is not None:
+            for i, env in enumerate(self.envs):
+                env.reset(seed=seed + i)
+        else:
+            for i, env in enumerate(self.envs):
+                env.reset(seed=None)
 
-        self.rewards = {agent: [env.rewards.get(agent, 0) for env in self.envs] for agent in self.possible_agents}
-        self._cumulative_rewards = {agent: [env._cumulative_rewards.get(agent, 0) for env in self.envs] for agent in self.possible_agents}
-        self.dones = {agent: [env.dones.get(agent, True) for env in self.envs] for agent in self.possible_agents}
-        self.infos = {agent: [env.infos.get(agent, {}) for env in self.envs] for agent in self.possible_agents}
+        self.rewards = {agent: [env.rewards.get(
+            agent, 0) for env in self.envs] for agent in self.possible_agents}
+        self._cumulative_rewards = {agent: [env._cumulative_rewards.get(
+            agent, 0) for env in self.envs] for agent in self.possible_agents}
+        self.dones = {agent: [env.dones.get(
+            agent, True) for env in self.envs] for agent in self.possible_agents}
+        self.infos = {agent: [env.infos.get(
+            agent, {}) for env in self.envs] for agent in self.possible_agents}
 
     def observe(self, agent):
         observations = []
         for env in self.envs:
-            observations.append(env.observe(agent) if agent in env.dones else self.dead_obss[agent])
+            observations.append(env.observe(
+                agent) if agent in env.dones else self.dead_obss[agent])
         return observations
-
-    def seed(self, seed=None):
-        for i, env in enumerate(self.envs):
-            env.seed(seed + i)
 
     def step(self, agent_step, actions):
         assert len(actions) == len(self.envs)
@@ -100,16 +114,21 @@ class _SeperableAECWrapper:
             env_done = not env.agents
             env_dones.append(env_done)
             if env_done:
+                # TODO: check is this reset needs seeding other than None
                 env.reset()
             elif env.agent_selection == agent_step:
                 if env.dones[agent_step]:
                     act = None
                 env.step(act)
 
-        self.rewards = {agent: [env.rewards.get(agent, 0) for env in self.envs] for agent in self.possible_agents}
-        self._cumulative_rewards = {agent: [env._cumulative_rewards.get(agent, 0) for env in self.envs] for agent in self.possible_agents}
-        self.dones = {agent: [env.dones.get(agent, True) for env in self.envs] for agent in self.possible_agents}
-        self.infos = {agent: [env.infos.get(agent, {}) for env in self.envs] for agent in self.possible_agents}
+        self.rewards = {agent: [env.rewards.get(
+            agent, 0) for env in self.envs] for agent in self.possible_agents}
+        self._cumulative_rewards = {agent: [env._cumulative_rewards.get(
+            agent, 0) for env in self.envs] for agent in self.possible_agents}
+        self.dones = {agent: [env.dones.get(
+            agent, True) for env in self.envs] for agent in self.possible_agents}
+        self.infos = {agent: [env.infos.get(
+            agent, {}) for env in self.envs] for agent in self.possible_agents}
 
         return env_dones
 
@@ -132,15 +151,18 @@ def write_out_data(rewards, cumulative_rews, dones, num_envs, start_index, share
         cum_rews = np.asarray(cumulative_rews[agent], dtype=np.float32)
         dns = np.asarray(dones[agent], dtype=np.uint8)
         cur_data = shared_data[agent]
-        cur_data.rewards.np_arr[start_index : start_index + num_envs] = rews
-        cur_data._cumulative_rewards.np_arr[start_index : start_index + num_envs] = cum_rews
-        cur_data.dones.np_arr[start_index : start_index + num_envs] = dns
+        cur_data.rewards.np_arr[start_index: start_index + num_envs] = rews
+        cur_data._cumulative_rewards.np_arr[start_index: start_index +
+                                            num_envs] = cum_rews
+        cur_data.dones.np_arr[start_index: start_index + num_envs] = dns
 
 
 def write_env_data(env_dones, indexes, num_envs, start_index, shared_data):
-    shared_data.env_dones.np_arr[start_index : start_index + num_envs] = env_dones
+    shared_data.env_dones.np_arr[start_index: start_index +
+                                 num_envs] = env_dones
     agent_indexes = np.asarray(indexes, dtype=np.uint32)
-    shared_data.agent_sel_idx.np_arr[start_index : start_index + num_envs] = agent_indexes
+    shared_data.agent_sel_idx.np_arr[start_index: start_index +
+                                     num_envs] = agent_indexes
 
 
 def write_obs(obs, num_env, start_index, shared_data):
@@ -173,7 +195,8 @@ def env_worker(env_constructors, total_num_envs, idx_start, my_num_envs, agent_a
         env = _SeperableAECWrapper(env_constructors, my_num_envs)
         shared_datas = {
             agent: AgentSharedData(
-                total_num_envs, SpaceWrapper(env.env.observation_space(agent)), SpaceWrapper(env.env.action_space(agent)), agent_arrays[agent]
+                total_num_envs, SpaceWrapper(env.env.observation_space(agent)), SpaceWrapper(
+                    env.env.action_space(agent)), agent_arrays[agent]
             )
             for agent in env.possible_agents
         }
@@ -184,26 +207,31 @@ def env_worker(env_constructors, total_num_envs, idx_start, my_num_envs, agent_a
             instruction, data = pipe.recv()
             if instruction == "reset":
                 env.reset()
-                write_out_data(env.rewards, env._cumulative_rewards, env.dones, my_num_envs, idx_start, shared_datas)
+                write_out_data(env.rewards, env._cumulative_rewards,
+                               env.dones, my_num_envs, idx_start, shared_datas)
                 env_dones = np.zeros(my_num_envs, dtype=np.uint8)
-                write_env_data(env_dones, env.get_agent_indexes(), my_num_envs, idx_start, env_datas)
+                write_env_data(env_dones, env.get_agent_indexes(),
+                               my_num_envs, idx_start, env_datas)
 
                 pipe.send(compress_info(env.infos))
 
             elif instruction == "observe":
                 agent_observe = data
                 obs = env.observe(agent_observe)
-                write_obs(obs, my_num_envs, idx_start, shared_datas[agent_observe])
+                write_obs(obs, my_num_envs, idx_start,
+                          shared_datas[agent_observe])
 
                 pipe.send(True)
             elif instruction == "step":
                 step_agent, do_observe = data
 
-                actions = shared_datas[step_agent].act.np_arr[idx_start : idx_start + my_num_envs]
+                actions = shared_datas[step_agent].act.np_arr[idx_start: idx_start + my_num_envs]
 
                 env_dones = env.step(step_agent, actions)
-                write_out_data(env.rewards, env._cumulative_rewards, env.dones, my_num_envs, idx_start, shared_datas)
-                write_env_data(env_dones, env.get_agent_indexes(), my_num_envs, idx_start, env_datas)
+                write_out_data(env.rewards, env._cumulative_rewards,
+                               env.dones, my_num_envs, idx_start, shared_datas)
+                write_env_data(env_dones, env.get_agent_indexes(),
+                               my_num_envs, idx_start, env_datas)
 
                 pipe.send(compress_info(env.infos))
             elif instruction == "seed":
@@ -232,7 +260,8 @@ class AsyncAECVectorEnv(VectorAECEnv):
         assert num_envs > 0
 
         assert num_envs >= 1
-        assert callable(env_constructors[0]), "env_constructor must be a callable object (i.e function) that create an environment"
+        assert callable(
+            env_constructors[0]), "env_constructor must be a callable object (i.e function) that create an environment"
         # self.envs = [env_constructor() for _ in range(num_envs)]
         self.env = env = env_constructors[0]()
         self.max_num_agents = len(self.env.possible_agents)
@@ -240,7 +269,8 @@ class AsyncAECVectorEnv(VectorAECEnv):
         self.order_is_nondeterministic = False
         self.num_envs = num_envs
 
-        self.agent_indexes = {agent: i for i, agent in enumerate(self.env.possible_agents)}
+        self.agent_indexes = {agent: i for i,
+                              agent in enumerate(self.env.possible_agents)}
 
         self._agent_selector = agent_selector(self.possible_agents)
 
@@ -254,7 +284,8 @@ class AsyncAECVectorEnv(VectorAECEnv):
         }
 
         self.shared_datas = {
-            agent: AgentSharedData(num_envs, SpaceWrapper(env.observation_space(agent)), SpaceWrapper(env.action_space(agent)), all_arrays[agent])
+            agent: AgentSharedData(num_envs, SpaceWrapper(env.observation_space(
+                agent)), SpaceWrapper(env.action_space(agent)), all_arrays[agent])
             for agent in env.possible_agents
         }
 
@@ -271,10 +302,12 @@ class AsyncAECVectorEnv(VectorAECEnv):
         env_counter = 0
         for pidx in range(num_cpus):
             envs_left = num_envs - env_counter
-            allocated_envs = min(envs_left, (num_envs + num_cpus - 1) // num_cpus)
-            proc_constructors = env_constructors[env_counter : env_counter + allocated_envs]
+            allocated_envs = min(
+                envs_left, (num_envs + num_cpus - 1) // num_cpus)
+            proc_constructors = env_constructors[env_counter: env_counter + allocated_envs]
             proc = mp.Process(
-                target=env_worker, args=(proc_constructors, num_envs, env_counter, allocated_envs, all_arrays, env_arrays, self.con_outs[pidx])
+                target=env_worker, args=(proc_constructors, num_envs, env_counter,
+                                         allocated_envs, all_arrays, env_arrays, self.con_outs[pidx])
             )
             self.procs.append(proc)
             self.env_starts.append(env_counter)
@@ -295,7 +328,8 @@ class AsyncAECVectorEnv(VectorAECEnv):
             if isinstance(data, tuple):
                 err, tb = data
                 print(tb)
-                raise RuntimeError("ProcVectorEnv received error from subprocess (look up there ^^^ for error)")
+                raise RuntimeError(
+                    "ProcVectorEnv received error from subprocess (look up there ^^^ for error)")
             all_data.append(data)
         return all_data
 
@@ -308,21 +342,27 @@ class AsyncAECVectorEnv(VectorAECEnv):
     def _load_next_data(self, reset):
         all_compressed_info = self._receive_info()
 
-        all_info = decompress_info(self.possible_agents, self.num_envs, self.env_starts, all_compressed_info)
+        all_info = decompress_info(
+            self.possible_agents, self.num_envs, self.env_starts, all_compressed_info)
 
-        self.agent_selection = self._agent_selector.reset() if reset else self._agent_selector.next()
+        self.agent_selection = self._agent_selector.reset(
+        ) if reset else self._agent_selector.next()
         self.agent_selection = self._find_active_agent()
 
-        passes = np.not_equal(self.env_datas.agent_sel_idx.np_arr, self.agent_indexes[self.agent_selection])
+        passes = np.not_equal(
+            self.env_datas.agent_sel_idx.np_arr, self.agent_indexes[self.agent_selection])
 
         assert not np.all(passes), "something went wrong with finding agent"
         if np.any(passes) or self.order_is_nondeterministic:
             warnings.warn("The agent order of sub-environments of ProcVectorEnv differs, likely due to agent death. The ProcVectorEnv only returns one agent at a time, so it will now 'pass' environments where the current agent is not active, taking up to O(n) more time")
             self.order_is_nondeterministic = True
 
-        self.dones = {agent: self.copy(self.shared_datas[agent].dones.np_arr) for agent in self.possible_agents}
-        self.rewards = {agent: self.copy(self.shared_datas[agent].rewards.np_arr) for agent in self.possible_agents}
-        self._cumulative_rewards = {agent: self.copy(self.shared_datas[agent]._cumulative_rewards.np_arr) for agent in self.possible_agents}
+        self.dones = {agent: self.copy(
+            self.shared_datas[agent].dones.np_arr) for agent in self.possible_agents}
+        self.rewards = {agent: self.copy(
+            self.shared_datas[agent].rewards.np_arr) for agent in self.possible_agents}
+        self._cumulative_rewards = {agent: self.copy(
+            self.shared_datas[agent]._cumulative_rewards.np_arr) for agent in self.possible_agents}
         self.infos = all_info
         env_dones = self.env_datas.env_dones.np_arr
         self.passes = self.copy(passes)
@@ -333,7 +373,13 @@ class AsyncAECVectorEnv(VectorAECEnv):
         obs = self.observe(last_agent) if observe else None
         return obs, self._cumulative_rewards[last_agent], self.dones[last_agent], self.env_dones, self.passes, self.infos[last_agent]
 
-    def reset(self, observe=True):
+    def reset(self, observe=True, seed=None):
+        if seed is not None:
+            for start, cin in zip(self.env_starts, self.con_ins):
+                cin.send(("seed", seed + start if seed is not None else None))
+
+            self._receive_info()
+
         for cin in self.con_ins:
             cin.send(("reset", observe))
 
@@ -357,12 +403,6 @@ class AsyncAECVectorEnv(VectorAECEnv):
 
         obs = self.copy(self.shared_datas[self.agent_selection].obs.np_arr)
         return obs
-
-    def seed(self, seed):
-        for start, cin in zip(self.env_starts, self.con_ins):
-            cin.send(("seed", seed + start if seed is not None else None))
-
-        self._receive_info()
 
     def action_space(self, agent):
         return self.env.action_space(agent)
