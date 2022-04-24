@@ -8,13 +8,11 @@ def sticky_actions_v0(env, repeat_action_probability):
 
     class StickyActionsModifier(BaseModifier):
         def __init__(self):
-            self.seed(None)
+            super().__init__()
 
-        def reset(self):
-            self.old_action = None
-
-        def seed(self, seed):
+        def reset(self, seed=None):
             self.np_random, _ = gym.utils.seeding.np_random(seed)
+            self.old_action = None
 
         def modify_action(self, action):
             if self.old_action is not None and self.np_random.uniform() < repeat_action_probability:

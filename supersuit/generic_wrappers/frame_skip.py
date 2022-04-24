@@ -9,11 +9,6 @@ class frame_skip_gym(gym.Wrapper):
     def __init__(self, env, num_frames):
         super().__init__(env)
         self.num_frames = check_transform_frameskip(num_frames)
-        self.np_random, seed = gym.utils.seeding.np_random(None)
-
-    def seed(self, seed=None):
-        self.np_random, seed = gym.utils.seeding.np_random(seed)
-        super().seed(seed)
 
     def step(self, action):
         low, high = self.num_frames
@@ -40,21 +35,25 @@ class StepAltWrapper(BaseWrapper):
 class frame_skip_aec(StepAltWrapper):
     def __init__(self, env, num_frames):
         super().__init__(env)
-        assert isinstance(num_frames, int), "multi-agent frame skip only takes in an integer"
+        assert isinstance(
+            num_frames, int), "multi-agent frame skip only takes in an integer"
         assert num_frames > 0
         check_transform_frameskip(num_frames)
         self.num_frames = num_frames
 
-    def reset(self):
-        super().reset()
+    def reset(self, seed=None):
+        super().reset(seed=seed)
         self.agents = self.env.agents[:]
         self.dones = make_defaultdict({agent: False for agent in self.agents})
         self.rewards = make_defaultdict({agent: 0. for agent in self.agents})
-        self._cumulative_rewards = make_defaultdict({agent: 0. for agent in self.agents})
+        self._cumulative_rewards = make_defaultdict(
+            {agent: 0. for agent in self.agents})
         self.infos = make_defaultdict({agent: {} for agent in self.agents})
         self.skip_num = make_defaultdict({agent: 0 for agent in self.agents})
-        self.old_actions = make_defaultdict({agent: None for agent in self.agents})
-        self._final_observations = make_defaultdict({agent: None for agent in self.agents})
+        self.old_actions = make_defaultdict(
+            {agent: None for agent in self.agents})
+        self._final_observations = make_defaultdict(
+            {agent: None for agent in self.agents})
 
     def observe(self, agent):
         fin_observe = self._final_observations[agent]
@@ -88,7 +87,8 @@ class frame_skip_aec(StepAltWrapper):
                 while self.env.agents and self.env.dones[self.env.agent_selection]:
                     done_agent = self.env.agent_selection
                     self.dones[done_agent] = True
-                    self._final_observations[done_agent] = self.env.observe(done_agent)
+                    self._final_observations[done_agent] = self.env.observe(
+                        done_agent)
                     self.env.step(None)
                 step_agent = self.env.agent_selection
 
@@ -111,12 +111,7 @@ class frame_skip_par(BaseParallelWraper):
     def __init__(self, env, num_frames, default_action=None):
         super().__init__(env)
         self.num_frames = check_transform_frameskip(num_frames)
-        self.np_random, seed = gym.utils.seeding.np_random(None)
         self.default_action = default_action
-
-    def seed(self, seed=None):
-        self.np_random, seed = gym.utils.seeding.np_random(seed)
-        super().seed(seed)
 
     def step(self, action):
         action = {**action}
@@ -161,4 +156,5 @@ class frame_skip_par(BaseParallelWraper):
         return total_obs, total_reward, total_dones, total_infos
 
 
-frame_skip_v0 = WrapperChooser(aec_wrapper=frame_skip_aec, gym_wrapper=frame_skip_gym, parallel_wrapper=frame_skip_par)
+frame_skip_v0 = WrapperChooser(
+    aec_wrapper=frame_skip_aec, gym_wrapper=frame_skip_gym, parallel_wrapper=frame_skip_par)
