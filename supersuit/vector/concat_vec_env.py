@@ -31,7 +31,17 @@ class ConcatVecEnv(gym.vector.VectorEnv):
         self.num_envs = tot_num_envs
 
     def reset(self, seed=None):
-        return self.concat_obs([vec_env.reset(seed=seed) for vec_env in self.vec_envs])
+        _res_ls = []
+
+        # TODO: match the style of seeding of gym.vector.AsyncVectorEnv
+        if seed is not None:
+            for i in range(len(self.vec_envs)):
+                _res = self.vec_envs[i].reset(seed=seed+i)
+                _res_ls.append(_res)
+        else:
+            _res_ls = [vec_env.reset(seed=None) for vec_env in self.vec_envs]
+
+        return self.concat_obs(_res_ls)
 
     def concat_obs(self, observations):
         return concatenate(

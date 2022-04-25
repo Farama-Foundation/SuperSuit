@@ -158,8 +158,11 @@ class ProcConcatVec(gym.vector.VectorEnv):
         self.idx_starts = idx_starts
 
     def reset(self, seed=None):
-        for pipe in self.pipes:
-            pipe.send(("reset", seed))
+        for i, pipe in enumerate(self.pipes):
+            if seed is not None:
+                pipe.send(("reset", seed+i))
+            else:
+                pipe.send(("reset", seed))
 
         self._receive_info()
 

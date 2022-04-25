@@ -48,14 +48,16 @@ def test_pettingzoo_parallel_env():
 
 
 wrappers = [
-    # supersuit.color_reduction_v0(knights_archers_zombies_v10.env(), "R"),
-    # supersuit.resize_v0(
-    #     dtype_v0(knights_archers_zombies_v10.env(), np.uint8), x_size=5, y_size=10),
-    # supersuit.resize_v0(dtype_v0(knights_archers_zombies_v10.env(
-    # ), np.uint8), x_size=5, y_size=10, linear_interp=True),
+    supersuit.color_reduction_v0(
+        knights_archers_zombies_v10.env(vector_state=False), "R"),
+    supersuit.resize_v0(
+        dtype_v0(knights_archers_zombies_v10.env(vector_state=False), np.uint8), x_size=5, y_size=10),
+    supersuit.resize_v0(dtype_v0(knights_archers_zombies_v10.env(
+        vector_state=False), np.uint8), x_size=5, y_size=10, linear_interp=True),
     supersuit.dtype_v0(knights_archers_zombies_v10.env(), np.int32),
     supersuit.flatten_v0(knights_archers_zombies_v10.env()),
-    # supersuit.reshape_v0(knights_archers_zombies_v10.env(), (512 * 512, 3)),
+    supersuit.reshape_v0(knights_archers_zombies_v10.env(
+        vector_state=False), (512 * 512, 3)),
     supersuit.normalize_obs_v0(dtype_v0(
         knights_archers_zombies_v10.env(), np.float32), env_min=-1, env_max=5.0),
     supersuit.frame_stack_v1(combined_arms_v5.env(), 8),
@@ -94,8 +96,8 @@ parallel_wrappers = [
     supersuit.delay_observations_v0(combined_arms_v5.parallel_env(), 3),
     supersuit.delay_observations_v0(simple_push_v2.parallel_env(), 3),
     supersuit.dtype_v0(combined_arms_v5.parallel_env(), np.int32),
-    # supersuit.color_reduction_v0(
-    #     knights_archers_zombies_v10.parallel_env(), "R"),
+    supersuit.color_reduction_v0(
+        knights_archers_zombies_v10.parallel_env(vector_state=False), "R"),
     supersuit.frame_skip_v0(combined_arms_v5.parallel_env(), 4),
     supersuit.frame_skip_v0(simple_push_v2.parallel_env(), 4),
     supersuit.max_observation_v0(combined_arms_v5.parallel_env(), 4),
