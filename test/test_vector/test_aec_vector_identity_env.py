@@ -1,4 +1,4 @@
-from pettingzoo.butterfly import knights_archers_zombies_v9
+from pettingzoo.butterfly import knights_archers_zombies_v10
 from pettingzoo.mpe import simple_push_v2
 from supersuit import frame_skip_v0, vectorize_aec_env_v0
 import numpy as np
@@ -12,13 +12,13 @@ def recursive_equal(info1, info2):
 
 def test_identical():
     def env_fn():
-        return knights_archers_zombies_v9.env()  # ,20)
+        return knights_archers_zombies_v10.env()  # ,20)
 
     n_envs = 2
     # single threaded
-    env1 = vectorize_aec_env_v0(knights_archers_zombies_v9.env(), n_envs)
+    env1 = vectorize_aec_env_v0(knights_archers_zombies_v10.env(), n_envs)
     env2 = vectorize_aec_env_v0(
-        knights_archers_zombies_v9.env(), n_envs, num_cpus=1)
+        knights_archers_zombies_v10.env(), n_envs, num_cpus=1)
     env1.reset(seed=42)
     env2.reset(seed=42)
 
