@@ -29,8 +29,8 @@ def observation_homogenizable(env, agents):
     homogenizable = True
     for agent in agents:
         homogenizable = homogenizable and (
-            isinstance(env.observation_space(agent), spaces.Box)
-            or isinstance(env.observation_space(agent), spaces.Discrete)
+            isinstance(env.observation_space(agent), spaces.Box) or isinstance(
+                env.observation_space(agent), spaces.Discrete)
         )
     return homogenizable
 
@@ -39,8 +39,8 @@ def action_homogenizable(env, agents):
     homogenizable = True
     for agent in agents:
         homogenizable = homogenizable and (
-            isinstance(env.action_space(agent), spaces.Box)
-            or isinstance(env.action_space(agent), spaces.Discrete)
+            isinstance(env.action_space(agent), spaces.Box) or isinstance(
+                env.action_space(agent), spaces.Discrete)
         )
     return homogenizable
 
@@ -49,10 +49,14 @@ def image_observation(env, agents):
     imagable = True
     for agent in agents:
         if isinstance(env.observation_space(agent), spaces.Box):
-            imagable = imagable and (env.observation_space(agent).low.shape == 3)
-            imagable = imagable and (len(env.observation_space(agent).shape[2]) == 3)
-            imagable = imagable and (env.observation_space(agent).low == 0).all()
-            imagable = imagable and (env.observation_space(agent).high == 255).all()
+            imagable = imagable and (
+                env.observation_space(agent).low.shape == 3)
+            imagable = imagable and (
+                len(env.observation_space(agent).shape[2]) == 3)
+            imagable = imagable and (
+                env.observation_space(agent).low == 0).all()
+            imagable = imagable and (
+                env.observation_space(agent).high == 255).all()
         else:
             return False
     return imagable
@@ -68,7 +72,8 @@ def box_action(env, agents):
 def not_dict_observation(env, agents):
     is_dict = True
     for agent in agents:
-        is_dict = is_dict and (isinstance(env.observation_space(agent), spaces.Dict))
+        is_dict = is_dict and (isinstance(
+            env.observation_space(agent), spaces.Dict))
     return not is_dict
 
 
@@ -110,9 +115,8 @@ def unwrapped_check(env):
         env = black_death_v3(env)
 
     if (
-        not_dict_observation(env, agents)
-        and not_discrete_observation(env, agents)
-        and not_multibinary_observation(env, agents)
+        not_dict_observation(env, agents) and not_discrete_observation(
+            env, agents) and not_multibinary_observation(env, agents)
     ):
         env = dtype_v0(env, np.float16)
         env = flatten_v0(env)
