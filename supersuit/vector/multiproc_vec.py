@@ -58,19 +58,20 @@ def async_loop(vec_env_constr, inpt_p, pipe, shared_obs, shared_rews, shared_don
         while True:
             instr = pipe.recv()
             comp_infos = []
-            if instr == "reset":
-                # TODO: need to figure out how this works
-                observations = vec_env.reset()
-                write_observations(vec_env, env_start_idx,
-                                   shared_obs, observations)
-                shared_dones.np_arr[env_start_idx:env_end_idx] = False
-                shared_rews.np_arr[env_start_idx:env_end_idx] = 0.0
-            elif instr == "close":
+
+            if instr == "close":
                 vec_env.close()
+
             elif isinstance(instr, tuple):
                 name, data = instr
-                if name == "seed":
-                    vec_env.seed(data)
+
+                if instr == "reset":
+                    observations = vec_env.reset(seed=data)
+                    write_observations(vec_env, env_start_idx,
+                                       shared_obs, observations)
+                    shared_dones.np_arr[env_start_idx:env_end_idx] = False
+                    shared_rews.np_arr[env_start_idx:env_end_idx] = 0.0
+
                 elif name == "step":
                     actions = data
                     actions = concatenate(
@@ -85,12 +86,15 @@ def async_loop(vec_env_constr, inpt_p, pipe, shared_obs, shared_rews, shared_don
                     shared_dones.np_arr[env_start_idx:env_end_idx] = dones
                     shared_rews.np_arr[env_start_idx:env_end_idx] = rewards
                     comp_infos = compress_info(infos)
+
                 elif name == "env_is_wrapped":
                     comp_infos = vec_env.env_is_wrapped(data)
+
                 elif name == "render":
                     render_result = vec_env.render(data)
                     if data == "rgb_array":
                         comp_infos = render_result
+
                 else:
                     raise AssertionError("bad tuple instruction name: " + name)
             elif instr == "terminate":
@@ -154,14 +158,8 @@ class ProcConcatVec(gym.vector.VectorEnv):
         self.idx_starts = idx_starts
 
     def reset(self, seed=None):
-        if seed is not None:
-            for i, pipe in enumerate(self.pipes):
-                pipe.send(("seed", seed + self.idx_starts[i]))
-
-            self._receive_info()
-
         for pipe in self.pipes:
-            pipe.send("reset")
+            pipe.send(("reset", seed))
 
         self._receive_info()
 

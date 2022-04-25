@@ -206,13 +206,12 @@ def env_worker(env_constructors, total_num_envs, idx_start, my_num_envs, agent_a
         while True:
             instruction, data = pipe.recv()
             if instruction == "reset":
-                env.reset()
+                env.reset(seed=data)
                 write_out_data(env.rewards, env._cumulative_rewards,
                                env.dones, my_num_envs, idx_start, shared_datas)
                 env_dones = np.zeros(my_num_envs, dtype=np.uint8)
                 write_env_data(env_dones, env.get_agent_indexes(),
                                my_num_envs, idx_start, env_datas)
-
                 pipe.send(compress_info(env.infos))
 
             elif instruction == "observe":
@@ -220,8 +219,8 @@ def env_worker(env_constructors, total_num_envs, idx_start, my_num_envs, agent_a
                 obs = env.observe(agent_observe)
                 write_obs(obs, my_num_envs, idx_start,
                           shared_datas[agent_observe])
-
                 pipe.send(True)
+
             elif instruction == "step":
                 step_agent, do_observe = data
 
@@ -232,13 +231,11 @@ def env_worker(env_constructors, total_num_envs, idx_start, my_num_envs, agent_a
                                env.dones, my_num_envs, idx_start, shared_datas)
                 write_env_data(env_dones, env.get_agent_indexes(),
                                my_num_envs, idx_start, env_datas)
-
                 pipe.send(compress_info(env.infos))
-            elif instruction == "seed":
-                env.seed(data)
-                pipe.send(True)
+
             elif instruction == "terminate":
                 return
+
             else:
                 assert False, "Bad instruction sent to ProcVectorEnv worker"
     except Exception as e:
@@ -345,6 +342,7 @@ class AsyncAECVectorEnv(VectorAECEnv):
         all_info = decompress_info(
             self.possible_agents, self.num_envs, self.env_starts, all_compressed_info)
 
+        # TODO: check if this reset needs seeding
         self.agent_selection = self._agent_selector.reset(
         ) if reset else self._agent_selector.next()
         self.agent_selection = self._find_active_agent()
@@ -373,15 +371,9 @@ class AsyncAECVectorEnv(VectorAECEnv):
         obs = self.observe(last_agent) if observe else None
         return obs, self._cumulative_rewards[last_agent], self.dones[last_agent], self.env_dones, self.passes, self.infos[last_agent]
 
-    def reset(self, observe=True, seed=None):
-        if seed is not None:
-            for start, cin in zip(self.env_starts, self.con_ins):
-                cin.send(("seed", seed + start if seed is not None else None))
-
-            self._receive_info()
-
+    def reset(self, seed=None):
         for cin in self.con_ins:
-            cin.send(("reset", observe))
+            cin.send(("reset", seed))
 
         self._load_next_data(True)
 
