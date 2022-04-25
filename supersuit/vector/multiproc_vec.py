@@ -65,7 +65,7 @@ def async_loop(vec_env_constr, inpt_p, pipe, shared_obs, shared_rews, shared_don
             elif isinstance(instr, tuple):
                 name, data = instr
 
-                if instr == "reset":
+                if name == "reset":
                     observations = vec_env.reset(seed=data)
                     write_observations(vec_env, env_start_idx,
                                        shared_obs, observations)

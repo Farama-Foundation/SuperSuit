@@ -21,8 +21,8 @@ def recursive_equal(info1, info2):
 
 
 def check_vec_env_equivalency(venv1, venv2, check_info=True):
-    # assert venv1.observation_space == venv2.observation_space
-    # assert venv1.action_space == venv2.action_space
+    assert venv1.observation_space == venv2.observation_space
+    assert venv1.action_space == venv2.action_space
 
     obs1 = venv1.reset(seed=51)
     obs2 = venv2.reset(seed=51)
@@ -49,7 +49,7 @@ def test_gym_supersuit_equivalency():
 
 
 def test_inital_state_dissimilarity():
-    env = gym.make("CartPole-v0")
+    env = gym.make("CartPole-v1")
     venv = concat_vec_envs_v1(env, 2)
     observations = venv.reset()
     assert not np.equal(observations[0], observations[1]).all()
@@ -64,7 +64,7 @@ def test_inital_state_dissimilarity():
 #     check_vec_env_equivalency(venv1, venv2, check_info=False)  # stable baselines does not implement info correctly
 
 def test_mutliproc_single_proc_equivalency():
-    env = gym.make("CartPole-v0")
+    env = gym.make("CartPole-v1")
     num_envs = 3
     # uses single threaded vector environment
     venv1 = concat_vec_envs_v1(env, num_envs, num_cpus=0)
@@ -86,7 +86,7 @@ def test_multiagent_mutliproc_single_proc_equivalency():
 
 def test_multiproc_buffer():
     num_envs = 2
-    env = gym.make("CartPole-v0")
+    env = gym.make("CartPole-v1")
     env = concat_vec_envs_v1(env, num_envs, num_cpus=2)
 
     obss = env.reset()

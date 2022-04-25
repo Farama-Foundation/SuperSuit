@@ -20,9 +20,6 @@ class SingleVecEnv:
     def step_wait(self):
         return self.step(self._saved_actions)
 
-    def seed(self, seed=None):
-        self.gym_env.seed(seed)
-
     def render(self, mode="human"):
         return self.gym_env.render(mode)
 

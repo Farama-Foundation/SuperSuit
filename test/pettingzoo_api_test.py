@@ -53,11 +53,11 @@ wrappers = [
     #     dtype_v0(knights_archers_zombies_v10.env(), np.uint8), x_size=5, y_size=10),
     # supersuit.resize_v0(dtype_v0(knights_archers_zombies_v10.env(
     # ), np.uint8), x_size=5, y_size=10, linear_interp=True),
-    # supersuit.dtype_v0(knights_archers_zombies_v10.env(), np.int32),
-    # supersuit.flatten_v0(knights_archers_zombies_v10.env()),
+    supersuit.dtype_v0(knights_archers_zombies_v10.env(), np.int32),
+    supersuit.flatten_v0(knights_archers_zombies_v10.env()),
     # supersuit.reshape_v0(knights_archers_zombies_v10.env(), (512 * 512, 3)),
-    # supersuit.normalize_obs_v0(dtype_v0(
-    #     knights_archers_zombies_v10.env(), np.float32), env_min=-1, env_max=5.0),
+    supersuit.normalize_obs_v0(dtype_v0(
+        knights_archers_zombies_v10.env(), np.float32), env_min=-1, env_max=5.0),
     supersuit.frame_stack_v1(combined_arms_v5.env(), 8),
     supersuit.pad_observations_v0(simple_world_comm_v2.env()),
     supersuit.pad_action_space_v0(simple_world_comm_v2.env()),
