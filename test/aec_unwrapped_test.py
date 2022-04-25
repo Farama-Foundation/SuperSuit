@@ -93,7 +93,6 @@ def not_multibinary_observation(env, agents):
 def unwrapped_check(env):
     env.reset()
     agents = env.agents
-    base_env = env.unwrapped
 
     if image_observation(env, agents):
         env = max_observation_v0(env, 2)
@@ -128,7 +127,7 @@ def unwrapped_check(env):
     env = nan_random_v0(env)
     env = nan_zeros_v0(env)
 
-    assert env.unwrapped == base_env, f"Failed to unwrap {env}"
+    assert env.unwrapped.__class__ == DummyEnv, f"Failed to unwrap {env}"
 
 
 def test_unwrapped():

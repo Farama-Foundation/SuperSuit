@@ -22,8 +22,6 @@ from .dummy_gym_env import DummyEnv
 
 
 def unwrapped_check(env):
-    base_env = env.unwrapped
-
     # image observations
     if isinstance(env.observation_space, spaces.Box):
         if (
@@ -62,7 +60,7 @@ def unwrapped_check(env):
     env = nan_random_v0(env)
     env = nan_zeros_v0(env)
 
-    assert env.unwrapped == base_env, f"Failed to unwrap {env}"
+    assert env.unwrapped.__class__ == DummyEnv, f"Failed to unwrap {env}"
 
 
 def test_unwrapped():
