@@ -19,7 +19,7 @@ def color_reduction_v0(env, mode="full"):
     return basic_obs_wrapper(env, basic_transforms.color_reduction, mode)
 
 
-def resize_v0(env, x_size, y_size, linear_interp=True):
+def resize_v1(env, x_size, y_size, linear_interp=True):
     scale_tuple = (x_size, y_size, linear_interp)
     return basic_obs_wrapper(env, basic_transforms.resize, scale_tuple)
 
