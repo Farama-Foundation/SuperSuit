@@ -13,7 +13,7 @@ class shared_wrapper_aec(PettingzooWrap):
         self.modifiers = {}
         self._cur_seed = None
 
-        if hasattr(self.env, 'possible_agents'):
+        if hasattr(self.env, "possible_agents"):
             self.add_modifiers(self.env.possible_agents)
 
     @functools.lru_cache(maxsize=None)
@@ -44,7 +44,8 @@ class shared_wrapper_aec(PettingzooWrap):
         super().reset(seed=seed)
         self.add_modifiers(self.agents)
         self.modifiers[self.agent_selection].modify_obs(
-            super().observe(self.agent_selection))
+            super().observe(self.agent_selection)
+        )
 
     def step(self, action):
         mod = self.modifiers[self.agent_selection]
@@ -54,7 +55,8 @@ class shared_wrapper_aec(PettingzooWrap):
         super().step(action)
         self.add_modifiers(self.agents)
         self.modifiers[self.agent_selection].modify_obs(
-            super().observe(self.agent_selection))
+            super().observe(self.agent_selection)
+        )
 
     def observe(self, agent):
         return self.modifiers[agent].get_last_obs()
@@ -68,7 +70,7 @@ class shared_wrapper_parr(BaseParallelWraper):
         self.modifiers = {}
         self._cur_seed = None
 
-        if hasattr(self.env, 'possible_agents'):
+        if hasattr(self.env, "possible_agents"):
             self.add_modifiers(self.env.possible_agents)
 
     @functools.lru_cache(maxsize=None)
@@ -97,18 +99,24 @@ class shared_wrapper_parr(BaseParallelWraper):
         observations = super().reset(seed=seed)
         self.add_modifiers(self.agents)
         for agent, mod in self.modifiers.items():
-            mod.reset()
-        observations = {agent: self.modifiers[agent].modify_obs(
-            obs) for agent, obs in observations.items()}
+            mod.reset(seed=seed)
+        observations = {
+            agent: self.modifiers[agent].modify_obs(obs)
+            for agent, obs in observations.items()
+        }
         return observations
 
     def step(self, actions):
-        actions = {agent: self.modifiers[agent].modify_action(
-            action) for agent, action in actions.items()}
+        actions = {
+            agent: self.modifiers[agent].modify_action(action)
+            for agent, action in actions.items()
+        }
         observations, rewards, dones, infos = super().step(actions)
         self.add_modifiers(self.agents)
-        observations = {agent: self.modifiers[agent].modify_obs(
-            obs) for agent, obs in observations.items()}
+        observations = {
+            agent: self.modifiers[agent].modify_obs(obs)
+            for agent, obs in observations.items()
+        }
         return observations, rewards, dones, infos
 
 
@@ -116,10 +124,8 @@ class shared_wrapper_gym(gym.Wrapper):
     def __init__(self, env, modifier_class):
         super().__init__(env)
         self.modifier = modifier_class()
-        self.observation_space = self.modifier.modify_obs_space(
-            self.observation_space)
-        self.action_space = self.modifier.modify_action_space(
-            self.action_space)
+        self.observation_space = self.modifier.modify_obs_space(self.observation_space)
+        self.action_space = self.modifier.modify_action_space(self.action_space)
 
     def reset(self, seed=None):
         self.modifier.reset(seed=seed)
@@ -133,5 +139,8 @@ class shared_wrapper_gym(gym.Wrapper):
         return obs, rew, done, info
 
 
-shared_wrapper = WrapperChooser(aec_wrapper=shared_wrapper_aec,
-                                gym_wrapper=shared_wrapper_gym, parallel_wrapper=shared_wrapper_parr)
+shared_wrapper = WrapperChooser(
+    aec_wrapper=shared_wrapper_aec,
+    gym_wrapper=shared_wrapper_gym,
+    parallel_wrapper=shared_wrapper_parr,
+)
