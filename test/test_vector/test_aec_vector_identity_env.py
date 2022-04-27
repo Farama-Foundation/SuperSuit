@@ -1,4 +1,4 @@
-from pettingzoo.butterfly import knights_archers_zombies_v9
+from pettingzoo.butterfly import knights_archers_zombies_v10
 from pettingzoo.mpe import simple_push_v2
 from supersuit import frame_skip_v0, vectorize_aec_env_v0
 import numpy as np
@@ -12,16 +12,15 @@ def recursive_equal(info1, info2):
 
 def test_identical():
     def env_fn():
-        return knights_archers_zombies_v9.env()  # ,20)
+        return knights_archers_zombies_v10.env()  # ,20)
 
     n_envs = 2
     # single threaded
-    env1 = vectorize_aec_env_v0(knights_archers_zombies_v9.env(), n_envs)
-    env2 = vectorize_aec_env_v0(knights_archers_zombies_v9.env(), n_envs, num_cpus=1)
-    env1.seed(42)
-    env2.seed(42)
-    env1.reset()
-    env2.reset()
+    env1 = vectorize_aec_env_v0(knights_archers_zombies_v10.env(), n_envs)
+    env2 = vectorize_aec_env_v0(
+        knights_archers_zombies_v10.env(), n_envs, num_cpus=1)
+    env1.reset(seed=42)
+    env2.reset(seed=42)
 
     def policy(obs, agent):
         return [env1.action_space(agent).sample() for i in range(env1.num_envs)]
@@ -37,7 +36,8 @@ def test_identical():
         assert np.all(np.equal(agent_passes1, agent_passes2))
         assert np.all(np.equal(env_done1, env_done2))
         assert np.all(np.equal(obs1, obs2))
-        assert all(np.all(np.equal(r1, r2)) for r1, r2 in zip(env1.rewards.values(), env2.rewards.values()))
+        assert all(np.all(np.equal(r1, r2)) for r1, r2 in zip(
+            env1.rewards.values(), env2.rewards.values()))
         assert recursive_equal(infos1, infos2)
         actions = policy(obs1, agent)
         env1.step(actions)

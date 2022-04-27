@@ -17,7 +17,8 @@ class MarkovVectorEnv(gym.vector.VectorEnv):
         """
         self.par_env = par_env
         self.metadata = par_env.metadata
-        self.observation_space = par_env.observation_space(par_env.possible_agents[0])
+        self.observation_space = par_env.observation_space(
+            par_env.possible_agents[0])
         self.action_space = par_env.action_space(par_env.possible_agents[0])
         assert all(
             self.observation_space == par_env.observation_space(agent) for agent in par_env.possible_agents
@@ -28,14 +29,12 @@ class MarkovVectorEnv(gym.vector.VectorEnv):
         self.num_envs = len(par_env.possible_agents)
         self.black_death = black_death
 
-    def seed(self, seed=None):
-        self.par_env.seed(seed)
-
     def concat_obs(self, obs_dict):
         obs_list = []
         for i, agent in enumerate(self.par_env.possible_agents):
             if agent not in obs_dict:
-                raise AssertionError("environment has agent death. Not allowed for pettingzoo_env_to_vec_env_v1 unless black_death is True")
+                raise AssertionError(
+                    "environment has agent death. Not allowed for pettingzoo_env_to_vec_env_v1 unless black_death is True")
             obs_list.append(obs_dict[agent])
 
         return concatenate(
@@ -50,13 +49,14 @@ class MarkovVectorEnv(gym.vector.VectorEnv):
     def step_wait(self):
         return self.step(self._saved_actions)
 
-    def reset(self):
-        return self.concat_obs(self.par_env.reset())
+    def reset(self, seed=None):
+        return self.concat_obs(self.par_env.reset(seed=seed))
 
     def step(self, actions):
         actions = list(iterate(self.action_space, actions))
         agent_set = set(self.par_env.agents)
-        act_dict = {agent: actions[i] for i, agent in enumerate(self.par_env.possible_agents) if agent in agent_set}
+        act_dict = {agent: actions[i] for i, agent in enumerate(
+            self.par_env.possible_agents) if agent in agent_set}
         observations, rewards, dones, infos = self.par_env.step(act_dict)
 
         # adds last observation to info where user can get it
@@ -64,11 +64,14 @@ class MarkovVectorEnv(gym.vector.VectorEnv):
             for agent, obs in observations.items():
                 infos[agent]['terminal_observation'] = obs
 
-        rews = np.array([rewards.get(agent, 0) for agent in self.par_env.possible_agents], dtype=np.float32)
-        dns = np.array([dones.get(agent, False) for agent in self.par_env.possible_agents], dtype=np.uint8)
+        rews = np.array([rewards.get(agent, 0)
+                        for agent in self.par_env.possible_agents], dtype=np.float32)
+        dns = np.array([dones.get(agent, False)
+                       for agent in self.par_env.possible_agents], dtype=np.uint8)
         infs = [infos.get(agent, {}) for agent in self.par_env.possible_agents]
 
         if all(dones.values()):
+            # TODO: need to check how to seed this reset()
             observations = self.reset()
         else:
             observations = self.concat_obs(observations)

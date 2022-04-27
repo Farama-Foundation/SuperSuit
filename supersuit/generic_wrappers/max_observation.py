@@ -8,8 +8,9 @@ def max_observation_v0(env, memory):
     int(memory)  # delay must be an int
 
     class MaxObsModifier(BaseModifier):
-        def reset(self):
-            self.accumulator = Accumulator(self.observation_space, memory, np.maximum)
+        def reset(self, seed=None):
+            self.accumulator = Accumulator(
+                self.observation_space, memory, np.maximum)
 
         def modify_obs(self, obs):
             self.accumulator.add(obs)

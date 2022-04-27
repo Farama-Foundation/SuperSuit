@@ -11,17 +11,14 @@ class SingleVecEnv:
         self.num_envs = 1
         self.metadata = self.gym_env.metadata
 
-    def reset(self):
-        return np.expand_dims(self.gym_env.reset(), 0)
+    def reset(self, seed=None):
+        return np.expand_dims(self.gym_env.reset(seed=seed), 0)
 
     def step_async(self, actions):
         self._saved_actions = actions
 
     def step_wait(self):
         return self.step(self._saved_actions)
-
-    def seed(self, seed=None):
-        self.gym_env.seed(seed)
 
     def render(self, mode="human"):
         return self.gym_env.render(mode)
