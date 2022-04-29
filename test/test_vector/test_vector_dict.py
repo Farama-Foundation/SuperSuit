@@ -13,7 +13,10 @@ def make_env():
         {
             str(i): {
                 "feature": i * np.ones((5,), dtype=np.float32),
-                "id": (i * np.ones((7,), dtype=np.float32), i * np.ones((8,), dtype=np.float32))
+                "id": (
+                    i * np.ones((7,), dtype=np.float32),
+                    i * np.ones((8,), dtype=np.float32),
+                ),
             }
             for i in range(n_agents)
         },
@@ -21,7 +24,12 @@ def make_env():
             str(i): Dict(
                 {
                     "feature": Box(low=0, high=10, shape=(5,)),
-                    "id": Tuple([Box(low=0, high=10, shape=(7,)), Box(low=0, high=10, shape=(8,))]),
+                    "id": Tuple(
+                        [
+                            Box(low=0, high=10, shape=(7,)),
+                            Box(low=0, high=10, shape=(8,)),
+                        ]
+                    ),
                 }
             )
             for i in range(n_agents)
@@ -55,8 +63,8 @@ def dict_vec_env_test(env):
         obss, rews, dones, infos = env.step(actions)
         assert obss["feature"][1][0] == 1
         assert {
-            "feature": obss['feature'][1][:],
-            "id": [o[1] for o in obss['id']]
+            "feature": obss["feature"][1][:],
+            "id": [o[1] for o in obss["id"]],
         } in env.observation_space
         # no agent death, only env death
         if any(dones):

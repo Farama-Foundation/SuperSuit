@@ -32,7 +32,10 @@ def write_observations(vec_env, env_start_idx, shared_obs, obs):
     obs = list(iterate(vec_env.observation_space, obs))
     for i in range(vec_env.num_envs):
         write_to_shared_memory(
-            vec_env.observation_space, env_start_idx + i, obs[i], shared_obs,
+            vec_env.observation_space,
+            env_start_idx + i,
+            obs[i],
+            shared_obs,
         )
 
 
@@ -67,8 +70,7 @@ def async_loop(vec_env_constr, inpt_p, pipe, shared_obs, shared_rews, shared_don
 
                 if name == "reset":
                     observations = vec_env.reset(seed=data)
-                    write_observations(vec_env, env_start_idx,
-                                       shared_obs, observations)
+                    write_observations(vec_env, env_start_idx, shared_obs, observations)
                     shared_dones.np_arr[env_start_idx:env_end_idx] = False
                     shared_rews.np_arr[env_start_idx:env_end_idx] = 0.0
 
@@ -77,12 +79,10 @@ def async_loop(vec_env_constr, inpt_p, pipe, shared_obs, shared_rews, shared_don
                     actions = concatenate(
                         vec_env.action_space,
                         actions,
-                        create_empty_array(
-                            vec_env.action_space, n=len(actions)),
+                        create_empty_array(vec_env.action_space, n=len(actions)),
                     )
                     observations, rewards, dones, infos = vec_env.step(actions)
-                    write_observations(vec_env, env_start_idx,
-                                       shared_obs, observations)
+                    write_observations(vec_env, env_start_idx, shared_obs, observations)
                     shared_dones.np_arr[env_start_idx:env_end_idx] = dones
                     shared_rews.np_arr[env_start_idx:env_end_idx] = rewards
                     comp_infos = compress_info(infos)
@@ -108,18 +108,16 @@ def async_loop(vec_env_constr, inpt_p, pipe, shared_obs, shared_rews, shared_don
 
 
 class ProcConcatVec(gym.vector.VectorEnv):
-    def __init__(self, vec_env_constrs, observation_space, action_space, tot_num_envs, metadata):
+    def __init__(
+        self, vec_env_constrs, observation_space, action_space, tot_num_envs, metadata
+    ):
         self.observation_space = observation_space
         self.action_space = action_space
         self.num_envs = num_envs = tot_num_envs
         self.metadata = metadata
 
-        self.shared_obs = create_shared_memory(
-            self.observation_space, n=self.num_envs
-        )
-        self.shared_act = create_shared_memory(
-            self.action_space, n=self.num_envs
-        )
+        self.shared_obs = create_shared_memory(self.observation_space, n=self.num_envs)
+        self.shared_act = create_shared_memory(self.action_space, n=self.num_envs)
         self.shared_rews = SharedArray((num_envs,), dtype=np.float32)
         self.shared_dones = SharedArray((num_envs,), dtype=np.uint8)
 
@@ -133,8 +131,15 @@ class ProcConcatVec(gym.vector.VectorEnv):
             inpt, outpt = mp.Pipe()
             constr = gym.vector.async_vector_env.CloudpickleWrapper(constr)
             proc = mp.Process(
-                target=async_loop, args=(
-                    constr, inpt, outpt, self.shared_obs, self.shared_rews, self.shared_dones)
+                target=async_loop,
+                args=(
+                    constr,
+                    inpt,
+                    outpt,
+                    self.shared_obs,
+                    self.shared_rews,
+                    self.shared_dones,
+                ),
             )
             proc.start()
             outpt.close()
@@ -160,7 +165,7 @@ class ProcConcatVec(gym.vector.VectorEnv):
     def reset(self, seed=None):
         for i, pipe in enumerate(self.pipes):
             if seed is not None:
-                pipe.send(("reset", seed+i))
+                pipe.send(("reset", seed + i))
             else:
                 pipe.send(("reset", seed))
 
@@ -171,7 +176,7 @@ class ProcConcatVec(gym.vector.VectorEnv):
     def step_async(self, actions):
         actions = list(iterate(self.action_space, actions))
         for i, pipe in enumerate(self.pipes):
-            start, end = self.idx_starts[i: i + 2]
+            start, end = self.idx_starts[i : i + 2]
             pipe.send(("step", actions[start:end]))
 
     def _receive_info(self):
@@ -187,11 +192,15 @@ class ProcConcatVec(gym.vector.VectorEnv):
 
     def step_wait(self):
         compressed_infos = self._receive_info()
-        infos = decompress_info(
-            self.num_envs, self.idx_starts, compressed_infos)
+        infos = decompress_info(self.num_envs, self.idx_starts, compressed_infos)
         rewards = self.shared_rews.np_arr
         dones = self.shared_dones.np_arr
-        return numpy_deepcopy(self.observations_buffers), rewards.copy(), dones.copy(), copy.deepcopy(infos)
+        return (
+            numpy_deepcopy(self.observations_buffers),
+            rewards.copy(),
+            dones.copy(),
+            copy.deepcopy(infos),
+        )
 
     def step(self, actions):
         self.step_async(actions)
@@ -226,7 +235,8 @@ class ProcConcatVec(gym.vector.VectorEnv):
                 pipe.recv()
             except EOFError:
                 raise RuntimeError(
-                    "only one multiproccessing vector environment can open a window over the duration of a process")
+                    "only one multiproccessing vector environment can open a window over the duration of a process"
+                )
             except ConnectionError:
                 pass
 

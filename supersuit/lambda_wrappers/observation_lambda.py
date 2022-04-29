@@ -8,17 +8,23 @@ from supersuit.utils.wrapper_chooser import WrapperChooser
 
 class aec_observation_lambda(BaseWrapper):
     def __init__(self, env, change_observation_fn, change_obs_space_fn=None):
-        assert callable(change_observation_fn), "change_observation_fn needs to be a function. It is {}".format(
-            change_observation_fn)
+        assert callable(
+            change_observation_fn
+        ), "change_observation_fn needs to be a function. It is {}".format(
+            change_observation_fn
+        )
         assert change_obs_space_fn is None or callable(
-            change_obs_space_fn), "change_obs_space_fn needs to be a function. It is {}".format(change_obs_space_fn)
+            change_obs_space_fn
+        ), "change_obs_space_fn needs to be a function. It is {}".format(
+            change_obs_space_fn
+        )
 
         self.change_observation_fn = change_observation_fn
         self.change_obs_space_fn = change_obs_space_fn
 
         super().__init__(env)
 
-        if hasattr(self, 'possible_agents'):
+        if hasattr(self, "possible_agents"):
             for agent in self.possible_agents:
                 # call any validation logic in this function
                 self.observation_space(agent)
@@ -27,10 +33,11 @@ class aec_observation_lambda(BaseWrapper):
         return action
 
     def _check_wrapper_params(self):
-        if self.change_obs_space_fn is None and hasattr(self, 'possible_agents'):
+        if self.change_obs_space_fn is None and hasattr(self, "possible_agents"):
             for agent in self.possible_agents:
-                assert isinstance(self.observation_space(
-                    agent), Box), "the observation_lambda_wrapper only allows the change_obs_space_fn argument to be optional for Box observation spaces"
+                assert isinstance(
+                    self.observation_space(agent), Box
+                ), "the observation_lambda_wrapper only allows the change_obs_space_fn argument to be optional for Box observation spaces"
 
     @functools.lru_cache(maxsize=None)
     def observation_space(self, agent):
@@ -38,8 +45,7 @@ class aec_observation_lambda(BaseWrapper):
             space = self.env.observation_space(agent)
             try:
                 trans_low = self.change_observation_fn(space.low, space, agent)
-                trans_high = self.change_observation_fn(
-                    space.high, space, agent)
+                trans_high = self.change_observation_fn(space.high, space, agent)
             except TypeError:
                 trans_low = self.change_observation_fn(space.low, space)
                 trans_high = self.change_observation_fn(space.high, space)
@@ -64,10 +70,16 @@ class aec_observation_lambda(BaseWrapper):
 
 class gym_observation_lambda(gym.Wrapper):
     def __init__(self, env, change_observation_fn, change_obs_space_fn=None):
-        assert callable(change_observation_fn), "change_observation_fn needs to be a function. It is {}".format(
-            change_observation_fn)
+        assert callable(
+            change_observation_fn
+        ), "change_observation_fn needs to be a function. It is {}".format(
+            change_observation_fn
+        )
         assert change_obs_space_fn is None or callable(
-            change_obs_space_fn), "change_obs_space_fn needs to be a function. It is {}".format(change_obs_space_fn)
+            change_obs_space_fn
+        ), "change_obs_space_fn needs to be a function. It is {}".format(
+            change_obs_space_fn
+        )
         self.change_observation_fn = change_observation_fn
         self.change_obs_space_fn = change_obs_space_fn
 
@@ -79,7 +91,8 @@ class gym_observation_lambda(gym.Wrapper):
         if self.change_obs_space_fn is None:
             space = self.observation_space
             assert isinstance(
-                space, Box), "the observation_lambda_wrapper only allows the change_obs_space_fn argument to be optional for Box observation spaces"
+                space, Box
+            ), "the observation_lambda_wrapper only allows the change_obs_space_fn argument to be optional for Box observation spaces"
 
     def _modify_spaces(self):
         space = self.observation_space
@@ -91,7 +104,8 @@ class gym_observation_lambda(gym.Wrapper):
         else:
             new_space = self.change_obs_space_fn(space)
             assert isinstance(
-                new_space, Space), "output of change_obs_space_fn to observation_lambda_wrapper must be a gym space"
+                new_space, Space
+            ), "output of change_obs_space_fn to observation_lambda_wrapper must be a gym space"
         self.observation_space = new_space
 
     def _modify_observation(self, observation):
@@ -109,4 +123,5 @@ class gym_observation_lambda(gym.Wrapper):
 
 
 observation_lambda_v0 = WrapperChooser(
-    aec_wrapper=aec_observation_lambda, gym_wrapper=gym_observation_lambda)
+    aec_wrapper=aec_observation_lambda, gym_wrapper=gym_observation_lambda
+)

@@ -5,8 +5,12 @@ import cloudpickle
 
 
 def vectorize_aec_env_v0(aec_env, num_envs, num_cpus=0):
-    assert isinstance(aec_env, AECEnv), "pettingzoo_env_to_vec_env takes in a pettingzoo AECEnv."
-    assert hasattr(aec_env, 'possible_agents'), "environment passed to vectorize_aec_env must have possible_agents attribute."
+    assert isinstance(
+        aec_env, AECEnv
+    ), "pettingzoo_env_to_vec_env takes in a pettingzoo AECEnv."
+    assert hasattr(
+        aec_env, "possible_agents"
+    ), "environment passed to vectorize_aec_env must have possible_agents attribute."
 
     def env_fn():
         return cloudpickle.loads(cloudpickle.dumps(aec_env))

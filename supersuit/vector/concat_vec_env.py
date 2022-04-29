@@ -14,8 +14,7 @@ def iterate_discrete(space, items):
     try:
         return iter(items)
     except TypeError:
-        raise TypeError(
-            f"Unable to iterate over the following elements: {items}")
+        raise TypeError(f"Unable to iterate over the following elements: {items}")
 
 
 class ConcatVecEnv(gym.vector.VectorEnv):
@@ -36,7 +35,7 @@ class ConcatVecEnv(gym.vector.VectorEnv):
         # TODO: match the style of seeding of gym.vector.AsyncVectorEnv
         if seed is not None:
             for i in range(len(self.vec_envs)):
-                _res = self.vec_envs[i].reset(seed=seed+i)
+                _res = self.vec_envs[i].reset(seed=seed + i)
                 _res_ls.append(_res)
         else:
             _res_ls = [vec_env.reset(seed=None) for vec_env in self.vec_envs]
@@ -46,8 +45,11 @@ class ConcatVecEnv(gym.vector.VectorEnv):
     def concat_obs(self, observations):
         return concatenate(
             self.observation_space,
-            [item for obs in observations for item in iterate(
-                self.observation_space, obs)],
+            [
+                item
+                for obs in observations
+                for item in iterate(self.observation_space, obs)
+            ],
             create_empty_array(self.observation_space, n=self.num_envs),
         )
 
@@ -69,8 +71,13 @@ class ConcatVecEnv(gym.vector.VectorEnv):
         idx = 0
         actions = list(iterate(self.action_space, actions))
         for venv in self.vec_envs:
-            data.append(venv.step(self.concatenate_actions(
-                actions[idx: idx + venv.num_envs], venv.num_envs)))
+            data.append(
+                venv.step(
+                    self.concatenate_actions(
+                        actions[idx : idx + venv.num_envs], venv.num_envs
+                    )
+                )
+            )
             idx += venv.num_envs
         observations, rewards, dones, infos = transpose(data)
         observations = self.concat_obs(observations)
@@ -87,4 +94,6 @@ class ConcatVecEnv(gym.vector.VectorEnv):
             vec_env.close()
 
     def env_is_wrapped(self, wrapper_class):
-        return sum([sub_venv.env_is_wrapped(wrapper_class) for sub_venv in self.vec_envs], [])
+        return sum(
+            [sub_venv.env_is_wrapped(wrapper_class) for sub_venv in self.vec_envs], []
+        )

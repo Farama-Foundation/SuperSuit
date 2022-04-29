@@ -7,14 +7,18 @@ import gym
 
 class aec_action_lambda(BaseWrapper):
     def __init__(self, env, change_action_fn, change_space_fn):
-        assert callable(change_action_fn), "change_action_fn needs to be a function. It is {}".format(change_action_fn)
-        assert callable(change_space_fn), "change_space_fn needs to be a function. It is {}".format(change_space_fn)
+        assert callable(
+            change_action_fn
+        ), "change_action_fn needs to be a function. It is {}".format(change_action_fn)
+        assert callable(
+            change_space_fn
+        ), "change_space_fn needs to be a function. It is {}".format(change_space_fn)
 
         self.change_action_fn = change_action_fn
         self.change_space_fn = change_space_fn
 
         super().__init__(env)
-        if hasattr(self, 'possible_agents'):
+        if hasattr(self, "possible_agents"):
             for agent in self.possible_agents:
                 # call any validation logic in this function
                 self.action_space(agent)
@@ -40,8 +44,12 @@ class aec_action_lambda(BaseWrapper):
 
 class gym_action_lambda(gym.Wrapper):
     def __init__(self, env, change_action_fn, change_space_fn):
-        assert callable(change_action_fn), "change_action_fn needs to be a function. It is {}".format(change_action_fn)
-        assert callable(change_space_fn), "change_space_fn needs to be a function. It is {}".format(change_space_fn)
+        assert callable(
+            change_action_fn
+        ), "change_action_fn needs to be a function. It is {}".format(change_action_fn)
+        assert callable(
+            change_space_fn
+        ), "change_space_fn needs to be a function. It is {}".format(change_space_fn)
         self.change_action_fn = change_action_fn
         self.change_space_fn = change_space_fn
 
@@ -50,7 +58,9 @@ class gym_action_lambda(gym.Wrapper):
 
     def _modify_spaces(self):
         new_space = self.change_space_fn(self.action_space)
-        assert isinstance(new_space, Space), "output of change_space_fn argument to action_lambda_wrapper must be a gym space"
+        assert isinstance(
+            new_space, Space
+        ), "output of change_space_fn argument to action_lambda_wrapper must be a gym space"
         self.action_space = new_space
 
     def _modify_action(self, action):
@@ -60,4 +70,6 @@ class gym_action_lambda(gym.Wrapper):
         return super().step(self._modify_action(action))
 
 
-action_lambda_v1 = WrapperChooser(aec_wrapper=aec_action_lambda, gym_wrapper=gym_action_lambda)
+action_lambda_v1 = WrapperChooser(
+    aec_wrapper=aec_action_lambda, gym_wrapper=gym_action_lambda
+)
