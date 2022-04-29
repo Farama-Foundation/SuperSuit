@@ -9,9 +9,15 @@ import pytest
 
 high_val = np.array([1, 2, 4])
 test_val = np.array([1, 1, 1])
-test_obs_space = Box(low=np.zeros(3, dtype=np.float32), high=high_val.astype(np.float32))
-bad_test_obs_space = Box(low=np.zeros(3, dtype=np.int32), high=high_val.astype(np.int32), dtype=np.int32)
-bad_test_obs_space2 = Box(low=np.zeros(3, dtype=np.float32), high=np.inf * high_val.astype(np.float32))
+test_obs_space = Box(
+    low=np.zeros(3, dtype=np.float32), high=high_val.astype(np.float32)
+)
+bad_test_obs_space = Box(
+    low=np.zeros(3, dtype=np.int32), high=high_val.astype(np.int32), dtype=np.int32
+)
+bad_test_obs_space2 = Box(
+    low=np.zeros(3, dtype=np.float32), high=np.inf * high_val.astype(np.float32)
+)
 
 
 def test_param_check():
@@ -27,7 +33,9 @@ def test_param_check():
 
 
 def test_change_obs_space():
-    assert np.all(np.equal(change_obs_space(test_obs_space, (1, 2)).high, np.array([2, 2, 2])))
+    assert np.all(
+        np.equal(change_obs_space(test_obs_space, (1, 2)).high, np.array([2, 2, 2]))
+    )
 
 
 def test_change_observation():

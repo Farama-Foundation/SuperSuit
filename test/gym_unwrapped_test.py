@@ -25,8 +25,10 @@ def unwrapped_check(env):
     # image observations
     if isinstance(env.observation_space, spaces.Box):
         if (
-            (env.observation_space.low.shape == 3) and (env.observation_space.low == 0).all() and (
-                len(env.observation_space.shape[2]) == 3) and (env.observation_space.high == 255).all()
+            (env.observation_space.low.shape == 3)
+            and (env.observation_space.low == 0).all()
+            and (len(env.observation_space.shape[2]) == 3)
+            and (env.observation_space.high == 255).all()
         ):
             env = max_observation_v0(env, 2)
             env = color_reduction_v0(env, mode="full")

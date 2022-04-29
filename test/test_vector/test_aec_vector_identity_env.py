@@ -17,8 +17,7 @@ def test_identical():
     n_envs = 2
     # single threaded
     env1 = vectorize_aec_env_v0(knights_archers_zombies_v10.env(), n_envs)
-    env2 = vectorize_aec_env_v0(
-        knights_archers_zombies_v10.env(), n_envs, num_cpus=1)
+    env2 = vectorize_aec_env_v0(knights_archers_zombies_v10.env(), n_envs, num_cpus=1)
     env1.reset(seed=42)
     env2.reset(seed=42)
 
@@ -36,8 +35,10 @@ def test_identical():
         assert np.all(np.equal(agent_passes1, agent_passes2))
         assert np.all(np.equal(env_done1, env_done2))
         assert np.all(np.equal(obs1, obs2))
-        assert all(np.all(np.equal(r1, r2)) for r1, r2 in zip(
-            env1.rewards.values(), env2.rewards.values()))
+        assert all(
+            np.all(np.equal(r1, r2))
+            for r1, r2 in zip(env1.rewards.values(), env2.rewards.values())
+        )
         assert recursive_equal(infos1, infos2)
         actions = policy(obs1, agent)
         env1.step(actions)

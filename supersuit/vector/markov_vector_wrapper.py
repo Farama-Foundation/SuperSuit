@@ -17,14 +17,15 @@ class MarkovVectorEnv(gym.vector.VectorEnv):
         """
         self.par_env = par_env
         self.metadata = par_env.metadata
-        self.observation_space = par_env.observation_space(
-            par_env.possible_agents[0])
+        self.observation_space = par_env.observation_space(par_env.possible_agents[0])
         self.action_space = par_env.action_space(par_env.possible_agents[0])
         assert all(
-            self.observation_space == par_env.observation_space(agent) for agent in par_env.possible_agents
+            self.observation_space == par_env.observation_space(agent)
+            for agent in par_env.possible_agents
         ), "observation spaces not consistent. Perhaps you should wrap with `supersuit.aec_wrappers.pad_observations`?"
         assert all(
-            self.action_space == par_env.action_space(agent) for agent in par_env.possible_agents
+            self.action_space == par_env.action_space(agent)
+            for agent in par_env.possible_agents
         ), "action spaces not consistent. Perhaps you should wrap with `supersuit.aec_wrappers.pad_actions`?"
         self.num_envs = len(par_env.possible_agents)
         self.black_death = black_death
@@ -34,7 +35,8 @@ class MarkovVectorEnv(gym.vector.VectorEnv):
         for i, agent in enumerate(self.par_env.possible_agents):
             if agent not in obs_dict:
                 raise AssertionError(
-                    "environment has agent death. Not allowed for pettingzoo_env_to_vec_env_v1 unless black_death is True")
+                    "environment has agent death. Not allowed for pettingzoo_env_to_vec_env_v1 unless black_death is True"
+                )
             obs_list.append(obs_dict[agent])
 
         return concatenate(
@@ -55,19 +57,26 @@ class MarkovVectorEnv(gym.vector.VectorEnv):
     def step(self, actions):
         actions = list(iterate(self.action_space, actions))
         agent_set = set(self.par_env.agents)
-        act_dict = {agent: actions[i] for i, agent in enumerate(
-            self.par_env.possible_agents) if agent in agent_set}
+        act_dict = {
+            agent: actions[i]
+            for i, agent in enumerate(self.par_env.possible_agents)
+            if agent in agent_set
+        }
         observations, rewards, dones, infos = self.par_env.step(act_dict)
 
         # adds last observation to info where user can get it
         if all(dones.values()):
             for agent, obs in observations.items():
-                infos[agent]['terminal_observation'] = obs
+                infos[agent]["terminal_observation"] = obs
 
-        rews = np.array([rewards.get(agent, 0)
-                        for agent in self.par_env.possible_agents], dtype=np.float32)
-        dns = np.array([dones.get(agent, False)
-                       for agent in self.par_env.possible_agents], dtype=np.uint8)
+        rews = np.array(
+            [rewards.get(agent, 0) for agent in self.par_env.possible_agents],
+            dtype=np.float32,
+        )
+        dns = np.array(
+            [dones.get(agent, False) for agent in self.par_env.possible_agents],
+            dtype=np.uint8,
+        )
         infs = [infos.get(agent, {}) for agent in self.par_env.possible_agents]
 
         if all(dones.values()):
@@ -87,8 +96,8 @@ class MarkovVectorEnv(gym.vector.VectorEnv):
         return self.par_env.close()
 
     def env_is_wrapped(self, wrapper_class):
-        '''
+        """
         env_is_wrapped only suppors vector and gym environments
         currently, not pettingzoo environments
-        '''
+        """
         return [False] * self.num_envs

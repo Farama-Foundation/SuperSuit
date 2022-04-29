@@ -39,10 +39,14 @@ class DummyParEnv(ParallelEnv):
         pass
 
 
-base_obs = {"a{}".format(idx): np.zeros(
-    [8, 8, 3], dtype=np.float32) + np.arange(3) + idx for idx in range(2)}
-base_obs_space = {"a{}".format(idx): Box(low=np.float32(
-    0.0), high=np.float32(10.0), shape=[8, 8, 3]) for idx in range(2)}
+base_obs = {
+    "a{}".format(idx): np.zeros([8, 8, 3], dtype=np.float32) + np.arange(3) + idx
+    for idx in range(2)
+}
+base_obs_space = {
+    "a{}".format(idx): Box(low=np.float32(0.0), high=np.float32(10.0), shape=[8, 8, 3])
+    for idx in range(2)
+}
 base_act_spaces = {"a{}".format(idx): Discrete(5) for idx in range(2)}
 
 
@@ -52,6 +56,5 @@ def test_basic():
     env = supersuit.dtype_v0(env, np.uint8)
     orig_obs = env.reset()
     for i in range(10):
-        action = {agent: env.action_space(agent).sample()
-                  for agent in env.agents}
+        action = {agent: env.action_space(agent).sample() for agent in env.agents}
         obs, rew, done, info = env.step(action)

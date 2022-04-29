@@ -1,6 +1,11 @@
 import copy
 
-from supersuit import gym_vec_env_v0, stable_baselines3_vec_env_v0, concat_vec_envs_v1, pettingzoo_env_to_vec_env_v1
+from supersuit import (
+    gym_vec_env_v0,
+    stable_baselines3_vec_env_v0,
+    concat_vec_envs_v1,
+    pettingzoo_env_to_vec_env_v1,
+)
 from pettingzoo.mpe import simple_spread_v2
 import gym
 import numpy as np
@@ -14,7 +19,13 @@ def recursive_equal(info1, info2):
         if isinstance(info1, np.ndarray) and isinstance(info2, np.ndarray):
             return np.all(np.equal(info1, info2))
         elif isinstance(info1, dict) and isinstance(info2, dict):
-            return all((set(info1.keys()) == set(info2.keys()) and recursive_equal(info1[i], info2[i])) for i in info1.keys())
+            return all(
+                (
+                    set(info1.keys()) == set(info2.keys())
+                    and recursive_equal(info1[i], info2[i])
+                )
+                for i in info1.keys()
+            )
         elif isinstance(info1, list) and isinstance(info2, list):
             return all(recursive_equal(i1, i2) for i1, i2 in zip(info1, info2))
     return False
@@ -62,6 +73,7 @@ def test_inital_state_dissimilarity():
 #     venv1 = supersuit_vec_env(env, num_envs, base_class='stable_baselines3')
 #     venv2 = stable_baselines3_vec_env(env, num_envs)
 #     check_vec_env_equivalency(venv1, venv2, check_info=False)  # stable baselines does not implement info correctly
+
 
 def test_mutliproc_single_proc_equivalency():
     env = gym.make("CartPole-v1")
