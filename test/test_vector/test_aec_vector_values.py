@@ -31,7 +31,6 @@ def hanabi_maker():
 
 def test_all():
     NUM_ENVS = 5
-    NUM_CPUS = 2
 
     def test_vec_env(vec_env):
         vec_env.reset()
