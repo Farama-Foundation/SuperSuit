@@ -36,8 +36,10 @@ def new_dummy():
 
 wrappers = [
     supersuit.color_reduction_v0(new_dummy(), "R"),
-    supersuit.resize_v0(dtype_v0(new_dummy(), np.uint8), x_size=5, y_size=10),
-    supersuit.resize_v0(dtype_v0(new_dummy(), np.uint8), x_size=5, y_size=10, linear_interp=True),
+    supersuit.resize_v1(dtype_v0(new_dummy(), np.uint8), x_size=5, y_size=10),
+    supersuit.resize_v1(
+        dtype_v0(new_dummy(), np.uint8), x_size=5, y_size=10, linear_interp=True
+    ),
     supersuit.dtype_v0(new_dummy(), np.int32),
     supersuit.flatten_v0(new_dummy()),
     supersuit.reshape_v0(new_dummy(), (64, 3)),
@@ -60,8 +62,7 @@ wrappers = [
 
 @pytest.mark.parametrize("env", wrappers)
 def test_basic_wrappers(env):
-    env.seed(5)
-    obs = env.reset()
+    obs = env.reset(seed=5)
     act_space = env.action_space
     obs_space = env.observation_space
     assert obs_space.contains(obs)

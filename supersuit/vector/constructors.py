@@ -32,9 +32,13 @@ def MakeCPUAsyncConstructor(max_num_cpus):
                 env_cpu_div.append(env_fn_list[start_idx:end_idx])
                 num_envs_alloced = end_idx
 
-            assert alloced_num_cpus == len(env_cpu_div)
-
             cat_env_fns = [call_wrap(ConcatVecEnv, env_fns) for env_fns in env_cpu_div]
-            return ProcConcatVec(cat_env_fns, obs_space, act_space, num_fns * envs_per_env, example_env.metadata)
+            return ProcConcatVec(
+                cat_env_fns,
+                obs_space,
+                act_space,
+                num_fns * envs_per_env,
+                example_env.metadata,
+            )
 
         return constructor

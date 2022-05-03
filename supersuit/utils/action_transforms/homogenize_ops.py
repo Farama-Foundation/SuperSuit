@@ -6,16 +6,26 @@ from gym import spaces
 def check_homogenize_spaces(all_spaces):
     assert len(all_spaces) > 0
     space1 = all_spaces[0]
-    assert all(isinstance(space, space1.__class__) for space in all_spaces), "all spaces to homogenize must be of same general shape"
+    assert all(
+        isinstance(space, space1.__class__) for space in all_spaces
+    ), "all spaces to homogenize must be of same general shape"
 
     if isinstance(space1, spaces.Box):
         for space in all_spaces:
-            assert isinstance(space, spaces.Box), "all spaces for homogenize must be either Box or Discrete, not a mix"
-            assert len(space1.shape) == len(space.shape), "all spaces to homogenize must be of same shape"
-            assert space1.dtype == space.dtype, "all spaces to homogenize must be of same dtype"
+            assert isinstance(
+                space, spaces.Box
+            ), "all spaces for homogenize must be either Box or Discrete, not a mix"
+            assert len(space1.shape) == len(
+                space.shape
+            ), "all spaces to homogenize must be of same shape"
+            assert (
+                space1.dtype == space.dtype
+            ), "all spaces to homogenize must be of same dtype"
     elif isinstance(space1, spaces.Discrete):
         for space in all_spaces:
-            assert isinstance(space, spaces.Discrete), "all spaces for homogenize must be either Box or Discrete, not a mix"
+            assert isinstance(
+                space, spaces.Discrete
+            ), "all spaces for homogenize must be either Box or Discrete, not a mix"
     else:
         assert False, "homogenization only supports Discrete and Box spaces"
 
@@ -35,8 +45,18 @@ def homogenize_spaces(all_spaces):
         all_dims = np.array([space.shape for space in all_spaces], dtype=np.int32)
         max_dims = np.max(all_dims, axis=0)
         new_shape = tuple(max_dims)
-        all_lows = np.stack([pad_to(space.low, new_shape, np.minimum(0, np.min(space.low))) for space in all_spaces])
-        all_highs = np.stack([pad_to(space.high, new_shape, np.maximum(1e-5, np.max(space.high))) for space in all_spaces])
+        all_lows = np.stack(
+            [
+                pad_to(space.low, new_shape, np.minimum(0, np.min(space.low)))
+                for space in all_spaces
+            ]
+        )
+        all_highs = np.stack(
+            [
+                pad_to(space.high, new_shape, np.maximum(1e-5, np.max(space.high)))
+                for space in all_spaces
+            ]
+        )
         new_low = np.min(all_lows, axis=0)
         new_high = np.max(all_highs, axis=0)
         assert new_shape == new_low.shape

@@ -54,7 +54,7 @@ You can install SuperSuit via `pip install supersuit`
 
 `reshape_v0(env, shape)` reshapes observations into given shape.
 
-`resize_v0(env, x_size, y_size, linear_interp=False)` Performs interpolation to up-size or down-size observation image using area interpolation by default. Linear interpolation is also available by setting `linear_interp=True` (it's faster and better for up-sizing). This wrapper is only available for 2D or 3D observations, and only makes sense if the observation is an image.
+`resize_v1(env, x_size, y_size, linear_interp=True)` Performs interpolation to up-size or down-size observation image using area interpolation by default. Nearest interpolation is also available by setting `linear_interp=False` (it's faster but lower quality). This wrapper is only available for 2D or 3D observations, and only makes sense if the observation is an image.
 
 `nan_noop_v0(env)` If an action is a NaN value for a step, the following wrapper will trigger a warning and perform a no operation action in its place. The noop action is accepted as an argument in the `step(action, no_op_action)` function.
 
@@ -146,7 +146,7 @@ model = PPO('CnnPolicy', env, verbose=3, n_steps=16)
 model.learn(total_timesteps=2000000)
 ```
 
-`vectorize_aec_env_v0(aec_env, num_envs, num_cpus=0)` creates an AEC Vector env (API documented in source [here](https://github.com/Farama-Foundation/SuperSuit/blob/master/supersuit/aec_vector/base_aec_vec_env.py)). `num_cpus=0` indicates that the process will run in a single thread. Values of 1 or more will spawn at most that number of processes.  
+`vectorize_aec_env_v0(aec_env, num_envs, num_cpus=0)` creates an AEC Vector env (API documented in source [here](https://github.com/Farama-Foundation/SuperSuit/blob/master/supersuit/aec_vector/base_aec_vec_env.py)). `num_cpus=0` indicates that the process will run in a single thread. Values of 1 or more will spawn at most that number of processes.
 
 #### Note on multiprocessing
 Turning on multiprocessing runs each environment in it's own process. Turning this on is typically much slower for fast environments (like card games), but much faster for slow environments (like robotics simulations). Determining which case you are will require testing.

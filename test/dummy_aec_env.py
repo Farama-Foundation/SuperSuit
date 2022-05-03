@@ -4,7 +4,7 @@ from pettingzoo.utils.agent_selector import agent_selector
 
 
 class DummyEnv(AECEnv):
-    metadata = {"render.modes": ["human"]}
+    metadata = {"render.modes": ["human"], "is_parallelizable": True}
 
     def __init__(self, observations, observation_spaces, action_spaces):
         super().__init__()
@@ -25,9 +25,6 @@ class DummyEnv(AECEnv):
     def action_space(self, agent):
         return self._action_spaces[agent]
 
-    def seed(self, seed=None):
-        pass
-
     def observe(self, agent):
         return self._observations[agent]
 
@@ -43,7 +40,7 @@ class DummyEnv(AECEnv):
         self._accumulate_rewards()
         self._dones_step_first()
 
-    def reset(self, observe=True):
+    def reset(self, seed=None):
         self.agents = self.possible_agents[:]
         self._agent_selector = agent_selector(self.agents)
         self.agent_selection = self._agent_selector.reset()

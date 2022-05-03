@@ -1,12 +1,7 @@
 class VectorAECEnv:
-    def reset(self):
+    def reset(self, seed=None):
         """
         resets all environments
-        """
-
-    def seed(self, seed=None):
-        """
-        seeds all environments
         """
 
     def observe(self, agent):

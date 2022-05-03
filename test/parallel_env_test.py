@@ -32,15 +32,21 @@ class DummyParEnv(ParallelEnv):
             assert action in self.action_space(agent)
         return self._observations, self.rewards, self.dones, self.infos
 
-    def reset(self):
+    def reset(self, seed=None):
         return self._observations
 
     def close(self):
         pass
 
 
-base_obs = {"a{}".format(idx): np.zeros([8, 8, 3], dtype=np.float32) + np.arange(3) + idx for idx in range(2)}
-base_obs_space = {"a{}".format(idx): Box(low=np.float32(0.0), high=np.float32(10.0), shape=[8, 8, 3]) for idx in range(2)}
+base_obs = {
+    "a{}".format(idx): np.zeros([8, 8, 3], dtype=np.float32) + np.arange(3) + idx
+    for idx in range(2)
+}
+base_obs_space = {
+    "a{}".format(idx): Box(low=np.float32(0.0), high=np.float32(10.0), shape=[8, 8, 3])
+    for idx in range(2)
+}
 base_act_spaces = {"a{}".format(idx): Discrete(5) for idx in range(2)}
 
 

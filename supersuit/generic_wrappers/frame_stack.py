@@ -10,17 +10,23 @@ def frame_stack_v1(env, stack_size=4, stack_dim0=False):
     class FrameStackModifier(BaseModifier):
         def modify_obs_space(self, obs_space):
             if isinstance(obs_space, Box):
-                assert 1 <= len(obs_space.shape) <= 3, "frame_stack only works for 1, 2 or 3 dimensional observations"
+                assert (
+                    1 <= len(obs_space.shape) <= 3
+                ), "frame_stack only works for 1, 2 or 3 dimensional observations"
             elif isinstance(obs_space, Discrete):
                 pass
             else:
-                assert False, "Stacking is currently only allowed for Box and Discrete observation spaces. The given observation space is {}".format(obs_space)
+                assert (
+                    False
+                ), "Stacking is currently only allowed for Box and Discrete observation spaces. The given observation space is {}".format(
+                    obs_space
+                )
 
             self.old_obs_space = obs_space
             self.observation_space = stack_obs_space(obs_space, stack_size, stack_dim0)
             return self.observation_space
 
-        def reset(self):
+        def reset(self, seed=None):
             self.stack = stack_init(self.old_obs_space, stack_size, stack_dim0)
             self.reset_flag = True
 

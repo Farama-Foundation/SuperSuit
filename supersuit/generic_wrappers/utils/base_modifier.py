@@ -1,17 +1,13 @@
-
 class BaseModifier:
     def __init__(self):
         pass
 
-    def reset(self):
+    def reset(self, seed=None):
         pass
 
     def modify_obs(self, obs):
         self.cur_obs = obs
         return obs
-
-    def seed(self, seed):
-        pass
 
     def get_last_obs(self):
         return self.cur_obs

@@ -3,7 +3,9 @@ from gym.spaces import Box
 import numpy as np
 import pytest
 
-test_obs_space = Box(low=np.float32(0.0), high=np.float32(1.0), shape=(4, 4, 3), dtype=np.float32)
+test_obs_space = Box(
+    low=np.float32(0.0), high=np.float32(1.0), shape=(4, 4, 3), dtype=np.float32
+)
 test_obs = np.zeros([4, 4, 3], dtype=np.float64) + np.arange(3)
 
 

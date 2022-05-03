@@ -17,15 +17,26 @@ import pytest
 from pettingzoo.utils.wrappers import OrderEnforcingWrapper as PettingzooWrap
 
 
-base_obs = {"a{}".format(idx): np.zeros([8, 8, 3], dtype=np.float32) + np.arange(3) + idx for idx in range(2)}
-base_obs_space = {"a{}".format(idx): Box(low=np.float32(0.0), high=np.float32(10.0), shape=[8, 8, 3]) for idx in range(2)}
+base_obs = {
+    "a{}".format(idx): np.zeros([8, 8, 3], dtype=np.float32) + np.arange(3) + idx
+    for idx in range(2)
+}
+base_obs_space = {
+    "a{}".format(idx): Box(low=np.float32(0.0), high=np.float32(10.0), shape=[8, 8, 3])
+    for idx in range(2)
+}
 base_act_spaces = {"a{}".format(idx): Discrete(5) for idx in range(2)}
 
 
 def test_frame_stack():
     # frame_stack_v0 test
-    base_obs_space = {"a{}".format(idx): Box(low=np.float32(0.0), high=np.float32(10.0), shape=[2, 3]) for idx in range(2)}
-    base_obs = {"a{}".format(idx): np.float32(np.zeros([2, 3]) + np.arange(3) + idx) for idx in range(2)}
+    base_obs_space = {
+      "a{}".format(idx): Box(low=np.float32(0.0), high=np.float32(10.0), shape=[2, 3])
+      for idx in range(2)
+    }
+    base_obs = {
+      "a{}".format(idx): np.float32(np.zeros([2, 3]) + np.arange(3) + idx) for idx in range(2)
+    }
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
     env = frame_stack_v1(base_env, 4)
     obs = env.reset()
@@ -94,7 +105,12 @@ def test_frame_skip():
 def test_agent_indicator():
     let = ["a", "a", "b"]
     base_obs = {"{}_{}".format(let[idx], idx): np.zeros([2, 3]) for idx in range(3)}
-    base_obs_space = {"{}_{}".format(let[idx], idx): Box(low=np.float32(0.0), high=np.float32(10.0), shape=[2, 3]) for idx in range(3)}
+    base_obs_space = {
+        "{}_{}".format(let[idx], idx): Box(
+            low=np.float32(0.0), high=np.float32(10.0), shape=[2, 3]
+        )
+        for idx in range(3)
+    }
     base_act_spaces = {"{}_{}".format(let[idx], idx): Discrete(5) for idx in range(3)}
 
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
@@ -126,17 +142,40 @@ def test_reshape():
 
 def new_continuous_dummy():
 
-    base_obs = {"a_{}".format(idx): (np.zeros([8, 8, 3], dtype=np.float32) + np.arange(3) + idx).astype(np.float32) for idx in range(2)}
-    base_obs_space = {"a_{}".format(idx): Box(low=np.float32(0.0), high=np.float32(10.0), shape=[8, 8, 3]) for idx in range(2)}
-    base_act_spaces = {"a_{}".format(idx): Box(low=np.float32(0.0), high=np.float32(10.0), shape=[3]) for idx in range(2)}
+    base_obs = {
+        "a_{}".format(idx): (
+            np.zeros([8, 8, 3], dtype=np.float32) + np.arange(3) + idx
+        ).astype(np.float32)
+        for idx in range(2)
+    }
+    base_obs_space = {
+        "a_{}".format(idx): Box(
+            low=np.float32(0.0), high=np.float32(10.0), shape=[8, 8, 3]
+        )
+        for idx in range(2)
+    }
+    base_act_spaces = {
+        "a_{}".format(idx): Box(low=np.float32(0.0), high=np.float32(10.0), shape=[3])
+        for idx in range(2)
+    }
 
     return PettingzooWrap(DummyEnv(base_obs, base_obs_space, base_act_spaces))
 
 
 def new_dummy():
 
-    base_obs = {"a_{}".format(idx): (np.zeros([8, 8, 3], dtype=np.float32) + np.arange(3) + idx).astype(np.float32) for idx in range(2)}
-    base_obs_space = {"a_{}".format(idx): Box(low=np.float32(0.0), high=np.float32(10.0), shape=[8, 8, 3]) for idx in range(2)}
+    base_obs = {
+        "a_{}".format(idx): (
+            np.zeros([8, 8, 3], dtype=np.float32) + np.arange(3) + idx
+        ).astype(np.float32)
+        for idx in range(2)
+    }
+    base_obs_space = {
+        "a_{}".format(idx): Box(
+            low=np.float32(0.0), high=np.float32(10.0), shape=[8, 8, 3]
+        )
+        for idx in range(2)
+    }
     base_act_spaces = {"a_{}".format(idx): Discrete(5) for idx in range(2)}
 
     return PettingzooWrap(DummyEnv(base_obs, base_obs_space, base_act_spaces))
@@ -144,8 +183,10 @@ def new_dummy():
 
 wrappers = [
     supersuit.color_reduction_v0(new_dummy(), "R"),
-    supersuit.resize_v0(dtype_v0(new_dummy(), np.uint8), x_size=5, y_size=10),
-    supersuit.resize_v0(dtype_v0(new_dummy(), np.uint8), x_size=5, y_size=10, linear_interp=True),
+    supersuit.resize_v1(dtype_v0(new_dummy(), np.uint8), x_size=5, y_size=10),
+    supersuit.resize_v1(
+        dtype_v0(new_dummy(), np.uint8), x_size=5, y_size=10, linear_interp=True
+    ),
     supersuit.dtype_v0(new_dummy(), np.int32),
     supersuit.flatten_v0(new_dummy()),
     supersuit.reshape_v0(new_dummy(), (64, 3)),
@@ -171,8 +212,7 @@ wrappers = [
 
 @pytest.mark.parametrize("env", wrappers)
 def test_basic_wrappers(env):
-    env.seed(5)
-    env.reset()
+    env.reset(seed=5)
     obs, _, _, _ = env.last()
     act_space = env.action_space(env.agent_selection)
     obs_space = env.observation_space(env.agent_selection)
@@ -226,26 +266,39 @@ def test_observation_lambda():
     assert obs0.shape == (32, 8, 3)
 
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
-    env = observation_lambda_v0(base_env, lambda obs, obs_space, agent: obs + base_env.possible_agents.index(agent))
+    env = observation_lambda_v0(
+        base_env,
+        lambda obs, obs_space, agent: obs + base_env.possible_agents.index(agent),
+    )
     env.reset()
     obs0 = env.observe(env.agents[0])
     obs1 = env.observe(env.agents[1])
 
     assert int(obs0[0][0][0]) == 0
     assert int(obs1[0][0][0]) == 2
-    assert (env.observation_space(env.agents[0]).high + 1 == env.observation_space(env.agents[1]).high).all()
+    assert (
+        env.observation_space(env.agents[0]).high + 1
+        == env.observation_space(env.agents[1]).high
+    ).all()
 
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
-    env = observation_lambda_v0(base_env,
-                                lambda obs, obs_space, agent: obs + base_env.possible_agents.index(agent),
-                                lambda obs_space, agent: Box(obs_space.low, obs_space.high + base_env.possible_agents.index(agent)))
+    env = observation_lambda_v0(
+        base_env,
+        lambda obs, obs_space, agent: obs + base_env.possible_agents.index(agent),
+        lambda obs_space, agent: Box(
+            obs_space.low, obs_space.high + base_env.possible_agents.index(agent)
+        ),
+    )
     env.reset()
     obs0 = env.observe(env.agents[0])
     obs1 = env.observe(env.agents[1])
 
     assert int(obs0[0][0][0]) == 0
     assert int(obs1[0][0][0]) == 2
-    assert (env.observation_space(env.agents[0]).high + 1 == env.observation_space(env.agents[1]).high).all()
+    assert (
+        env.observation_space(env.agents[0]).high + 1
+        == env.observation_space(env.agents[1]).high
+    ).all()
 
 
 def test_action_lambda():
@@ -265,7 +318,9 @@ def test_action_lambda():
         v[x] = 1
         return v
 
-    act_spaces = {"a{}".format(idx): Box(low=0, high=1, shape=(15,)) for idx in range(2)}
+    act_spaces = {
+        "a{}".format(idx): Box(low=0, high=1, shape=(15,)) for idx in range(2)
+    }
     base_env = DummyEnv(base_obs, base_obs_space, act_spaces)
     env = action_lambda_v1(
         base_env,
@@ -277,12 +332,18 @@ def test_action_lambda():
     env.reset()
     env.step(2)
 
-    act_spaces = {"a{}".format(idx): Box(low=0, high=1, shape=(15,)) for idx in range(2)}
+    act_spaces = {
+        "a{}".format(idx): Box(low=0, high=1, shape=(15,)) for idx in range(2)
+    }
     base_env = DummyEnv(base_obs, base_obs_space, act_spaces)
     env = action_lambda_v1(
         base_env,
-        lambda action, act_space, agent: one_hot(action + base_env.possible_agents.index(agent), act_space.shape[0]),
-        lambda act_space, agent: Discrete(act_space.shape[0] + base_env.possible_agents.index(agent)),
+        lambda action, act_space, agent: one_hot(
+            action + base_env.possible_agents.index(agent), act_space.shape[0]
+        ),
+        lambda act_space, agent: Discrete(
+            act_space.shape[0] + base_env.possible_agents.index(agent)
+        ),
     )
     assert env.action_space(env.possible_agents[0]).n == 15
     assert env.action_space(env.possible_agents[1]).n == 16
@@ -303,7 +364,9 @@ def test_dehomogenize():
 class DummyNaNEnv(DummyEnv):
     def step(self, action):
         super().step(action)
-        assert (not (np.isnan(action))), "Action was a NaN, even though it should not have been."
+        assert not (
+            np.isnan(action)
+        ), "Action was a NaN, even though it should not have been."
 
 
 def test_NaN_noop():
@@ -334,9 +397,20 @@ class DummyScaleEnv(DummyEnv):
 
 
 def test_scale_action_wrapper():
-    base_obs = {"a{}".format(idx): np.zeros([8, 8, 3], dtype=np.float32) + np.arange(3) + idx for idx in range(2)}
-    base_obs_space = {"a{}".format(idx): Box(low=np.float32(0.0), high=np.float32(10.0), shape=[8, 8, 3]) for idx in range(2)}
-    base_act_spaces = {"a{}".format(idx): Box(low=np.float32(0.0), high=np.float32(10.0), shape=[3]) for idx in range(2)}
+    base_obs = {
+        "a{}".format(idx): np.zeros([8, 8, 3], dtype=np.float32) + np.arange(3) + idx
+        for idx in range(2)
+    }
+    base_obs_space = {
+        "a{}".format(idx): Box(
+            low=np.float32(0.0), high=np.float32(10.0), shape=[8, 8, 3]
+        )
+        for idx in range(2)
+    }
+    base_act_spaces = {
+        "a{}".format(idx): Box(low=np.float32(0.0), high=np.float32(10.0), shape=[3])
+        for idx in range(2)
+    }
     base_env = DummyScaleEnv(base_obs, base_obs_space, base_act_spaces)
     wrapped_env = scale_actions_v0(base_env, 2)
     wrapped_env.reset()

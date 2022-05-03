@@ -10,6 +10,7 @@ def make_env():
     env = pettingzoo_env_to_vec_env_v1(env)
     return env
 
+
 # unfortunately this test does not pass
 # def test_vector_render_multiproc():
 #     env = make_env()

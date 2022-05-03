@@ -11,20 +11,30 @@ class black_death_par(BaseParallelWraper):
     def _check_valid_for_black_death(self):
         for agent in self.agents:
             space = self.observation_space(agent)
-            assert isinstance(space, gym.spaces.Box), f"observation sapces for black death must be Box spaces, is {space}"
+            assert isinstance(
+                space, gym.spaces.Box
+            ), f"observation sapces for black death must be Box spaces, is {space}"
 
-    def reset(self):
-        obss = self.env.reset()
+    def reset(self, seed=None):
+        obss = self.env.reset(seed=seed)
         self.agents = self.env.agents[:]
         self._check_valid_for_black_death()
-        black_obs = {agent: np.zeros_like(self.observation_space(agent).low) for agent in self.agents if agent not in obss}
+        black_obs = {
+            agent: np.zeros_like(self.observation_space(agent).low)
+            for agent in self.agents
+            if agent not in obss
+        }
         return {**obss, **black_obs}
 
     def step(self, actions):
         active_actions = {agent: actions[agent] for agent in self.env.agents}
         obss, rews, dones, infos = self.env.step(active_actions)
-        black_obs = {agent: np.zeros_like(self.observation_space(agent).low) for agent in self.agents if agent not in obss}
-        black_rews = {agent: 0. for agent in self.agents if agent not in obss}
+        black_obs = {
+            agent: np.zeros_like(self.observation_space(agent).low)
+            for agent in self.agents
+            if agent not in obss
+        }
+        black_rews = {agent: 0.0 for agent in self.agents if agent not in obss}
         black_infos = {agent: {} for agent in self.agents if agent not in obss}
         env_is_done = all(dones.values())
         total_obs = {**black_obs, **obss}

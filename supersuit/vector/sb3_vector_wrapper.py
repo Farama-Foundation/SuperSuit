@@ -8,7 +8,9 @@ class SB3VecEnvWrapper(VecEnvWrapper):
         self.observation_space = venv.observation_space
         self.action_space = venv.action_space
 
-    def reset(self):
+    def reset(self, seed=None):
+        if seed is not None:
+            self.seed(seed=seed)
         return self.venv.reset()
 
     def step_wait(self):

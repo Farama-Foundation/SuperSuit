@@ -9,11 +9,6 @@ class frame_skip_gym(gym.Wrapper):
     def __init__(self, env, num_frames):
         super().__init__(env)
         self.num_frames = check_transform_frameskip(num_frames)
-        self.np_random, seed = gym.utils.seeding.np_random(None)
-
-    def seed(self, seed=None):
-        self.np_random, seed = gym.utils.seeding.np_random(seed)
-        super().seed(seed)
 
     def step(self, action):
         low, high = self.num_frames
@@ -40,21 +35,27 @@ class StepAltWrapper(BaseWrapper):
 class frame_skip_aec(StepAltWrapper):
     def __init__(self, env, num_frames):
         super().__init__(env)
-        assert isinstance(num_frames, int), "multi-agent frame skip only takes in an integer"
+        assert isinstance(
+            num_frames, int
+        ), "multi-agent frame skip only takes in an integer"
         assert num_frames > 0
         check_transform_frameskip(num_frames)
         self.num_frames = num_frames
 
-    def reset(self):
-        super().reset()
+    def reset(self, seed=None):
+        super().reset(seed=seed)
         self.agents = self.env.agents[:]
         self.dones = make_defaultdict({agent: False for agent in self.agents})
-        self.rewards = make_defaultdict({agent: 0. for agent in self.agents})
-        self._cumulative_rewards = make_defaultdict({agent: 0. for agent in self.agents})
+        self.rewards = make_defaultdict({agent: 0.0 for agent in self.agents})
+        self._cumulative_rewards = make_defaultdict(
+            {agent: 0.0 for agent in self.agents}
+        )
         self.infos = make_defaultdict({agent: {} for agent in self.agents})
         self.skip_num = make_defaultdict({agent: 0 for agent in self.agents})
         self.old_actions = make_defaultdict({agent: None for agent in self.agents})
-        self._final_observations = make_defaultdict({agent: None for agent in self.agents})
+        self._final_observations = make_defaultdict(
+            {agent: None for agent in self.agents}
+        )
 
     def observe(self, agent):
         fin_observe = self._final_observations[agent]
@@ -69,7 +70,7 @@ class frame_skip_aec(StepAltWrapper):
             return
         cur_agent = self.agent_selection
         self._cumulative_rewards[cur_agent] = 0
-        self.rewards = make_defaultdict({a: 0. for a in self.agents})
+        self.rewards = make_defaultdict({a: 0.0 for a in self.agents})
         self.skip_num[cur_agent] = self.num_frames
         self.old_actions[cur_agent] = action
         while self.old_actions[self.env.agent_selection] is not None:
@@ -111,17 +112,12 @@ class frame_skip_par(BaseParallelWraper):
     def __init__(self, env, num_frames, default_action=None):
         super().__init__(env)
         self.num_frames = check_transform_frameskip(num_frames)
-        self.np_random, seed = gym.utils.seeding.np_random(None)
         self.default_action = default_action
-
-    def seed(self, seed=None):
-        self.np_random, seed = gym.utils.seeding.np_random(seed)
-        super().seed(seed)
 
     def step(self, action):
         action = {**action}
         low, high = self.num_frames
-        num_skips = int(self.np_random.randint(low, high + 1))
+        num_skips = int(self.np_random.integers(low, high + 1))
         self.agents = self.env.agents[:]
         orig_agents = set(action.keys())
 
@@ -141,7 +137,9 @@ class frame_skip_par(BaseParallelWraper):
 
             for agent in self.env.agents:
                 if agent not in action:
-                    assert self.default_action is not None, "parallel environments that use frame_skip_v0 must provide a `default_action` argument for steps between an agent being generated and an agent taking its first step"
+                    assert (
+                        self.default_action is not None
+                    ), "parallel environments that use frame_skip_v0 must provide a `default_action` argument for steps between an agent being generated and an agent taking its first step"
                     action[agent] = self.default_action
 
             if all(done.values()):
@@ -161,4 +159,8 @@ class frame_skip_par(BaseParallelWraper):
         return total_obs, total_reward, total_dones, total_infos
 
 
-frame_skip_v0 = WrapperChooser(aec_wrapper=frame_skip_aec, gym_wrapper=frame_skip_gym, parallel_wrapper=frame_skip_par)
+frame_skip_v0 = WrapperChooser(
+    aec_wrapper=frame_skip_aec,
+    gym_wrapper=frame_skip_gym,
+    parallel_wrapper=frame_skip_par,
+)
