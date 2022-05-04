@@ -31,11 +31,11 @@ base_act_spaces = {"a{}".format(idx): Discrete(5) for idx in range(2)}
 def test_frame_stack():
     # frame_stack_v0 test
     base_obs_space = {
-      "a{}".format(idx): Box(low=np.float32(0.0), high=np.float32(10.0), shape=[2, 3])
-      for idx in range(2)
+        "a{}".format(idx): Box(low=np.float32(0.0), high=np.float32(10.0), shape=[2, 3])
+        for idx in range(2)
     }
     base_obs = {
-      "a{}".format(idx): np.float32(np.zeros([2, 3]) + np.arange(3) + idx) for idx in range(2)
+        "a{}".format(idx): np.float32(np.zeros([2, 3]) + np.arange(3) + idx) for idx in range(2)
     }
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
     env = frame_stack_v1(base_env, 4)
