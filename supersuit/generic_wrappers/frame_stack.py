@@ -63,7 +63,7 @@ def frame_stack_v2(env, stack_size=4, stack_dim0=False):
             self.observation_space = stack_obs_space(obs_space, stack_size, stack_dim0)
             return self.observation_space
 
-        def reset(self):
+        def reset(self, seed=None):
             self.stack = stack_init(self.old_obs_space, stack_size, stack_dim0)
             self.reset_flag = True
 
