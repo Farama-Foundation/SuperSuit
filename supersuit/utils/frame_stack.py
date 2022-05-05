@@ -2,10 +2,10 @@ import numpy as np
 from gym.spaces import Box, Discrete
 
 
-def get_tile_shape(shape, stack_size, stack_dim0=False):
+def get_tile_shape(shape, stack_size, stack_dim=-1):
     obs_dim = len(shape)
 
-    if not stack_dim0:
+    if stack_dim==-1:
         if obs_dim == 1:
             tile_shape = (stack_size,)
             new_shape = shape
@@ -19,7 +19,7 @@ def get_tile_shape(shape, stack_size, stack_dim0=False):
         else:
             assert False, "Stacking is only avaliable for 1,2 or 3 dimentional arrays"
 
-    else:
+    elif stack_dim==0:
         if obs_dim == 1:
             tile_shape = (stack_size,)
             new_shape = shape
@@ -36,7 +36,7 @@ def get_tile_shape(shape, stack_size, stack_dim0=False):
     return tile_shape, new_shape
 
 
-def stack_obs_space(obs_space, stack_size, stack_dim0=False):
+def stack_obs_space(obs_space, stack_size, stack_dim=-1):
     """
     obs_space_dict: Dictionary of observations spaces of agents
     stack_size: Number of frames in the observation stack
@@ -46,7 +46,7 @@ def stack_obs_space(obs_space, stack_size, stack_dim0=False):
     if isinstance(obs_space, Box):
         dtype = obs_space.dtype
         # stack 1-D frames and 3-D frames
-        tile_shape, new_shape = get_tile_shape(obs_space.low.shape, stack_size, stack_dim0)
+        tile_shape, new_shape = get_tile_shape(obs_space.low.shape, stack_size, stack_dim)
 
         low = np.tile(obs_space.low.reshape(new_shape), tile_shape)
         high = np.tile(obs_space.high.reshape(new_shape), tile_shape)
@@ -62,15 +62,15 @@ def stack_obs_space(obs_space, stack_size, stack_dim0=False):
         )
 
 
-def stack_init(obs_space, stack_size, stack_dim0=False):
+def stack_init(obs_space, stack_size, stack_dim=-1):
     if isinstance(obs_space, Box):
-        tile_shape, new_shape = get_tile_shape(obs_space.low.shape, stack_size, stack_dim0)
+        tile_shape, new_shape = get_tile_shape(obs_space.low.shape, stack_size, stack_dim)
         return np.tile(np.zeros(new_shape, dtype=obs_space.dtype), tile_shape)
     else:
         return 0
 
 
-def stack_obs(frame_stack, obs, obs_space, stack_size, stack_dim0=False):
+def stack_obs(frame_stack, obs, obs_space, stack_size, stack_dim=-1):
     """
     Parameters
     ----------
@@ -90,19 +90,19 @@ def stack_obs(frame_stack, obs, obs_space, stack_size, stack_dim0=False):
             agent_fs[-size:] = obs
 
         elif len(obs_shape) == 2:
-            if not stack_dim0:
+            if stack_dim==-1:
                 agent_fs[:, :, :-1] = agent_fs[:, :, 1:]
                 agent_fs[:, :, -1] = obs
-            else:
+            elif stack_dim==0:
                 agent_fs[:-1] = agent_fs[1:]
                 agent_fs[:-1] = obs
 
         elif len(obs_shape) == 3:
-            if not stack_dim0:
+            if stack_dim==-1:
                 nchannels = obs_shape[-1]
                 agent_fs[:, :, :-nchannels] = agent_fs[:, :, nchannels:]
                 agent_fs[:, :, -nchannels:] = obs
-            else:
+            elif stack_dim==0:
                 nchannels = obs_shape[0]
                 agent_fs[:-nchannels] = agent_fs[nchannels:]
                 agent_fs[-nchannels:] = obs
