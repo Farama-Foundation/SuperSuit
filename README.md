@@ -4,7 +4,7 @@
 
 
 SuperSuit introduces a collection of small functions which can wrap reinforcement learning environments to do preprocessing ('microwrappers').
-We support Gym for single agent environments and PettingZoo for multi-agent environments (both AECEnv and ParallelEnv environments). Using it to convert space invaders to have a grey scale observation space and stack the last 4 frames looks like: 
+We support Gym for single agent environments and PettingZoo for multi-agent environments (both AECEnv and ParallelEnv environments). Using it to convert space invaders to have a grey scale observation space and stack the last 4 frames looks like:
 
 ```
 import gym
@@ -46,7 +46,7 @@ You can install SuperSuit via `pip install supersuit`
 
 `frame_stack_v1(env, num_frames=4, stack_dim=0)` stacks the most recent frames. For vector games observed via plain vectors (1D arrays), the output is just concatenated to a longer 1D array. 2D or 3D arrays are stacked to be taller 3D arrays. Stacked dimension can be set to dim=0 (default dim=-1) by stack_dim=0. At the start of the game, frames that don't yet exist are filled with 0s. `num_frames=1` is analogous to not using this function.
 
-`frame_stack_v2(env, num_frames=4, stack_dim=0)` stacks the most recent frames. For vector games observed via plain vectors (1D arrays), the output is just concatenated to a longer 1D array. 2D or 3D arrays are stacked to be taller 3D arrays. Stacked dimension can be set to dim=0 (default dim=-1) by stack_dim=0. At the start of the game, frames that don't yet exist are filled with the copies of the first frame. `num_frames=1` is analogous to not using this function.
+`frame_stack_v2(env, num_frames=4, stack_dim=0)` stacks the most recent frames. For vector games observed via plain vectors (1D arrays), the output is just concatenated to a longer 1D array. 2D or 3D arrays are stacked to be taller 3D arrays. Stacked dimension can be set to dim=0 (default dim=-1) with stack_dim=0. At the start of the game, frames that don't yet exist are filled with the copies of the first frame. `num_frames=1` is analogous to not using this function.
 
 `max_observation_v0(env, memory)` the resulting observation becomes the max over `memory` number of prior frames. This is important for Atari environments, as many games have elements that are intermitently flashed on the instead of being constant, due to the peculiarities of the console and CRT TVs. The OpenAI baselines MaxAndSkip Atari wrapper is equivalent to doing `memory=2` and then a  `frame_skip` of 4.
 
