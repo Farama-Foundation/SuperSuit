@@ -5,7 +5,7 @@ from gym.spaces import Box, Discrete
 def get_tile_shape(shape, stack_size, stack_dim=-1):
     obs_dim = len(shape)
 
-    if stack_dim==-1:
+    if stack_dim == -1:
         if obs_dim == 1:
             tile_shape = (stack_size,)
             new_shape = shape
@@ -19,7 +19,7 @@ def get_tile_shape(shape, stack_size, stack_dim=-1):
         else:
             assert False, "Stacking is only avaliable for 1,2 or 3 dimentional arrays"
 
-    elif stack_dim==0:
+    elif stack_dim == 0:
         if obs_dim == 1:
             tile_shape = (stack_size,)
             new_shape = shape
@@ -90,19 +90,19 @@ def stack_obs(frame_stack, obs, obs_space, stack_size, stack_dim=-1):
             agent_fs[-size:] = obs
 
         elif len(obs_shape) == 2:
-            if stack_dim==-1:
+            if stack_dim == -1:
                 agent_fs[:, :, :-1] = agent_fs[:, :, 1:]
                 agent_fs[:, :, -1] = obs
-            elif stack_dim==0:
+            elif stack_dim == 0:
                 agent_fs[:-1] = agent_fs[1:]
                 agent_fs[:-1] = obs
 
         elif len(obs_shape) == 3:
-            if stack_dim==-1:
+            if stack_dim == -1:
                 nchannels = obs_shape[-1]
                 agent_fs[:, :, :-nchannels] = agent_fs[:, :, nchannels:]
                 agent_fs[:, :, -nchannels:] = obs
-            elif stack_dim==0:
+            elif stack_dim == 0:
                 nchannels = obs_shape[0]
                 agent_fs[:-nchannels] = agent_fs[nchannels:]
                 agent_fs[-nchannels:] = obs
