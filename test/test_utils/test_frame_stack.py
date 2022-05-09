@@ -20,7 +20,7 @@ def test_obs_space():
         4,
         3 * STACK_SIZE,
     )
-    assert stack_obs_space(stack_discrete, STACK_SIZE).n == 3 ** STACK_SIZE
+    assert stack_obs_space(stack_discrete, STACK_SIZE).n == 3**STACK_SIZE
 
 
 def stack_obs_helper(frame_stack_list, obs_space, stack_size):
