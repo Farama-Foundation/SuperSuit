@@ -12,7 +12,7 @@ from .basic_wrappers import (
 )  # NOQA
 from .nan_wrappers import nan_random_v0, nan_noop_v0, nan_zeros_v0  # NOQA
 
-from .delay_observations import delay_observations_v0  # NOQA
-from .frame_stack import frame_stack_v1  # NOQA
-from .max_observation import max_observation_v0  # NOQA
-from .sticky_actions import sticky_actions_v0  # NOQA
+from .delay_observations import delay_observations_v0 # NOQA
+from .frame_stack import frame_stack_v1, frame_stack_v2 # NOQA
+from .max_observation import max_observation_v0 # NOQA
+from .sticky_actions import sticky_actions_v0 # NOQA
