@@ -18,7 +18,7 @@ def MakeCPUAsyncConstructor(max_num_cpus):
 
         def constructor(env_fn_list, obs_space, act_space):
             example_env = env_fn_list[0]()
-            envs_per_env = getattr(example_env, "num_envs", 1)
+            total_envs = sum([getattr(env_fn(), "num_envs", 1) for env_fn in env_fn_list])
 
             num_fns = len(env_fn_list)
             envs_per_cpu = (num_fns + max_num_cpus - 1) // max_num_cpus
@@ -39,7 +39,8 @@ def MakeCPUAsyncConstructor(max_num_cpus):
                 cat_env_fns,
                 obs_space,
                 act_space,
-                num_fns * envs_per_env,
+                # num_fns * envs_per_env,
+                total_envs,
                 example_env.metadata,
             )
 
