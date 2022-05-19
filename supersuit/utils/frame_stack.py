@@ -46,14 +46,16 @@ def stack_obs_space(obs_space, stack_size, stack_dim=-1):
     if isinstance(obs_space, Box):
         dtype = obs_space.dtype
         # stack 1-D frames and 3-D frames
-        tile_shape, new_shape = get_tile_shape(obs_space.low.shape, stack_size, stack_dim)
+        tile_shape, new_shape = get_tile_shape(
+            obs_space.low.shape, stack_size, stack_dim
+        )
 
         low = np.tile(obs_space.low.reshape(new_shape), tile_shape)
         high = np.tile(obs_space.high.reshape(new_shape), tile_shape)
         new_obs_space = Box(low=low, high=high, dtype=dtype)
         return new_obs_space
     elif isinstance(obs_space, Discrete):
-        return Discrete(obs_space.n ** stack_size)
+        return Discrete(obs_space.n**stack_size)
     else:
         assert (
             False
@@ -64,7 +66,9 @@ def stack_obs_space(obs_space, stack_size, stack_dim=-1):
 
 def stack_init(obs_space, stack_size, stack_dim=-1):
     if isinstance(obs_space, Box):
-        tile_shape, new_shape = get_tile_shape(obs_space.low.shape, stack_size, stack_dim)
+        tile_shape, new_shape = get_tile_shape(
+            obs_space.low.shape, stack_size, stack_dim
+        )
         return np.tile(np.zeros(new_shape, dtype=obs_space.dtype), tile_shape)
     else:
         return 0
@@ -110,4 +114,4 @@ def stack_obs(frame_stack, obs, obs_space, stack_size, stack_dim=-1):
         return agent_fs
 
     elif isinstance(obs_space, Discrete):
-        return (frame_stack * obs_space.n + obs) % (obs_space.n ** stack_size)
+        return (frame_stack * obs_space.n + obs) % (obs_space.n**stack_size)

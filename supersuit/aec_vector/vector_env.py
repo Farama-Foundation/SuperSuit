@@ -64,16 +64,16 @@ class SyncAECVectorEnv(VectorAECEnv):
             for agent in self.possible_agents
         }
 
-    def reset(self, seed=None):
+    def reset(self, seed=None, options=None):
         """
         returns: list of observations
         """
         if seed is not None:
             for i, env in enumerate(self.envs):
-                env.reset(seed=seed + i)
+                env.reset(seed=seed + i, options=options)
         else:
             for i, env in enumerate(self.envs):
-                env.reset(seed=None)
+                env.reset(seed=None, options=options)
 
         self.agent_selection = self._agent_selector.reset()
         self.agent_selection = self._find_active_agent()

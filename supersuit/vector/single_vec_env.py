@@ -11,8 +11,8 @@ class SingleVecEnv:
         self.num_envs = 1
         self.metadata = self.gym_env.metadata
 
-    def reset(self, seed=None):
-        return np.expand_dims(self.gym_env.reset(seed=seed), 0)
+    def reset(self, seed=None, options=None):
+        return np.expand_dims(self.gym_env.reset(seed=seed, options=options), 0)
 
     def step_async(self, actions):
         self._saved_actions = actions

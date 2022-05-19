@@ -35,7 +35,8 @@ def test_frame_stack():
         for idx in range(2)
     }
     base_obs = {
-        "a{}".format(idx): np.float32(np.zeros([2, 3]) + np.arange(3) + idx) for idx in range(2)
+        "a{}".format(idx): np.float32(np.zeros([2, 3]) + np.arange(3) + idx)
+        for idx in range(2)
     }
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
     env = frame_stack_v1(base_env, 4)
@@ -51,7 +52,7 @@ def test_frame_stack():
     env = frame_stack_v1(base_env, 4)
     obs = env.reset()
     obs, _, _, _ = env.last()
-    assert env.observation_space(env.agent_selection).n == 5 ** 4
+    assert env.observation_space(env.agent_selection).n == 5**4
     env.step(2)
     first_obs, _, _, _ = env.last()
     assert first_obs == 4
@@ -64,8 +65,14 @@ def test_frame_stack():
     assert nth_obs == ((3 * 5 + 3) * 5 + 3) * 5 + 3
 
     # frame_stack_v1 test
-    base_obs_space = {"a{}".format(idx): Box(low=np.float32(0.0), high=np.float32(10.0), shape=[2, 3]) for idx in range(2)}
-    base_obs = {"a{}".format(idx): np.float32(np.zeros([2, 3]) + np.arange(3) + idx) for idx in range(2)}
+    base_obs_space = {
+        "a{}".format(idx): Box(low=np.float32(0.0), high=np.float32(10.0), shape=[2, 3])
+        for idx in range(2)
+    }
+    base_obs = {
+        "a{}".format(idx): np.float32(np.zeros([2, 3]) + np.arange(3) + idx)
+        for idx in range(2)
+    }
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
     env = frame_stack_v2(base_env, 4)
     obs = env.reset()
@@ -80,7 +87,7 @@ def test_frame_stack():
     env = frame_stack_v2(base_env, 4)
     obs = env.reset()
     obs, _, _, _ = env.last()
-    assert env.observation_space(env.agent_selection).n == 5 ** 4
+    assert env.observation_space(env.agent_selection).n == 5**4
     env.step(2)
     first_obs, _, _, _ = env.last()
     assert first_obs == ((4 * 5 + 4) * 5 + 4) * 5 + 4
