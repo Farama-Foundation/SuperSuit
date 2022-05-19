@@ -28,7 +28,9 @@ jobs:
         sudo apt-get install python-opengl xvfb
     - name: Install python dependencies
       run: |
-        pip install flake8 pytest pettingzoo[classic]>=1.13.1 atari_py magent -r requirements.txt
+        pip install flake8 pytest atari_py magent -r requirements.txt
+        git clone https://github.com/Farama-Foundation/PettingZoo.git
+        pip install -e ./PettingZoo[classic]
     - name: Test with pytest
       run: |
         xvfb-run -s "-screen 0 1400x900x24" pytest
