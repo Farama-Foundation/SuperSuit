@@ -33,7 +33,7 @@ jobs:
         pip install -e ./PettingZoo[classic]
     - name: Test with pytest
       run: |
-        xvfb-run -s "-screen 0 1400x900x24" pytest ./SuperSuit/test
+        xvfb-run -s "-screen 0 1400x900x24" pytest ./test
     - name: Lint with flake8
       run: |
         flake8 supersuit/ --ignore E203,E266,E501,W503,F403,F401,E402,E128,F841 --max-line-length 99
