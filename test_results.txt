@@ -1,0 +1,1576 @@
+============================= test session starts ==============================
+platform linux -- Python 3.8.10, pytest-7.1.1, pluggy-1.0.0
+rootdir: /home/bolun/Documents/SuperSuit
+collected 192 items
+
+test/aec_mock_test.py FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF                [ 18%]
+test/aec_unwrapped_test.py .                                             [ 18%]
+test/generated_agents_test.py .......................................... [ 40%]
+.....                                                                    [ 43%]
+test/gym_mock_test.py FFFFFFFFF.....FFF..F.F..                           [ 55%]
+test/gym_unwrapped_test.py .                                             [ 56%]
+test/parallel_env_test.py F                                              [ 56%]
+test/pettingzoo_api_test.py .......................................      [ 77%]
+test/test_autodep.py .                                                   [ 77%]
+test/vec_env_test.py ..                                                  [ 78%]
+test/test_utils/test_agent_indicator.py ...                              [ 80%]
+test/test_utils/test_frame_stack.py ..                                   [ 81%]
+test/test_utils/test_action_transforms/test_homogenize.py ....           [ 83%]
+test/test_utils/test_basic_transforms/test_color_reduction.py ..         [ 84%]
+test/test_utils/test_basic_transforms/test_dtype.py ..                   [ 85%]
+test/test_utils/test_basic_transforms/test_flatten.py ..                 [ 86%]
+test/test_utils/test_basic_transforms/test_normalized_obs.py ...         [ 88%]
+test/test_utils/test_basic_transforms/test_reshape.py ..                 [ 89%]
+test/test_utils/test_basic_transforms/test_resize.py ..                  [ 90%]
+test/test_vector/test_aec_vector_identity_env.py .                       [ 90%]
+test/test_vector/test_aec_vector_values.py .                             [ 91%]
+test/test_vector/test_env_is_wrapped.py ....                             [ 93%]
+test/test_vector/test_gym_vector.py .....                                [ 95%]
+test/test_vector/test_pettingzoo_to_vec.py .....                         [ 98%]
+test/test_vector/test_vector_dict.py FFF                                 [100%]
+
+=================================== FAILURES ===================================
+_______________________________ test_frame_stack _______________________________
+
+    def test_frame_stack():
+        # frame_stack_v0 test
+        base_obs_space = {
+            "a{}".format(idx): Box(low=np.float32(0.0), high=np.float32(10.0), shape=[2, 3])
+            for idx in range(2)
+        }
+        base_obs = {
+            "a{}".format(idx): np.float32(np.zeros([2, 3]) + np.arange(3) + idx)
+            for idx in range(2)
+        }
+        base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
+        env = frame_stack_v1(base_env, 4)
+>       obs = env.reset()
+
+test/aec_mock_test.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+supersuit/generic_wrappers/utils/shared_wrapper_util.py:49: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <supersuit.generic_wrappers.utils.shared_wrapper_util.shared_wrapper_aec object at 0x7fa9840b0e20>
+seed = None, options = None
+
+    def reset(self, seed=None, options=None):
+>       self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: TypeError
+_______________________________ test_frame_skip ________________________________
+
+    def test_frame_skip():
+        base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
+        env = supersuit.frame_skip_v0(base_env, 3)
+>       env.reset()
+
+test/aec_mock_test.py:106: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+supersuit/generic_wrappers/frame_skip.py:46: in reset
+    super().reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <supersuit.generic_wrappers.frame_skip.frame_skip_aec object at 0x7fa983c7bee0>
+seed = None, options = None
+
+    def reset(self, seed=None, options=None):
+>       self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: TypeError
+_____________________________ test_agent_indicator _____________________________
+
+    def test_agent_indicator():
+        let = ["a", "a", "b"]
+        base_obs = {"{}_{}".format(let[idx], idx): np.zeros([2, 3]) for idx in range(3)}
+        base_obs_space = {
+            "{}_{}".format(let[idx], idx): Box(
+                low=np.float32(0.0), high=np.float32(10.0), shape=[2, 3]
+            )
+            for idx in range(3)
+        }
+        base_act_spaces = {"{}_{}".format(let[idx], idx): Discrete(5) for idx in range(3)}
+    
+        base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
+        env = supersuit.agent_indicator_v0(base_env, type_only=True)
+>       env.reset()
+
+test/aec_mock_test.py:125: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+supersuit/utils/base_aec_wrapper.py:31: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <supersuit.lambda_wrappers.observation_lambda.aec_observation_lambda object at 0x7fa983d049a0>
+seed = None, options = None
+
+    def reset(self, seed=None, options=None):
+>       self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: TypeError
+_________________________________ test_reshape _________________________________
+
+    def test_reshape():
+        base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
+        env = reshape_v0(base_env, (64, 3))
+>       env.reset()
+
+test/aec_mock_test.py:142: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+supersuit/utils/base_aec_wrapper.py:31: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <supersuit.lambda_wrappers.observation_lambda.aec_observation_lambda object at 0x7fa983d54340>
+seed = None, options = None
+
+    def reset(self, seed=None, options=None):
+>       self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: TypeError
+__________________________ test_basic_wrappers[env0] ___________________________
+
+env = <supersuit.lambda_wrappers.observation_lambda.aec_observation_lambda object at 0x7fa9418bfb80>
+
+    @pytest.mark.parametrize("env", wrappers)
+    def test_basic_wrappers(env):
+>       env.reset(seed=5)
+
+test/aec_mock_test.py:222: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+supersuit/utils/base_aec_wrapper.py:31: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: in reset
+    self.env.reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <pettingzoo.utils.wrappers.order_enforcing.OrderEnforcingWrapper object at 0x7fa941920430>
+seed = 5, options = None
+
+    def reset(self, seed=None, options=None):
+>       self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: TypeError
+__________________________ test_basic_wrappers[env1] ___________________________
+
+env = <supersuit.lambda_wrappers.observation_lambda.aec_observation_lambda object at 0x7fa941866670>
+
+    @pytest.mark.parametrize("env", wrappers)
+    def test_basic_wrappers(env):
+>       env.reset(seed=5)
+
+test/aec_mock_test.py:222: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+supersuit/utils/base_aec_wrapper.py:31: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: in reset
+    self.env.reset(seed=seed, options=options)
+supersuit/utils/base_aec_wrapper.py:31: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: in reset
+    self.env.reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <pettingzoo.utils.wrappers.order_enforcing.OrderEnforcingWrapper object at 0x7fa941866550>
+seed = 5, options = None
+
+    def reset(self, seed=None, options=None):
+>       self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: TypeError
+__________________________ test_basic_wrappers[env2] ___________________________
+
+env = <supersuit.lambda_wrappers.observation_lambda.aec_observation_lambda object at 0x7fa941866c70>
+
+    @pytest.mark.parametrize("env", wrappers)
+    def test_basic_wrappers(env):
+>       env.reset(seed=5)
+
+test/aec_mock_test.py:222: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+supersuit/utils/base_aec_wrapper.py:31: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: in reset
+    self.env.reset(seed=seed, options=options)
+supersuit/utils/base_aec_wrapper.py:31: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: in reset
+    self.env.reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <pettingzoo.utils.wrappers.order_enforcing.OrderEnforcingWrapper object at 0x7fa941866a90>
+seed = 5, options = None
+
+    def reset(self, seed=None, options=None):
+>       self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: TypeError
+__________________________ test_basic_wrappers[env3] ___________________________
+
+env = <supersuit.lambda_wrappers.observation_lambda.aec_observation_lambda object at 0x7fa9418774c0>
+
+    @pytest.mark.parametrize("env", wrappers)
+    def test_basic_wrappers(env):
+>       env.reset(seed=5)
+
+test/aec_mock_test.py:222: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+supersuit/utils/base_aec_wrapper.py:31: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: in reset
+    self.env.reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <pettingzoo.utils.wrappers.order_enforcing.OrderEnforcingWrapper object at 0x7fa941877430>
+seed = 5, options = None
+
+    def reset(self, seed=None, options=None):
+>       self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: TypeError
+__________________________ test_basic_wrappers[env4] ___________________________
+
+env = <supersuit.lambda_wrappers.observation_lambda.aec_observation_lambda object at 0x7fa9418777c0>
+
+    @pytest.mark.parametrize("env", wrappers)
+    def test_basic_wrappers(env):
+>       env.reset(seed=5)
+
+test/aec_mock_test.py:222: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+supersuit/utils/base_aec_wrapper.py:31: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: in reset
+    self.env.reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <pettingzoo.utils.wrappers.order_enforcing.OrderEnforcingWrapper object at 0x7fa941877730>
+seed = 5, options = None
+
+    def reset(self, seed=None, options=None):
+>       self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: TypeError
+__________________________ test_basic_wrappers[env5] ___________________________
+
+env = <supersuit.lambda_wrappers.observation_lambda.aec_observation_lambda object at 0x7fa941877ac0>
+
+    @pytest.mark.parametrize("env", wrappers)
+    def test_basic_wrappers(env):
+>       env.reset(seed=5)
+
+test/aec_mock_test.py:222: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+supersuit/utils/base_aec_wrapper.py:31: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: in reset
+    self.env.reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <pettingzoo.utils.wrappers.order_enforcing.OrderEnforcingWrapper object at 0x7fa941877a30>
+seed = 5, options = None
+
+    def reset(self, seed=None, options=None):
+>       self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: TypeError
+__________________________ test_basic_wrappers[env6] ___________________________
+
+env = <supersuit.lambda_wrappers.observation_lambda.aec_observation_lambda object at 0x7fa941877dc0>
+
+    @pytest.mark.parametrize("env", wrappers)
+    def test_basic_wrappers(env):
+>       env.reset(seed=5)
+
+test/aec_mock_test.py:222: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+supersuit/utils/base_aec_wrapper.py:31: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: in reset
+    self.env.reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <pettingzoo.utils.wrappers.order_enforcing.OrderEnforcingWrapper object at 0x7fa941877d30>
+seed = 5, options = None
+
+    def reset(self, seed=None, options=None):
+>       self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: TypeError
+__________________________ test_basic_wrappers[env7] ___________________________
+
+env = <supersuit.generic_wrappers.utils.shared_wrapper_util.shared_wrapper_aec object at 0x7fa941885100>
+
+    @pytest.mark.parametrize("env", wrappers)
+    def test_basic_wrappers(env):
+>       env.reset(seed=5)
+
+test/aec_mock_test.py:222: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+supersuit/generic_wrappers/utils/shared_wrapper_util.py:49: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: in reset
+    self.env.reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <pettingzoo.utils.wrappers.order_enforcing.OrderEnforcingWrapper object at 0x7fa941885070>
+seed = 5, options = None
+
+    def reset(self, seed=None, options=None):
+>       self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: TypeError
+__________________________ test_basic_wrappers[env8] ___________________________
+
+env = <supersuit.lambda_wrappers.observation_lambda.aec_observation_lambda object at 0x7fa9418854c0>
+
+    @pytest.mark.parametrize("env", wrappers)
+    def test_basic_wrappers(env):
+>       env.reset(seed=5)
+
+test/aec_mock_test.py:222: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+supersuit/utils/base_aec_wrapper.py:31: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: in reset
+    self.env.reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <pettingzoo.utils.wrappers.order_enforcing.OrderEnforcingWrapper object at 0x7fa941885430>
+seed = 5, options = None
+
+    def reset(self, seed=None, options=None):
+>       self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: TypeError
+__________________________ test_basic_wrappers[env9] ___________________________
+
+env = <supersuit.lambda_wrappers.action_lambda.aec_action_lambda object at 0x7fa941885760>
+
+    @pytest.mark.parametrize("env", wrappers)
+    def test_basic_wrappers(env):
+>       env.reset(seed=5)
+
+test/aec_mock_test.py:222: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+supersuit/utils/base_aec_wrapper.py:31: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: in reset
+    self.env.reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <pettingzoo.utils.wrappers.order_enforcing.OrderEnforcingWrapper object at 0x7fa9418856d0>
+seed = 5, options = None
+
+    def reset(self, seed=None, options=None):
+>       self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: TypeError
+__________________________ test_basic_wrappers[env10] __________________________
+
+env = <supersuit.lambda_wrappers.observation_lambda.aec_observation_lambda object at 0x7fa941885a60>
+
+    @pytest.mark.parametrize("env", wrappers)
+    def test_basic_wrappers(env):
+>       env.reset(seed=5)
+
+test/aec_mock_test.py:222: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+supersuit/utils/base_aec_wrapper.py:31: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: in reset
+    self.env.reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <pettingzoo.utils.wrappers.order_enforcing.OrderEnforcingWrapper object at 0x7fa9418859a0>
+seed = 5, options = None
+
+    def reset(self, seed=None, options=None):
+>       self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: TypeError
+__________________________ test_basic_wrappers[env11] __________________________
+
+env = <supersuit.lambda_wrappers.observation_lambda.aec_observation_lambda object at 0x7fa941885dc0>
+
+    @pytest.mark.parametrize("env", wrappers)
+    def test_basic_wrappers(env):
+>       env.reset(seed=5)
+
+test/aec_mock_test.py:222: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+supersuit/utils/base_aec_wrapper.py:31: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: in reset
+    self.env.reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <pettingzoo.utils.wrappers.order_enforcing.OrderEnforcingWrapper object at 0x7fa941885d00>
+seed = 5, options = None
+
+    def reset(self, seed=None, options=None):
+>       self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: TypeError
+__________________________ test_basic_wrappers[env12] __________________________
+
+env = <supersuit.lambda_wrappers.reward_lambda.aec_reward_lambda object at 0x7fa9418950a0>
+
+    @pytest.mark.parametrize("env", wrappers)
+    def test_basic_wrappers(env):
+>       env.reset(seed=5)
+
+test/aec_mock_test.py:222: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+supersuit/lambda_wrappers/reward_lambda.py:23: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: in reset
+    self.env.reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <pettingzoo.utils.wrappers.order_enforcing.OrderEnforcingWrapper object at 0x7fa941895070>
+seed = 5, options = None
+
+    def reset(self, seed=None, options=None):
+>       self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: TypeError
+__________________________ test_basic_wrappers[env13] __________________________
+
+env = <supersuit.lambda_wrappers.reward_lambda.aec_reward_lambda object at 0x7fa941895340>
+
+    @pytest.mark.parametrize("env", wrappers)
+    def test_basic_wrappers(env):
+>       env.reset(seed=5)
+
+test/aec_mock_test.py:222: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+supersuit/lambda_wrappers/reward_lambda.py:23: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: in reset
+    self.env.reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <pettingzoo.utils.wrappers.order_enforcing.OrderEnforcingWrapper object at 0x7fa9418952b0>
+seed = 5, options = None
+
+    def reset(self, seed=None, options=None):
+>       self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: TypeError
+__________________________ test_basic_wrappers[env14] __________________________
+
+env = <supersuit.lambda_wrappers.action_lambda.aec_action_lambda object at 0x7fa941895550>
+
+    @pytest.mark.parametrize("env", wrappers)
+    def test_basic_wrappers(env):
+>       env.reset(seed=5)
+
+test/aec_mock_test.py:222: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+supersuit/utils/base_aec_wrapper.py:31: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: in reset
+    self.env.reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <pettingzoo.utils.wrappers.order_enforcing.OrderEnforcingWrapper object at 0x7fa941895520>
+seed = 5, options = None
+
+    def reset(self, seed=None, options=None):
+>       self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: TypeError
+__________________________ test_basic_wrappers[env15] __________________________
+
+env = <supersuit.lambda_wrappers.action_lambda.aec_action_lambda object at 0x7fa941895850>
+
+    @pytest.mark.parametrize("env", wrappers)
+    def test_basic_wrappers(env):
+>       env.reset(seed=5)
+
+test/aec_mock_test.py:222: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+supersuit/utils/base_aec_wrapper.py:31: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: in reset
+    self.env.reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <pettingzoo.utils.wrappers.order_enforcing.OrderEnforcingWrapper object at 0x7fa941895760>
+seed = 5, options = None
+
+    def reset(self, seed=None, options=None):
+>       self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: TypeError
+__________________________ test_basic_wrappers[env16] __________________________
+
+env = <supersuit.generic_wrappers.frame_skip.frame_skip_aec object at 0x7fa941895bb0>
+
+    @pytest.mark.parametrize("env", wrappers)
+    def test_basic_wrappers(env):
+>       env.reset(seed=5)
+
+test/aec_mock_test.py:222: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+supersuit/generic_wrappers/frame_skip.py:46: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: in reset
+    self.env.reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <pettingzoo.utils.wrappers.order_enforcing.OrderEnforcingWrapper object at 0x7fa941895b80>
+seed = 5, options = None
+
+    def reset(self, seed=None, options=None):
+>       self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: TypeError
+__________________________ test_basic_wrappers[env17] __________________________
+
+env = <supersuit.generic_wrappers.utils.shared_wrapper_util.shared_wrapper_aec object at 0x7fa941895ee0>
+
+    @pytest.mark.parametrize("env", wrappers)
+    def test_basic_wrappers(env):
+>       env.reset(seed=5)
+
+test/aec_mock_test.py:222: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+supersuit/generic_wrappers/utils/shared_wrapper_util.py:49: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: in reset
+    self.env.reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <pettingzoo.utils.wrappers.order_enforcing.OrderEnforcingWrapper object at 0x7fa941895df0>
+seed = 5, options = None
+
+    def reset(self, seed=None, options=None):
+>       self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: TypeError
+__________________________ test_basic_wrappers[env18] __________________________
+
+env = <supersuit.generic_wrappers.utils.shared_wrapper_util.shared_wrapper_aec object at 0x7fa94189c3d0>
+
+    @pytest.mark.parametrize("env", wrappers)
+    def test_basic_wrappers(env):
+>       env.reset(seed=5)
+
+test/aec_mock_test.py:222: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+supersuit/generic_wrappers/utils/shared_wrapper_util.py:49: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: in reset
+    self.env.reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <pettingzoo.utils.wrappers.order_enforcing.OrderEnforcingWrapper object at 0x7fa94189c370>
+seed = 5, options = None
+
+    def reset(self, seed=None, options=None):
+>       self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: TypeError
+__________________________ test_basic_wrappers[env19] __________________________
+
+env = <supersuit.generic_wrappers.utils.shared_wrapper_util.shared_wrapper_aec object at 0x7fa94189c880>
+
+    @pytest.mark.parametrize("env", wrappers)
+    def test_basic_wrappers(env):
+>       env.reset(seed=5)
+
+test/aec_mock_test.py:222: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+supersuit/generic_wrappers/utils/shared_wrapper_util.py:49: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: in reset
+    self.env.reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <pettingzoo.utils.wrappers.order_enforcing.OrderEnforcingWrapper object at 0x7fa94189c790>
+seed = 5, options = None
+
+    def reset(self, seed=None, options=None):
+>       self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: TypeError
+__________________________ test_basic_wrappers[env20] __________________________
+
+env = <supersuit.lambda_wrappers.action_lambda.aec_action_lambda object at 0x7fa94189ccd0>
+
+    @pytest.mark.parametrize("env", wrappers)
+    def test_basic_wrappers(env):
+>       env.reset(seed=5)
+
+test/aec_mock_test.py:222: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+supersuit/utils/base_aec_wrapper.py:31: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: in reset
+    self.env.reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <pettingzoo.utils.wrappers.order_enforcing.OrderEnforcingWrapper object at 0x7fa94189cc40>
+seed = 5, options = None
+
+    def reset(self, seed=None, options=None):
+>       self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: TypeError
+__________________________ test_basic_wrappers[env21] __________________________
+
+env = <supersuit.lambda_wrappers.action_lambda.aec_action_lambda object at 0x7fa94189cf40>
+
+    @pytest.mark.parametrize("env", wrappers)
+    def test_basic_wrappers(env):
+>       env.reset(seed=5)
+
+test/aec_mock_test.py:222: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+supersuit/utils/base_aec_wrapper.py:31: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: in reset
+    self.env.reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <pettingzoo.utils.wrappers.order_enforcing.OrderEnforcingWrapper object at 0x7fa94189cee0>
+seed = 5, options = None
+
+    def reset(self, seed=None, options=None):
+>       self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: TypeError
+__________________________ test_basic_wrappers[env22] __________________________
+
+env = <supersuit.generic_wrappers.utils.shared_wrapper_util.shared_wrapper_aec object at 0x7fa9413df280>
+
+    @pytest.mark.parametrize("env", wrappers)
+    def test_basic_wrappers(env):
+>       env.reset(seed=5)
+
+test/aec_mock_test.py:222: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+supersuit/generic_wrappers/utils/shared_wrapper_util.py:49: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: in reset
+    self.env.reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <pettingzoo.utils.wrappers.order_enforcing.OrderEnforcingWrapper object at 0x7fa9413df1c0>
+seed = 5, options = None
+
+    def reset(self, seed=None, options=None):
+>       self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: TypeError
+_______________________________ test_rew_lambda ________________________________
+
+    def test_rew_lambda():
+        env = supersuit.reward_lambda_v0(new_dummy(), lambda x: x / 10)
+>       env.reset()
+
+test/aec_mock_test.py:237: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+supersuit/lambda_wrappers/reward_lambda.py:23: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: in reset
+    self.env.reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <pettingzoo.utils.wrappers.order_enforcing.OrderEnforcingWrapper object at 0x7fa983c9b0a0>
+seed = None, options = None
+
+    def reset(self, seed=None, options=None):
+>       self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: TypeError
+___________________________ test_observation_lambda ____________________________
+
+    def test_observation_lambda():
+        def add1(obs, obs_space):
+            return obs + 1
+    
+        base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
+        env = observation_lambda_v0(base_env, add1)
+>       env.reset()
+
+test/aec_mock_test.py:247: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+supersuit/utils/base_aec_wrapper.py:31: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <supersuit.lambda_wrappers.observation_lambda.aec_observation_lambda object at 0x7fa983cd51f0>
+seed = None, options = None
+
+    def reset(self, seed=None, options=None):
+>       self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: TypeError
+______________________________ test_action_lambda ______________________________
+
+    def test_action_lambda():
+        def inc1(x, space):
+            return x + 1
+    
+        def change_space_fn(space):
+            return Discrete(space.n + 1)
+    
+        base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
+        env = action_lambda_v1(base_env, inc1, change_space_fn)
+>       env.reset()
+
+test/aec_mock_test.py:320: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+supersuit/utils/base_aec_wrapper.py:31: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <supersuit.lambda_wrappers.action_lambda.aec_action_lambda object at 0x7fa983c3df40>
+seed = None, options = None
+
+    def reset(self, seed=None, options=None):
+>       self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: TypeError
+______________________________ test_dehomogenize _______________________________
+
+    def test_dehomogenize():
+        base_act_spaces = {"a{}".format(idx): Discrete(5 + idx) for idx in range(2)}
+    
+        base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
+        env = pad_action_space_v0(base_env)
+>       env.reset()
+
+test/aec_mock_test.py:366: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+supersuit/utils/base_aec_wrapper.py:31: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <supersuit.lambda_wrappers.action_lambda.aec_action_lambda object at 0x7fa983d342b0>
+seed = None, options = None
+
+    def reset(self, seed=None, options=None):
+>       self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: TypeError
+________________________________ test_NaN_noop _________________________________
+
+    def test_NaN_noop():
+        base_env = DummyNaNEnv(base_obs, base_obs_space, base_act_spaces)
+        wrapped_env = supersuit.nan_noop_v0(base_env, 0)
+>       wrapped_env.reset()
+
+test/aec_mock_test.py:382: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+supersuit/utils/base_aec_wrapper.py:31: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <supersuit.lambda_wrappers.action_lambda.aec_action_lambda object at 0x7fa983c7b640>
+seed = None, options = None
+
+    def reset(self, seed=None, options=None):
+>       self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: TypeError
+________________________________ test_NaN_zeros ________________________________
+
+    def test_NaN_zeros():
+        base_env = DummyNaNEnv(base_obs, base_obs_space, base_act_spaces)
+        wrapped_env = supersuit.nan_zeros_v0(base_env)
+>       wrapped_env.reset()
+
+test/aec_mock_test.py:389: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+supersuit/utils/base_aec_wrapper.py:31: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <supersuit.lambda_wrappers.action_lambda.aec_action_lambda object at 0x7fa983cbf730>
+seed = None, options = None
+
+    def reset(self, seed=None, options=None):
+>       self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: TypeError
+_______________________________ test_NaN_random ________________________________
+
+    def test_NaN_random():
+        base_env = DummyNaNEnv(base_obs, base_obs_space, base_act_spaces)
+        wrapped_env = supersuit.nan_random_v0(base_env)
+>       wrapped_env.reset()
+
+test/aec_mock_test.py:396: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+supersuit/generic_wrappers/utils/shared_wrapper_util.py:49: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <supersuit.generic_wrappers.utils.shared_wrapper_util.shared_wrapper_aec object at 0x7fa983d48d30>
+seed = None, options = None
+
+    def reset(self, seed=None, options=None):
+>       self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: TypeError
+__________________________ test_scale_action_wrapper ___________________________
+
+    def test_scale_action_wrapper():
+        base_obs = {
+            "a{}".format(idx): np.zeros([8, 8, 3], dtype=np.float32) + np.arange(3) + idx
+            for idx in range(2)
+        }
+        base_obs_space = {
+            "a{}".format(idx): Box(
+                low=np.float32(0.0), high=np.float32(10.0), shape=[8, 8, 3]
+            )
+            for idx in range(2)
+        }
+        base_act_spaces = {
+            "a{}".format(idx): Box(low=np.float32(0.0), high=np.float32(10.0), shape=[3])
+            for idx in range(2)
+        }
+        base_env = DummyScaleEnv(base_obs, base_obs_space, base_act_spaces)
+        wrapped_env = scale_actions_v0(base_env, 2)
+>       wrapped_env.reset()
+
+test/aec_mock_test.py:423: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+supersuit/utils/base_aec_wrapper.py:31: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <supersuit.lambda_wrappers.action_lambda.aec_action_lambda object at 0x7fa983c9efd0>
+seed = None, options = None
+
+    def reset(self, seed=None, options=None):
+>       self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: TypeError
+_________________________________ test_reshape _________________________________
+
+    def test_reshape():
+        base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
+        env = reshape_v0(base_env, (64, 3))
+>       obs = env.reset()
+
+test/gym_mock_test.py:22: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <gym_observation_lambda<DummyEnv instance>>, seed = None, options = None
+
+    def reset(self, seed=None, options=None):
+>       observation = self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+supersuit/lambda_wrappers/observation_lambda.py:120: TypeError
+__________________________ test_basic_wrappers[env0] ___________________________
+
+env = <gym_observation_lambda<DummyEnv instance>>
+
+    @pytest.mark.parametrize("env", wrappers)
+    def test_basic_wrappers(env):
+>       obs = env.reset(seed=5)
+
+test/gym_mock_test.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <gym_observation_lambda<DummyEnv instance>>, seed = 5, options = None
+
+    def reset(self, seed=None, options=None):
+>       observation = self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+supersuit/lambda_wrappers/observation_lambda.py:120: TypeError
+__________________________ test_basic_wrappers[env1] ___________________________
+
+env = <gym_observation_lambda<gym_observation_lambda<DummyEnv instance>>>
+
+    @pytest.mark.parametrize("env", wrappers)
+    def test_basic_wrappers(env):
+>       obs = env.reset(seed=5)
+
+test/gym_mock_test.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+supersuit/lambda_wrappers/observation_lambda.py:120: in reset
+    observation = self.env.reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <gym_observation_lambda<DummyEnv instance>>, seed = 5, options = None
+
+    def reset(self, seed=None, options=None):
+>       observation = self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+supersuit/lambda_wrappers/observation_lambda.py:120: TypeError
+__________________________ test_basic_wrappers[env2] ___________________________
+
+env = <gym_observation_lambda<gym_observation_lambda<DummyEnv instance>>>
+
+    @pytest.mark.parametrize("env", wrappers)
+    def test_basic_wrappers(env):
+>       obs = env.reset(seed=5)
+
+test/gym_mock_test.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+supersuit/lambda_wrappers/observation_lambda.py:120: in reset
+    observation = self.env.reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <gym_observation_lambda<DummyEnv instance>>, seed = 5, options = None
+
+    def reset(self, seed=None, options=None):
+>       observation = self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+supersuit/lambda_wrappers/observation_lambda.py:120: TypeError
+__________________________ test_basic_wrappers[env3] ___________________________
+
+env = <gym_observation_lambda<DummyEnv instance>>
+
+    @pytest.mark.parametrize("env", wrappers)
+    def test_basic_wrappers(env):
+>       obs = env.reset(seed=5)
+
+test/gym_mock_test.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <gym_observation_lambda<DummyEnv instance>>, seed = 5, options = None
+
+    def reset(self, seed=None, options=None):
+>       observation = self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+supersuit/lambda_wrappers/observation_lambda.py:120: TypeError
+__________________________ test_basic_wrappers[env4] ___________________________
+
+env = <gym_observation_lambda<DummyEnv instance>>
+
+    @pytest.mark.parametrize("env", wrappers)
+    def test_basic_wrappers(env):
+>       obs = env.reset(seed=5)
+
+test/gym_mock_test.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <gym_observation_lambda<DummyEnv instance>>, seed = 5, options = None
+
+    def reset(self, seed=None, options=None):
+>       observation = self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+supersuit/lambda_wrappers/observation_lambda.py:120: TypeError
+__________________________ test_basic_wrappers[env5] ___________________________
+
+env = <gym_observation_lambda<DummyEnv instance>>
+
+    @pytest.mark.parametrize("env", wrappers)
+    def test_basic_wrappers(env):
+>       obs = env.reset(seed=5)
+
+test/gym_mock_test.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <gym_observation_lambda<DummyEnv instance>>, seed = 5, options = None
+
+    def reset(self, seed=None, options=None):
+>       observation = self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+supersuit/lambda_wrappers/observation_lambda.py:120: TypeError
+__________________________ test_basic_wrappers[env6] ___________________________
+
+env = <gym_observation_lambda<DummyEnv instance>>
+
+    @pytest.mark.parametrize("env", wrappers)
+    def test_basic_wrappers(env):
+>       obs = env.reset(seed=5)
+
+test/gym_mock_test.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <gym_observation_lambda<DummyEnv instance>>, seed = 5, options = None
+
+    def reset(self, seed=None, options=None):
+>       observation = self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+supersuit/lambda_wrappers/observation_lambda.py:120: TypeError
+__________________________ test_basic_wrappers[env7] ___________________________
+
+env = <shared_wrapper_gym<DummyEnv instance>>
+
+    @pytest.mark.parametrize("env", wrappers)
+    def test_basic_wrappers(env):
+>       obs = env.reset(seed=5)
+
+test/gym_mock_test.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+supersuit/generic_wrappers/utils/shared_wrapper_util.py:143: in reset
+    obs = super().reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <shared_wrapper_gym<DummyEnv instance>>
+kwargs = {'options': None, 'seed': 5}
+
+    def reset(self, **kwargs) -> Union[ObsType, tuple[ObsType, dict]]:
+>       return self.env.reset(**kwargs)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/gym/core.py:283: TypeError
+__________________________ test_basic_wrappers[env13] __________________________
+
+env = <shared_wrapper_gym<DummyEnv instance>>
+
+    @pytest.mark.parametrize("env", wrappers)
+    def test_basic_wrappers(env):
+>       obs = env.reset(seed=5)
+
+test/gym_mock_test.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+supersuit/generic_wrappers/utils/shared_wrapper_util.py:143: in reset
+    obs = super().reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <shared_wrapper_gym<DummyEnv instance>>
+kwargs = {'options': None, 'seed': 5}
+
+    def reset(self, **kwargs) -> Union[ObsType, tuple[ObsType, dict]]:
+>       return self.env.reset(**kwargs)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/gym/core.py:283: TypeError
+__________________________ test_basic_wrappers[env14] __________________________
+
+env = <shared_wrapper_gym<DummyEnv instance>>
+
+    @pytest.mark.parametrize("env", wrappers)
+    def test_basic_wrappers(env):
+>       obs = env.reset(seed=5)
+
+test/gym_mock_test.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+supersuit/generic_wrappers/utils/shared_wrapper_util.py:143: in reset
+    obs = super().reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <shared_wrapper_gym<DummyEnv instance>>
+kwargs = {'options': None, 'seed': 5}
+
+    def reset(self, **kwargs) -> Union[ObsType, tuple[ObsType, dict]]:
+>       return self.env.reset(**kwargs)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/gym/core.py:283: TypeError
+__________________________ test_basic_wrappers[env15] __________________________
+
+env = <shared_wrapper_gym<DummyEnv instance>>
+
+    @pytest.mark.parametrize("env", wrappers)
+    def test_basic_wrappers(env):
+>       obs = env.reset(seed=5)
+
+test/gym_mock_test.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+supersuit/generic_wrappers/utils/shared_wrapper_util.py:143: in reset
+    obs = super().reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <shared_wrapper_gym<DummyEnv instance>>
+kwargs = {'options': None, 'seed': 5}
+
+    def reset(self, **kwargs) -> Union[ObsType, tuple[ObsType, dict]]:
+>       return self.env.reset(**kwargs)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/gym/core.py:283: TypeError
+__________________________ test_basic_wrappers[env18] __________________________
+
+env = <shared_wrapper_gym<DummyEnv instance>>
+
+    @pytest.mark.parametrize("env", wrappers)
+    def test_basic_wrappers(env):
+>       obs = env.reset(seed=5)
+
+test/gym_mock_test.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+supersuit/generic_wrappers/utils/shared_wrapper_util.py:143: in reset
+    obs = super().reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <shared_wrapper_gym<DummyEnv instance>>
+kwargs = {'options': None, 'seed': 5}
+
+    def reset(self, **kwargs) -> Union[ObsType, tuple[ObsType, dict]]:
+>       return self.env.reset(**kwargs)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/gym/core.py:283: TypeError
+_________________________________ test_lambda __________________________________
+
+    def test_lambda():
+        def add1(obs, obs_space):
+            return obs + 1
+    
+        base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
+        env = observation_lambda_v0(base_env, add1)
+>       obs0 = env.reset()
+
+test/gym_mock_test.py:80: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <gym_observation_lambda<DummyEnv instance>>, seed = None, options = None
+
+    def reset(self, seed=None, options=None):
+>       observation = self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+supersuit/lambda_wrappers/observation_lambda.py:120: TypeError
+__________________________________ test_basic __________________________________
+
+    def test_basic():
+        env = DummyParEnv(base_obs, base_obs_space, base_act_spaces)
+        env = supersuit.delay_observations_v0(env, 4)
+        env = supersuit.dtype_v0(env, np.uint8)
+>       orig_obs = env.reset()
+
+test/parallel_env_test.py:57: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/conversions.py:121: in reset
+    self.aec_env.reset(seed=seed, options=options)
+supersuit/utils/base_aec_wrapper.py:31: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: in reset
+    self.env.reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/order_enforcing.py:94: in reset
+    super().reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base.py:85: in reset
+    self.env.reset(seed=seed, options=options)
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/conversions.py:226: in reset
+    self._observations = self.env.reset(seed=seed, options=options)
+supersuit/generic_wrappers/utils/shared_wrapper_util.py:110: in reset
+    observations = super().reset(seed=seed, options=options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <supersuit.generic_wrappers.utils.shared_wrapper_util.shared_wrapper_parr object at 0x7fa983c3d130>
+seed = None, options = None
+
+    def reset(self, seed=None, options=None):
+        # Used in Supersuit frame_skip_par
+        self.np_random, _ = gym.utils.seeding.np_random(seed)
+    
+>       res = self.env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/wrappers/base_parallel.py:28: TypeError
+___________________________ test_pettingzoo_vec_env ____________________________
+
+    def test_pettingzoo_vec_env():
+        env = make_env()
+        env = pettingzoo_env_to_vec_env_v1(env)
+>       dict_vec_env_test(env)
+
+test/test_vector/test_vector_dict.py:77: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+test/test_vector/test_vector_dict.py:55: in dict_vec_env_test
+    obss = env.reset()
+supersuit/vector/markov_vector_wrapper.py:55: in reset
+    return self.concat_obs(self.par_env.reset(seed=seed, options=options))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <pettingzoo.utils.conversions.aec_to_parallel_wrapper object at 0x7fa96c242ac0>
+seed = None, options = None
+
+    def reset(self, seed=None, options=None):
+>       self.aec_env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/conversions.py:121: TypeError
+_______________________ test_single_threaded_concatenate _______________________
+
+    def test_single_threaded_concatenate():
+        env = make_env()
+        env = pettingzoo_env_to_vec_env_v1(env)
+        env = concat_vec_envs_v1(env, 2, num_cpus=1)
+>       dict_vec_env_test(env)
+
+test/test_vector/test_vector_dict.py:84: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+test/test_vector/test_vector_dict.py:55: in dict_vec_env_test
+    obss = env.reset()
+supersuit/vector/concat_vec_env.py:40: in reset
+    _res_ls = [
+supersuit/vector/concat_vec_env.py:41: in <listcomp>
+    vec_env.reset(seed=None, options=options) for vec_env in self.vec_envs
+supersuit/vector/markov_vector_wrapper.py:55: in reset
+    return self.concat_obs(self.par_env.reset(seed=seed, options=options))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <pettingzoo.utils.conversions.aec_to_parallel_wrapper object at 0x7fa96c193370>
+seed = None, options = None
+
+    def reset(self, seed=None, options=None):
+>       self.aec_env.reset(seed=seed, options=options)
+E       TypeError: reset() got an unexpected keyword argument 'options'
+
+../pet_env/lib/python3.8/site-packages/pettingzoo/utils/conversions.py:121: TypeError
+_______________________ test_multi_threaded_concatenate ________________________
+
+    def test_multi_threaded_concatenate():
+        env = make_env()
+        env = pettingzoo_env_to_vec_env_v1(env)
+        env = concat_vec_envs_v1(env, 2, num_cpus=2)
+>       dict_vec_env_test(env)
+
+test/test_vector/test_vector_dict.py:91: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+test/test_vector/test_vector_dict.py:55: in dict_vec_env_test
+    obss = env.reset()
+supersuit/vector/multiproc_vec.py:172: in reset
+    self._receive_info()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = ProcConcatVec(10)
+
+    def _receive_info(self):
+        all_data = []
+        for cin in self.pipes:
+            data = cin.recv()
+            if isinstance(data, tuple):
+                e, tb = data
+                print(tb)
+>               raise e
+E               TypeError: reset() got an unexpected keyword argument 'options'
+
+supersuit/vector/multiproc_vec.py:189: TypeError
+----------------------------- Captured stdout call -----------------------------
+Traceback (most recent call last):
+  File "/home/bolun/Documents/SuperSuit/supersuit/vector/multiproc_vec.py", line 72, in async_loop
+    observations = vec_env.reset(seed=data[0], options=data[1])
+  File "/home/bolun/Documents/SuperSuit/supersuit/vector/concat_vec_env.py", line 40, in reset
+    _res_ls = [
+  File "/home/bolun/Documents/SuperSuit/supersuit/vector/concat_vec_env.py", line 41, in <listcomp>
+    vec_env.reset(seed=None, options=options) for vec_env in self.vec_envs
+  File "/home/bolun/Documents/SuperSuit/supersuit/vector/markov_vector_wrapper.py", line 55, in reset
+    return self.concat_obs(self.par_env.reset(seed=seed, options=options))
+  File "/home/bolun/Documents/pet_env/lib/python3.8/site-packages/pettingzoo/utils/conversions.py", line 121, in reset
+    self.aec_env.reset(seed=seed, options=options)
+TypeError: reset() got an unexpected keyword argument 'options'
+
+=============================== warnings summary ===============================
+supersuit/utils/agent_indicator.py:53
+  /home/bolun/Documents/SuperSuit/supersuit/utils/agent_indicator.py:53: UserWarning: agent_indicator wrapper is degenerate, only one agent type; doing nothing
+    warnings.warn(
+
+../pet_env/lib/python3.8/site-packages/gym/utils/seeding.py:47: 1 warning
+test/generated_agents_test.py: 140 warnings
+test/gym_mock_test.py: 20 warnings
+test/pettingzoo_api_test.py: 10250 warnings
+test/test_vector/test_aec_vector_identity_env.py: 5406 warnings
+test/test_vector/test_pettingzoo_to_vec.py: 1657 warnings
+  /home/bolun/Documents/pet_env/lib/python3.8/site-packages/gym/utils/seeding.py:47: DeprecationWarning: [33mWARN: Function `rng.randint(low, [high, size, dtype])` is marked as deprecated and will be removed in the future. Please use `rng.integers(low, [high, size, dtype])` instead.[0m
+    deprecation(
+
+test/generated_agents_test.py: 26 warnings
+  /home/bolun/Documents/pet_env/lib/python3.8/site-packages/pettingzoo/test/api_test.py:361: UserWarning: This environment does not have possible_agents defined.
+  This is not a required part 'of the API as environments with procedurally
+  generated agents cannot always have this property defined. However, this is
+  very uncommon and these features should be included whenever possible as all
+  standard learning code requires these properties. Also not that if you do not
+  have possible_agents it should also not be possible for you to expose the possible_agents
+  list and observation_spaces, action_spaces dictionaries.
+    warnings.warn(missing_attr_warning.format(name="possible_agents"))
+
+test/generated_agents_test.py::test_pettingzoo_aec_api_par_gen[env0]
+test/generated_agents_test.py::test_pettingzoo_aec_api_par_gen[env11]
+test/generated_agents_test.py::test_pettingzoo_aec_api_aec_gen[env0]
+test/generated_agents_test.py::test_pettingzoo_aec_api_aec_gen[env11]
+test/pettingzoo_api_test.py::test_pettingzoo_aec_api[env3]
+test/pettingzoo_api_test.py::test_pettingzoo_aec_api[env5]
+test/pettingzoo_api_test.py::test_pettingzoo_aec_api[env10]
+test/pettingzoo_api_test.py::test_pettingzoo_aec_api[env21]
+  /home/bolun/Documents/pet_env/lib/python3.8/site-packages/pettingzoo/test/api_test.py:50: UserWarning: Observation numpy array is all zeros.
+    warnings.warn("Observation numpy array is all zeros.")
+
+test/generated_agents_test.py: 26 warnings
+  /home/bolun/Documents/pet_env/lib/python3.8/site-packages/pettingzoo/test/api_test.py:98: UserWarning: We recommend agents to be named in the format <descriptor>_<number>, like "player_0"
+    warnings.warn(
+
+test/generated_agents_test.py: 25 warnings
+test/pettingzoo_api_test.py: 3 warnings
+  /home/bolun/Documents/pet_env/lib/python3.8/site-packages/pettingzoo/test/api_test.py:110: UserWarning: Agents have different observation space sizes
+    warnings.warn("Agents have different observation space sizes")
+
+test/generated_agents_test.py: 26 warnings
+test/pettingzoo_api_test.py: 3 warnings
+  /home/bolun/Documents/pet_env/lib/python3.8/site-packages/pettingzoo/test/api_test.py:44: UserWarning: Observations are different shapes
+    warnings.warn("Observations are different shapes")
+
+test/generated_agents_test.py: 13 warnings
+  /home/bolun/Documents/pet_env/lib/python3.8/site-packages/pettingzoo/test/parallel_test.py:30: UserWarning: This environment does not have possible_agents defined.
+  This is not a required part 'of the API as environments with procedurally
+  generated agents cannot always have this property defined. However, this is
+  very uncommon and these features should be included whenever possible as all
+  standard learning code requires these properties. Also not that if you do not
+  have possible_agents it should also not be possible for you to expose the possible_agents
+  list and observation_spaces, action_spaces dictionaries.
+    warnings.warn(missing_attr_warning.format(name="possible_agents"))
+
+test/pettingzoo_api_test.py::test_pettingzoo_frame_stack
+test/pettingzoo_api_test.py::test_pettingzoo_pad_action_space
+test/pettingzoo_api_test.py::test_pettingzoo_aec_api[env8]
+test/pettingzoo_api_test.py::test_pettingzoo_aec_api[env9]
+  /home/bolun/Documents/pet_env/lib/python3.8/site-packages/pettingzoo/test/api_test.py:146: UserWarning: Agent's minimum observation space value is -infinity. This is probably too low.
+    warnings.warn(
+
+test/pettingzoo_api_test.py::test_pettingzoo_frame_stack
+test/pettingzoo_api_test.py::test_pettingzoo_pad_action_space
+test/pettingzoo_api_test.py::test_pettingzoo_aec_api[env8]
+test/pettingzoo_api_test.py::test_pettingzoo_aec_api[env9]
+  /home/bolun/Documents/pet_env/lib/python3.8/site-packages/pettingzoo/test/api_test.py:150: UserWarning: Agent's maxmimum observation space value is infinity. This is probably too high
+    warnings.warn(
+
+test/pettingzoo_api_test.py::test_pettingzoo_aec_api[env3]
+test/pettingzoo_api_test.py::test_pettingzoo_aec_api[env6]
+test/pettingzoo_api_test.py::test_pettingzoo_aec_api[env11]
+test/pettingzoo_api_test.py::test_pettingzoo_aec_api[env13]
+test/pettingzoo_api_test.py::test_pettingzoo_aec_api[env15]
+test/pettingzoo_api_test.py::test_pettingzoo_aec_api[env16]
+test/pettingzoo_api_test.py::test_pettingzoo_aec_api[env18]
+test/pettingzoo_api_test.py::test_pettingzoo_aec_api[env22]
+  /home/bolun/Documents/pet_env/lib/python3.8/site-packages/pettingzoo/test/api_test.py:56: UserWarning: The observation contains negative numbers and is in the shape of a graphical observation. This might be a bad thing.
+    warnings.warn(
+
+test/pettingzoo_api_test.py: 63604 warnings
+  /home/bolun/Documents/pet_env/lib/python3.8/site-packages/magent/gridworld.py:356: DeprecationWarning: `np.bool` is a deprecated alias for the builtin `bool`. To silence this warning, use `bool` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.bool_` here.
+  Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
+    buf = np.empty((n,), dtype=np.bool)
+
+test/pettingzoo_api_test.py::test_pettingzoo_aec_api[env17]
+  /home/bolun/Documents/pet_env/lib/python3.8/site-packages/pettingzoo/test/api_test.py:60: UserWarning: Observation is not NumPy array
+    warnings.warn("Observation is not NumPy array")
+
+test/pettingzoo_api_test.py::test_pettingzoo_aec_api[env17]
+  /home/bolun/Documents/pet_env/lib/python3.8/site-packages/pettingzoo/test/api_test.py:81: UserWarning: Observation space for each agent probably should be gym.spaces.box or gym.spaces.discrete
+    warnings.warn(
+
+test/test_utils/test_basic_transforms/test_resize.py::test_change_observation
+  /home/bolun/Documents/pet_env/lib/python3.8/site-packages/gym/spaces/box.py:84: UserWarning: [33mWARN: Box bound precision lowered by casting to float32[0m
+    logger.warn(f"Box bound precision lowered by casting to {self.dtype}")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED test/aec_mock_test.py::test_frame_stack - TypeError: reset() got an un...
+FAILED test/aec_mock_test.py::test_frame_skip - TypeError: reset() got an une...
+FAILED test/aec_mock_test.py::test_agent_indicator - TypeError: reset() got a...
+FAILED test/aec_mock_test.py::test_reshape - TypeError: reset() got an unexpe...
+FAILED test/aec_mock_test.py::test_basic_wrappers[env0] - TypeError: reset() ...
+FAILED test/aec_mock_test.py::test_basic_wrappers[env1] - TypeError: reset() ...
+FAILED test/aec_mock_test.py::test_basic_wrappers[env2] - TypeError: reset() ...
+FAILED test/aec_mock_test.py::test_basic_wrappers[env3] - TypeError: reset() ...
+FAILED test/aec_mock_test.py::test_basic_wrappers[env4] - TypeError: reset() ...
+FAILED test/aec_mock_test.py::test_basic_wrappers[env5] - TypeError: reset() ...
+FAILED test/aec_mock_test.py::test_basic_wrappers[env6] - TypeError: reset() ...
+FAILED test/aec_mock_test.py::test_basic_wrappers[env7] - TypeError: reset() ...
+FAILED test/aec_mock_test.py::test_basic_wrappers[env8] - TypeError: reset() ...
+FAILED test/aec_mock_test.py::test_basic_wrappers[env9] - TypeError: reset() ...
+FAILED test/aec_mock_test.py::test_basic_wrappers[env10] - TypeError: reset()...
+FAILED test/aec_mock_test.py::test_basic_wrappers[env11] - TypeError: reset()...
+FAILED test/aec_mock_test.py::test_basic_wrappers[env12] - TypeError: reset()...
+FAILED test/aec_mock_test.py::test_basic_wrappers[env13] - TypeError: reset()...
+FAILED test/aec_mock_test.py::test_basic_wrappers[env14] - TypeError: reset()...
+FAILED test/aec_mock_test.py::test_basic_wrappers[env15] - TypeError: reset()...
+FAILED test/aec_mock_test.py::test_basic_wrappers[env16] - TypeError: reset()...
+FAILED test/aec_mock_test.py::test_basic_wrappers[env17] - TypeError: reset()...
+FAILED test/aec_mock_test.py::test_basic_wrappers[env18] - TypeError: reset()...
+FAILED test/aec_mock_test.py::test_basic_wrappers[env19] - TypeError: reset()...
+FAILED test/aec_mock_test.py::test_basic_wrappers[env20] - TypeError: reset()...
+FAILED test/aec_mock_test.py::test_basic_wrappers[env21] - TypeError: reset()...
+FAILED test/aec_mock_test.py::test_basic_wrappers[env22] - TypeError: reset()...
+FAILED test/aec_mock_test.py::test_rew_lambda - TypeError: reset() got an une...
+FAILED test/aec_mock_test.py::test_observation_lambda - TypeError: reset() go...
+FAILED test/aec_mock_test.py::test_action_lambda - TypeError: reset() got an ...
+FAILED test/aec_mock_test.py::test_dehomogenize - TypeError: reset() got an u...
+FAILED test/aec_mock_test.py::test_NaN_noop - TypeError: reset() got an unexp...
+FAILED test/aec_mock_test.py::test_NaN_zeros - TypeError: reset() got an unex...
+FAILED test/aec_mock_test.py::test_NaN_random - TypeError: reset() got an une...
+FAILED test/aec_mock_test.py::test_scale_action_wrapper - TypeError: reset() ...
+FAILED test/gym_mock_test.py::test_reshape - TypeError: reset() got an unexpe...
+FAILED test/gym_mock_test.py::test_basic_wrappers[env0] - TypeError: reset() ...
+FAILED test/gym_mock_test.py::test_basic_wrappers[env1] - TypeError: reset() ...
+FAILED test/gym_mock_test.py::test_basic_wrappers[env2] - TypeError: reset() ...
+FAILED test/gym_mock_test.py::test_basic_wrappers[env3] - TypeError: reset() ...
+FAILED test/gym_mock_test.py::test_basic_wrappers[env4] - TypeError: reset() ...
+FAILED test/gym_mock_test.py::test_basic_wrappers[env5] - TypeError: reset() ...
+FAILED test/gym_mock_test.py::test_basic_wrappers[env6] - TypeError: reset() ...
+FAILED test/gym_mock_test.py::test_basic_wrappers[env7] - TypeError: reset() ...
+FAILED test/gym_mock_test.py::test_basic_wrappers[env13] - TypeError: reset()...
+FAILED test/gym_mock_test.py::test_basic_wrappers[env14] - TypeError: reset()...
+FAILED test/gym_mock_test.py::test_basic_wrappers[env15] - TypeError: reset()...
+FAILED test/gym_mock_test.py::test_basic_wrappers[env18] - TypeError: reset()...
+FAILED test/gym_mock_test.py::test_lambda - TypeError: reset() got an unexpec...
+FAILED test/parallel_env_test.py::test_basic - TypeError: reset() got an unex...
+FAILED test/test_vector/test_vector_dict.py::test_pettingzoo_vec_env - TypeEr...
+FAILED test/test_vector/test_vector_dict.py::test_single_threaded_concatenate
+FAILED test/test_vector/test_vector_dict.py::test_multi_threaded_concatenate
+========== 53 failed, 139 passed, 81228 warnings in 99.47s (0:01:39) ===========
