@@ -86,13 +86,13 @@ class _SeperableAECWrapper:
             for agent in self.env.possible_agents
         }
 
-    def reset(self, seed=None):
+    def reset(self, seed=None, options=None):
         if seed is not None:
             for i, env in enumerate(self.envs):
-                env.reset(seed=seed + i)
+                env.reset(seed=seed + i, options=options)
         else:
             for i, env in enumerate(self.envs):
-                env.reset(seed=None)
+                env.reset(seed=None, options=options)
 
         self.rewards = {
             agent: [env.rewards.get(agent, 0) for env in self.envs]
@@ -127,7 +127,6 @@ class _SeperableAECWrapper:
             env_done = not env.agents
             env_dones.append(env_done)
             if env_done:
-                # TODO: check is this reset needs seeding other than None
                 env.reset()
             elif env.agent_selection == agent_step:
                 if env.dones[agent_step]:
@@ -238,7 +237,7 @@ def env_worker(
         while True:
             instruction, data = pipe.recv()
             if instruction == "reset":
-                env.reset(seed=data)
+                env.reset(seed=data[0], options=data[1])
                 write_out_data(
                     env.rewards,
                     env._cumulative_rewards,
@@ -418,7 +417,6 @@ class AsyncAECVectorEnv(VectorAECEnv):
             self.possible_agents, self.num_envs, self.env_starts, all_compressed_info
         )
 
-        # TODO: check if this reset needs seeding
         self.agent_selection = (
             self._agent_selector.reset() if reset else self._agent_selector.next()
         )
@@ -465,9 +463,9 @@ class AsyncAECVectorEnv(VectorAECEnv):
             self.infos[last_agent],
         )
 
-    def reset(self, seed=None):
+    def reset(self, seed=None, options=None):
         for cin in self.con_ins:
-            cin.send(("reset", seed))
+            cin.send(("reset", (seed, options)))
 
         self._load_next_data(True)
 

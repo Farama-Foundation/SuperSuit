@@ -11,10 +11,10 @@ def nan_random_v0(env):
         def __init__(self):
             super().__init__()
 
-        def reset(self, seed=None):
+        def reset(self, seed=None, options=None):
             self.np_random, seed = gym.utils.seeding.np_random(seed)
 
-            return super().reset(seed)
+            return super().reset(seed, options=options)
 
         def modify_action(self, action):
             if action is not None and np.isnan(action).any():

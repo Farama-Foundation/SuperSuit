@@ -2,7 +2,7 @@ class BaseModifier:
     def __init__(self):
         pass
 
-    def reset(self, seed=None):
+    def reset(self, seed=None, options=None):
         pass
 
     def modify_obs(self, obs):

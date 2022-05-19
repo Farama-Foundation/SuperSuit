@@ -19,8 +19,8 @@ class aec_reward_lambda(PettingzooWrap):
     def _modify_spaces(self):
         pass
 
-    def reset(self, seed=None):
-        super().reset(seed=seed)
+    def reset(self, seed=None, options=None):
+        super().reset(seed=seed, options=options)
         self.rewards = {
             agent: self._change_reward_fn(reward)
             for agent, reward in self.rewards.items()

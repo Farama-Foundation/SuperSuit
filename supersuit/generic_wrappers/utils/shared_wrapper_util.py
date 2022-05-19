@@ -31,17 +31,22 @@ class shared_wrapper_aec(PettingzooWrap):
                 self.modifiers[agent] = self.modifier_class()
                 self.observation_space(agent)
                 self.action_space(agent)
-                self.modifiers[agent].reset(seed=self._cur_seed)
+                self.modifiers[agent].reset(
+                    seed=self._cur_seed, options=self._cur_options
+                )
 
                 # modifiers for each agent has a different seed
                 if self._cur_seed is not None:
                     self._cur_seed += 1
 
-    def reset(self, seed=None):
+    def reset(self, seed=None, options=None):
         self._cur_seed = seed
+        self._cur_options = options
+
         for mod in self.modifiers.values():
-            mod.reset(seed=seed)
-        super().reset(seed=seed)
+            mod.reset(seed=seed, options=options)
+        super().reset(seed=seed, options=options)
+
         self.add_modifiers(self.agents)
         self.modifiers[self.agent_selection].modify_obs(
             super().observe(self.agent_selection)
@@ -88,18 +93,22 @@ class shared_wrapper_parr(BaseParallelWraper):
                 self.modifiers[agent] = self.modifier_class()
                 self.observation_space(agent)
                 self.action_space(agent)
-                self.modifiers[agent].reset(seed=self._cur_seed)
+                self.modifiers[agent].reset(
+                    seed=self._cur_seed, options=self._cur_options
+                )
 
                 # modifiers for each agent has a different seed
                 if self._cur_seed is not None:
                     self._cur_seed += 1
 
-    def reset(self, seed=None):
+    def reset(self, seed=None, options=None):
         self._cur_seed = seed
-        observations = super().reset(seed=seed)
+        self._cur_options = options
+
+        observations = super().reset(seed=seed, options=options)
         self.add_modifiers(self.agents)
         for agent, mod in self.modifiers.items():
-            mod.reset(seed=seed)
+            mod.reset(seed=seed, options=options)
         observations = {
             agent: self.modifiers[agent].modify_obs(obs)
             for agent, obs in observations.items()
@@ -127,9 +136,9 @@ class shared_wrapper_gym(gym.Wrapper):
         self.observation_space = self.modifier.modify_obs_space(self.observation_space)
         self.action_space = self.modifier.modify_action_space(self.action_space)
 
-    def reset(self, seed=None):
-        self.modifier.reset(seed=seed)
-        obs = super().reset(seed=seed)
+    def reset(self, seed=None, options=None):
+        self.modifier.reset(seed=seed, options=options)
+        obs = super().reset(seed=seed, options=options)
         obs = self.modifier.modify_obs(obs)
         return obs
 
