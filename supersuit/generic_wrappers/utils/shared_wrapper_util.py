@@ -12,6 +12,7 @@ class shared_wrapper_aec(PettingzooWrap):
         self.modifier_class = modifier_class
         self.modifiers = {}
         self._cur_seed = None
+        self._cur_options = None
 
         if hasattr(self.env, "possible_agents"):
             self.add_modifiers(self.env.possible_agents)
@@ -74,6 +75,7 @@ class shared_wrapper_parr(BaseParallelWraper):
         self.modifier_class = modifier_class
         self.modifiers = {}
         self._cur_seed = None
+        self._cur_options = None
 
         if hasattr(self.env, "possible_agents"):
             self.add_modifiers(self.env.possible_agents)
