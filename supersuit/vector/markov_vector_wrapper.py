@@ -51,8 +51,8 @@ class MarkovVectorEnv(gym.vector.VectorEnv):
     def step_wait(self):
         return self.step(self._saved_actions)
 
-    def reset(self, seed=None):
-        return self.concat_obs(self.par_env.reset(seed=seed))
+    def reset(self, seed=None, options=None):
+        return self.concat_obs(self.par_env.reset(seed=seed, options=options))
 
     def step(self, actions):
         actions = list(iterate(self.action_space, actions))
@@ -80,7 +80,6 @@ class MarkovVectorEnv(gym.vector.VectorEnv):
         infs = [infos.get(agent, {}) for agent in self.par_env.possible_agents]
 
         if all(dones.values()):
-            # TODO: need to check how to seed this reset()
             observations = self.reset()
         else:
             observations = self.concat_obs(observations)
