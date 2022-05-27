@@ -43,7 +43,7 @@ class ConcatVecEnv(gym.vector.VectorEnv):
                     for vec_env in self.vec_envs
                 ]
 
-            return self.concat_obs(_res_ls)
+            return self.concat_obs(_res_obs)
 
         else:
             _res_info = []
@@ -62,7 +62,7 @@ class ConcatVecEnv(gym.vector.VectorEnv):
                     _res_obs.append(_obs)
                     _res_info.append(_info)
 
-            return self.concat_obs(_res_ls), sum(_res_info, [])
+            return self.concat_obs(_res_obs), sum(_res_info, [])
 
     def concat_obs(self, observations):
         return concatenate(
