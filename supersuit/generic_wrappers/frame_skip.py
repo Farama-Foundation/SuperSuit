@@ -42,7 +42,7 @@ class frame_skip_aec(StepAltWrapper):
         check_transform_frameskip(num_frames)
         self.num_frames = num_frames
 
-    def reset(self, seed=None, options=None):
+    def reset(self, seed=None, return_info=False, options=None):
         super().reset(seed=seed, options=options)
         self.agents = self.env.agents[:]
         self.dones = make_defaultdict({agent: False for agent in self.agents})
