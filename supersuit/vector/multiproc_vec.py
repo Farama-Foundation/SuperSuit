@@ -69,7 +69,14 @@ def async_loop(vec_env_constr, inpt_p, pipe, shared_obs, shared_rews, shared_don
                 name, data = instr
 
                 if name == "reset":
-                    observations = vec_env.reset(seed=data[0], options=data[1])
+                    if not data[1]:
+                        observations = vec_env.reset(seed=data[0], options=data[2])
+                    else:
+                        observations, infos = vec_env.reset(
+                            seed=data[0], return_info=data[1], options=data[2]
+                        )
+                        comp_infos = compress_info(infos)
+
                     write_observations(vec_env, env_start_idx, shared_obs, observations)
                     shared_dones.np_arr[env_start_idx:env_end_idx] = False
                     shared_rews.np_arr[env_start_idx:env_end_idx] = 0.0
@@ -162,12 +169,12 @@ class ProcConcatVec(gym.vector.VectorEnv):
         assert num_envs == tot_num_envs
         self.idx_starts = idx_starts
 
-    def reset(self, seed=None, options=None):
+    def reset(self, seed=None, return_info=False, options=None):
         for i, pipe in enumerate(self.pipes):
             if seed is not None:
-                pipe.send(("reset", (seed + i, options)))
+                pipe.send(("reset", (seed + i, return_info, options)))
             else:
-                pipe.send(("reset", (seed, options)))
+                pipe.send(("reset", (seed, return_info, options)))
 
         self._receive_info()
 
