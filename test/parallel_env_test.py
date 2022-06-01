@@ -32,8 +32,11 @@ class DummyParEnv(ParallelEnv):
             assert action in self.action_space(agent)
         return self._observations, self.rewards, self.dones, self.infos
 
-    def reset(self, seed=None, options=None):
-        return self._observations
+    def reset(self, seed=None, return_info=False, options=None):
+        if not return_info:
+            return self._observations
+        else:
+            return self._observations, self.infos
 
     def close(self):
         pass
