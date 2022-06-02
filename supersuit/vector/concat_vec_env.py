@@ -62,7 +62,11 @@ class ConcatVecEnv(gym.vector.VectorEnv):
                     _res_obs.append(_obs)
                     _res_info.append(_info)
 
-            return self.concat_obs(_res_obs), sum(_res_info, [])
+            info_array = {}
+            for i, info in enumerate(_res_info):
+                info_array = self._add_info(info_array, info, i)
+
+            return self.concat_obs(_res_obs), info_array
 
     def concat_obs(self, observations):
         return concatenate(
@@ -105,8 +109,12 @@ class ConcatVecEnv(gym.vector.VectorEnv):
         observations = self.concat_obs(observations)
         rewards = np.concatenate(rewards, axis=0)
         dones = np.concatenate(dones, axis=0)
-        infos = sum(infos, [])
-        return observations, rewards, dones, infos
+
+        info_array = {}
+        for i, info in enumerate(infos):
+            info_array = self._add_info(info_array, info[0], i)
+
+        return observations, rewards, dones, info_array
 
     def render(self, mode="human"):
         return self.vec_envs[0].render(mode)
