@@ -1,3 +1,0 @@
-gym>=0.22.0
-pettingzoo[butterfly]>=1.18.1
-tinyscaler>=1.0.4
