@@ -1,4 +1,3 @@
-from gym.utils.seeding import np_random
 import numpy as np
 import gym
 
