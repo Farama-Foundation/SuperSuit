@@ -31,6 +31,7 @@ jobs:
         pip install flake8 pytest atari_py magent gym pettingzoo[butterfly] tinyscaler
         git clone https://github.com/Farama-Foundation/PettingZoo.git
         pip install -e ./PettingZoo[classic]
+        pip install -e ./PettingZoo[butterfly]
     - name: Test with pytest
       run: |
         xvfb-run -s "-screen 0 1400x900x24" pytest ./test
