@@ -59,7 +59,7 @@ def test_gym_supersuit_equivalency():
     check_vec_env_equivalency(venv1, venv2)
 
 
-def test_inital_state_dissimilarity():
+def test_initial_state_dissimilarity():
     env = gym.make("CartPole-v1")
     venv = concat_vec_envs_v1(env, 2)
     observations = venv.reset()
