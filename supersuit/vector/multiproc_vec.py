@@ -34,9 +34,9 @@ def reconstruct_infos(infos):
         for key in info:
             if key not in new_infos:
                 new_infos[key] = [None] * len(infos)
-                new_infos[key][i] = info[key]
+                new_infos[key][i] = info[key][0]
             else:
-                new_infos[key][i] = info[key]
+                new_infos[key][i] = info[key][0]
 
     return new_infos
 
