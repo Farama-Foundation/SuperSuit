@@ -10,19 +10,6 @@ def transpose(ll):
     return [[ll[i][j] for i in range(len(ll))] for j in range(len(ll[0]))]
 
 
-def reconstruct_infos(infos):
-    new_infos = {}
-    for i, info in enumerate(infos):
-        for key in info:
-            if key not in new_infos:
-                new_infos[key] = [None] * len(infos)
-                new_infos[key][i] = info[key]
-            else:
-                new_infos[key][i] = info[key]
-
-    return new_infos
-
-
 @iterate.register(Discrete)
 def iterate_discrete(space, items):
     try:
