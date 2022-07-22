@@ -28,6 +28,19 @@ def decompress_info(num_envs, idx_starts, comp_infos):
     return all_info
 
 
+def reconstruct_infos(infos):
+    new_infos = {}
+    for i, info in enumerate(infos):
+        for key in info:
+            if key not in new_infos:
+                new_infos[key] = [None] * len(infos)
+                new_infos[key][i] = info[key]
+            else:
+                new_infos[key][i] = info[key]
+
+    return new_infos
+
+
 def write_observations(vec_env, env_start_idx, shared_obs, obs):
     obs = list(iterate(vec_env.observation_space, obs))
     for i in range(vec_env.num_envs):
@@ -60,7 +73,7 @@ def async_loop(vec_env_constr, inpt_p, pipe, shared_obs, shared_rews, shared_don
         env_end_idx = env_start_idx + vec_env.num_envs
         while True:
             instr = pipe.recv()
-            comp_infos = []
+            infos = {}
 
             if instr == "close":
                 vec_env.close()
@@ -75,7 +88,6 @@ def async_loop(vec_env_constr, inpt_p, pipe, shared_obs, shared_rews, shared_don
                         observations, infos = vec_env.reset(
                             seed=data[0], return_info=data[1], options=data[2]
                         )
-                        comp_infos = compress_info(infos)
 
                     write_observations(vec_env, env_start_idx, shared_obs, observations)
                     shared_dones.np_arr[env_start_idx:env_end_idx] = False
@@ -92,15 +104,14 @@ def async_loop(vec_env_constr, inpt_p, pipe, shared_obs, shared_rews, shared_don
                     write_observations(vec_env, env_start_idx, shared_obs, observations)
                     shared_dones.np_arr[env_start_idx:env_end_idx] = dones
                     shared_rews.np_arr[env_start_idx:env_end_idx] = rewards
-                    comp_infos = compress_info(infos)
 
                 elif name == "env_is_wrapped":
-                    comp_infos = vec_env.env_is_wrapped(data)
+                    infos = vec_env.env_is_wrapped(data)
 
                 elif name == "render":
                     render_result = vec_env.render(data)
                     if data == "rgb_array":
-                        comp_infos = render_result
+                        infos = render_result
 
                 else:
                     raise AssertionError("bad tuple instruction name: " + name)
@@ -108,7 +119,7 @@ def async_loop(vec_env_constr, inpt_p, pipe, shared_obs, shared_rews, shared_don
                 return
             else:
                 raise AssertionError("bad instruction: " + instr)
-            pipe.send(comp_infos)
+            pipe.send(infos)
     except BaseException as e:
         tb = traceback.format_exc()
         pipe.send((e, tb))
@@ -198,8 +209,8 @@ class ProcConcatVec(gym.vector.VectorEnv):
         return all_data
 
     def step_wait(self):
-        compressed_infos = self._receive_info()
-        infos = decompress_info(self.num_envs, self.idx_starts, compressed_infos)
+        infos = self._receive_info()
+        infos = reconstruct_infos(infos)
         rewards = self.shared_rews.np_arr
         dones = self.shared_dones.np_arr
         return (
