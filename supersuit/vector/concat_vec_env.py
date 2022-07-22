@@ -1,12 +1,26 @@
-import numpy as np
-from .single_vec_env import SingleVecEnv
 import gym.vector
-from gym.vector.utils import concatenate, iterate, create_empty_array
+import numpy as np
 from gym.spaces import Discrete
+from gym.vector.utils import concatenate, create_empty_array, iterate
+
+from .single_vec_env import SingleVecEnv
 
 
 def transpose(ll):
     return [[ll[i][j] for i in range(len(ll))] for j in range(len(ll[0]))]
+
+
+def reconstruct_infos(infos):
+    new_infos = {}
+    for i, info in enumerate(infos):
+        for key in info:
+            if key not in new_infos:
+                new_infos[key] = [None] * len(infos)
+                new_infos[key][i] = info[key]
+            else:
+                new_infos[key][i] = info[key]
+
+    return new_infos
 
 
 @iterate.register(Discrete)
@@ -65,8 +79,11 @@ class ConcatVecEnv(gym.vector.VectorEnv):
             info_array = {}
             for i, info in enumerate(_res_info):
                 info_array = self._add_info(info_array, info, i)
+            infos = {}
+            for info in info_array:
+                infos[info] = [info_array[info]]
 
-            return self.concat_obs(_res_obs), info_array
+            return self.concat_obs(_res_obs), infos
 
     def concat_obs(self, observations):
         return concatenate(
@@ -113,8 +130,9 @@ class ConcatVecEnv(gym.vector.VectorEnv):
         info_array = {}
         for i, info in enumerate(infos):
             info_array = self._add_info(info_array, info[0], i)
+        infos = {}
 
-        return observations, rewards, dones, info_array
+        return observations, rewards, dones, infos
 
     def render(self, mode="human"):
         return self.vec_envs[0].render(mode)

@@ -1,14 +1,15 @@
 import copy
 
-from supersuit import (
-    gym_vec_env_v0,
-    stable_baselines3_vec_env_v0,
-    concat_vec_envs_v1,
-    pettingzoo_env_to_vec_env_v1,
-)
-from pettingzoo.mpe import simple_spread_v2
 import gym
 import numpy as np
+from pettingzoo.mpe import simple_spread_v2
+
+from supersuit import (
+    concat_vec_envs_v1,
+    gym_vec_env_v0,
+    pettingzoo_env_to_vec_env_v1,
+    stable_baselines3_vec_env_v0,
+)
 
 
 def recursive_equal(info1, info2):
@@ -48,7 +49,7 @@ def check_vec_env_equivalency(venv1, venv2, check_info=True):
         # uses close rather than equal due to inconsistency in reporting rewards as float32 or float64
         assert np.allclose(rew1, rew2)
         assert np.all(np.equal(done1, done2))
-        assert recursive_equal(info1, info2) or not check_info
+        assert recursive_equal(info1, info2) or not check_info, f"{info1} \n {info2}"
 
 
 def test_gym_supersuit_equivalency():

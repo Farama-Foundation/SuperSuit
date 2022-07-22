@@ -1,8 +1,10 @@
-import gym
-import cloudpickle
-from . import MakeCPUAsyncConstructor, MarkovVectorEnv
-from pettingzoo.utils.env import ParallelEnv
 import warnings
+
+import cloudpickle
+import gym
+from pettingzoo.utils.env import ParallelEnv
+
+from . import MakeCPUAsyncConstructor, MarkovVectorEnv
 
 
 def vec_env_args(env, num_envs):
