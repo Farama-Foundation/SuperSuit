@@ -50,7 +50,6 @@ def test_good_vecenv():
         assert len(new_obss) == max_num_agents
         assert len(rews) == max_num_agents
         assert len(dones) == max_num_agents
-        assert len(infos) == max_num_agents
         # no agent death, only env death
         if any(dones):
             assert all(dones)
