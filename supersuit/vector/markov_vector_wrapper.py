@@ -22,11 +22,11 @@ class MarkovVectorEnv(gym.vector.VectorEnv):
         assert all(
             self.observation_space == par_env.observation_space(agent)
             for agent in par_env.possible_agents
-        ), "observation spaces not consistent. Perhaps you should wrap with `supersuit.aec_wrappers.pad_observations`?"
+        ), "observation spaces not consistent. Perhaps you should wrap with `supersuit.multiagent_wrappers.pad_observations_v0`?"
         assert all(
             self.action_space == par_env.action_space(agent)
             for agent in par_env.possible_agents
-        ), "action spaces not consistent. Perhaps you should wrap with `supersuit.aec_wrappers.pad_actions`?"
+        ), "action spaces not consistent. Perhaps you should wrap with `supersuit.multiagent_wrappers.pad_observations_v0`?"
         self.num_envs = len(par_env.possible_agents)
         self.black_death = black_death
 
