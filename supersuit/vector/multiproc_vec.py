@@ -212,7 +212,7 @@ class ProcConcatVec(gym.vector.VectorEnv):
         infos = self._receive_info()
         infos = reconstruct_infos(infos)
         rewards = self.shared_rews.np_arr
-        dones = self.shared_dones.np_arr
+        dones = self.shared_dones.np_arr.dtype(bool)
         return (
             numpy_deepcopy(self.observations_buffers),
             rewards.copy(),
