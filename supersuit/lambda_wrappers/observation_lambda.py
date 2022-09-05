@@ -112,9 +112,9 @@ class gym_observation_lambda(gym.Wrapper):
         return self.change_observation_fn(observation, self.env.observation_space)
 
     def step(self, action):
-        observation, rew, done, info = self.env.step(action)
+        observation, rew, termination, truncation, info = self.env.step(action)
         observation = self._modify_observation(observation)
-        return observation, rew, done, info
+        return observation, rew, termination, truncation, info
 
     def reset(self, seed=None, return_info=False, options=None):
         if not return_info:
