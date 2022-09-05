@@ -105,8 +105,8 @@ def test_frame_skip():
     env = supersuit.frame_skip_v0(base_env, 3)
     env.reset()
     for a in env.agent_iter(8):
-        obs, rew, done, info = env.last()
-        env.step(0 if not done else None)
+        obs, rew, termination, truncation, info = env.last()
+        env.step(0 if not termination or not truncation else None)
 
 
 def test_agent_indicator():
@@ -229,7 +229,11 @@ def test_basic_wrappers(env):
     env.step(act_space.sample())
     for agent in env.agent_iter():
         act_space = env.action_space(env.agent_selection)
-        env.step(act_space.sample() if not env.dones[agent] else None)
+        env.step(
+            act_space.sample()
+            if not env.terminations[agent] or not env.truncations[agent]
+            else None
+        )
 
 
 def test_rew_lambda():
