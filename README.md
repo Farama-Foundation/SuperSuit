@@ -3,6 +3,9 @@
 </p>
 
 
+Note- Once the planned wrapper rewrite of Gymnasium is complete and the vector API is stabilized, this project will be deprecated and rewritten as part of a new wrappers package in pettingzoo and the vectorized API will be redone, taking inspiration from the functionality currently in gymnasium. 
+
+
 SuperSuit introduces a collection of small functions which can wrap reinforcement learning environments to do preprocessing ('microwrappers').
 We support Gym for single agent environments and PettingZoo for multi-agent environments (both AECEnv and ParallelEnv environments). Using it to convert space invaders to have a grey scale observation space and stack the last 4 frames looks like:
 
