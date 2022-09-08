@@ -201,11 +201,11 @@ class ProcConcatVec(gym.vector.VectorEnv):
         compressed_infos = self._receive_info()
         infos = decompress_info(self.num_envs, self.idx_starts, compressed_infos)
         rewards = self.shared_rews.np_arr
-        dones = self.shared_dones.np_arr.dtype(bool)
+        dones = self.shared_dones.np_arr
         return (
             numpy_deepcopy(self.observations_buffers),
             rewards.copy(),
-            dones.copy(),
+            dones.astype(bool).copy(),
             copy.deepcopy(infos),
         )
 
