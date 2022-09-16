@@ -1,3 +1,7 @@
+"""
+Just to ensure PZ runs (trunc version)
+"""
+
 from pettingzoo.butterfly import pistonball_v6
 
 env = pistonball_v6.env()
