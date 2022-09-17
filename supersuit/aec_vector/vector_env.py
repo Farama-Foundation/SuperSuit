@@ -135,7 +135,10 @@ class SyncAECVectorEnv(VectorAECEnv):
             if env_done:
                 env.reset()
             elif env.agent_selection == old_agent:
-                env.step(np.array([act]) if not (self.terminations[old_agent][i] or self.truncations[old_agent][i]) else None)
+                if type(act) != type(np.array([])):
+                    act = np.array(act)
+                act = act if not (self.terminations[old_agent][i] or self.truncations[old_agent][i]) else None  # if the agent is dead, set action to None
+                env.step(act)
 
         self.agent_selection = self._agent_selector.next()
         self.agent_selection = self._find_active_agent()
