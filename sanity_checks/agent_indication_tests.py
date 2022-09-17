@@ -1,5 +1,5 @@
 """
-Just to ensure AEC wrappers run
+Just to ensure wrappers run
 """
 import numpy as np
 from pettingzoo.butterfly import pistonball_v6
