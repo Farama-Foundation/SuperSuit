@@ -1,0 +1,17 @@
+"""
+Just to ensure AEC wrappers run
+"""
+import numpy as np
+from pettingzoo.butterfly import pistonball_v6
+from supersuit.multiagent_wrappers import agent_indicator_v0
+
+env = pistonball_v6.env()
+env = agent_indicator_v0(env, type_only=False)
+
+env.reset()
+for agent in env.agent_iter(1000000):
+    obs, rew, term, trunc, info = env.last()
+    act = [env.action_space(agent).sample(), env.action_space(agent).sample(), env.action_space(agent).sample(), env.action_space(agent).sample()]
+    if (np.array(term) & np.array(trunc)).all():
+        env.reset()
+    env.step(act)
