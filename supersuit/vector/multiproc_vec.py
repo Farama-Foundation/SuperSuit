@@ -205,7 +205,7 @@ class ProcConcatVec(gym.vector.VectorEnv):
         return (
             numpy_deepcopy(self.observations_buffers),
             rewards.copy(),
-            dones.copy(),
+            dones.astype(bool).copy(),
             copy.deepcopy(infos),
         )
 
