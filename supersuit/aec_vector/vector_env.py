@@ -52,9 +52,16 @@ class SyncAECVectorEnv(VectorAECEnv):
             )
             for agent in self.possible_agents
         }
-        self.dones = {
+        self.terminations = {
             agent: np.array(
-                [env.dones[agent] if agent in env.dones else True for env in self.envs],
+                [env.terminations[agent] if agent in env.terminations else True for env in self.envs],
+                dtype=np.uint8,
+            )
+            for agent in self.possible_agents
+        }
+        self.truncations = {
+            agent: np.array(
+                [env.truncations[agent] if agent in env.truncations else True for env in self.envs],
                 dtype=np.uint8,
             )
             for agent in self.possible_agents
@@ -79,14 +86,15 @@ class SyncAECVectorEnv(VectorAECEnv):
         self.agent_selection = self._find_active_agent()
 
         self._collect_dicts()
-        self.envs_dones = np.zeros(self.num_envs)
+        self.envs_terminations = np.zeros(self.num_envs)
+        self.envs_truncations = np.zeros(self.num_envs)
 
     def observe(self, agent):
         observations = []
         for env in self.envs:
             obs = (
                 env.observe(agent)
-                if agent in env.dones
+                if (agent in env.terminations) or (agent in env.truncations)
                 else np.zeros_like(env.observation_space(agent).low)
             )
             observations.append(obs)
@@ -102,24 +110,35 @@ class SyncAECVectorEnv(VectorAECEnv):
         return (
             obs,
             self._cumulative_rewards[last_agent],
-            self.dones[last_agent],
-            self.envs_dones,
+            self.terminations[last_agent],
+            self.truncations[last_agent],
+            self.envs_terminations,
+            self.envs_truncations,
             passes,
             self.infos[last_agent],
         )
 
     def step(self, actions, observe=True):
-        assert len(actions) == len(self.envs)
+        assert len(actions) == len(self.envs), f"{len(actions)} actions given, but there are {len(self.envs)} environments!"
         old_agent = self.agent_selection
 
         envs_dones = []
         for i, (act, env) in enumerate(zip(actions, self.envs)):
-            env_done = not env.agents
+            # Prior to the truncation API update, the env was reset if env.agents was an empty list
+            # After the truncation API update, the env needs to be reset if every agent is terminated OR truncated
+            terminations = np.fromiter(env.terminations.values(), dtype=bool)
+            truncations = np.fromiter(env.truncations.values(), dtype=bool)
+            env_done = (terminations & truncations).any()
             envs_dones.append(env_done)
+
+
             if env_done:
                 env.reset()
             elif env.agent_selection == old_agent:
-                env.step(act if not self.dones[old_agent][i] else None)
+                if type(act) != type(np.array([])):
+                    act = np.array(act)
+                act = act if not (self.terminations[old_agent][i] or self.truncations[old_agent][i]) else None  # if the agent is dead, set action to None
+                env.step(act)
 
         self.agent_selection = self._agent_selector.next()
         self.agent_selection = self._find_active_agent()
