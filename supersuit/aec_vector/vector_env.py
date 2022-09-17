@@ -128,7 +128,7 @@ class SyncAECVectorEnv(VectorAECEnv):
             # After the truncation API update, the env needs to be reset if every agent is terminated OR truncated
             terminations = np.fromiter(env.terminations.values(), dtype=bool)
             truncations = np.fromiter(env.truncations.values(), dtype=bool)
-            env_done = (terminations & truncations).any()
+            env_done = (terminations & truncations).all()
             envs_dones.append(env_done)
 
 
