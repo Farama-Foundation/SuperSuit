@@ -11,7 +11,7 @@ env = agent_indicator_v0(env, type_only=False)
 env.reset()
 for agent in env.agent_iter(1000000):
     obs, rew, term, trunc, info = env.last()
-    act = [env.action_space(agent).sample(), env.action_space(agent).sample(), env.action_space(agent).sample(), env.action_space(agent).sample()]
+    act = None if (term or trunc) else env.action_space(agent).sample()
     if (np.array(term) & np.array(trunc)).all():
         env.reset()
     env.step(act)
