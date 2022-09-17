@@ -135,5 +135,5 @@ def test_action_lambda():
 def test_rew_lambda():
     env = supersuit.reward_lambda_v0(new_dummy(), lambda x: x / 10)
     env.reset()
-    obs, rew, done, info = env.step(0)
+    obs, rew, termination, truncation, info = env.step(0)
     assert rew == 1.0 / 10
