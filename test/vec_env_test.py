@@ -8,7 +8,9 @@ def test_vec_env_args():
     num_envs = 8
     vec_env = gym_vec_env_v0(env, num_envs)
     vec_env.reset()
-    obs, rew, dones, infos = vec_env.step([0] + [1] * (vec_env.num_envs - 1))
+    obs, rew, terminations, truncations, infos = vec_env.step(
+        [0] + [1] * (vec_env.num_envs - 1)
+    )
     assert not np.any(np.equal(obs[0], obs[1]))
 
 
