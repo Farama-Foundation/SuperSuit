@@ -149,7 +149,7 @@ class frame_skip_par(BaseParallelWraper):
                     ), "parallel environments that use frame_skip_v0 must provide a `default_action` argument for steps between an agent being generated and an agent taking its first step"
                     action[agent] = self.default_action
 
-            if (np.fromiter(term.values, dtype=bool) | np.fromiter(trunc.values, dtype=bool)).all():
+            if (np.fromiter(term.values(), dtype=bool) | np.fromiter(trunc.values(), dtype=bool)).all():
                 break
 
         # delete any values created by agents which were
