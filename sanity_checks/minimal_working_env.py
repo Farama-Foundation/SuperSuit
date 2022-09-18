@@ -12,7 +12,7 @@ for agent in env.agent_iter():
     act = None if (term or trunc) else env.action_space(agent).sample()
     terminations = np.fromiter(env.terminations.values(), dtype=bool)
     truncations = np.fromiter(env.truncations.values(), dtype=bool)
-    env_done = (terminations & truncations).all()
+    env_done = (terminations | truncations).all()
     if env_done:
         env.reset()
         break
