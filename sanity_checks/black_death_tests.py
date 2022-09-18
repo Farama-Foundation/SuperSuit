@@ -15,5 +15,4 @@ for agent in env.agent_iter(1000000):
     if (np.array(term) & np.array(trunc)).all():
         env.reset()
         break
-    print(__name__, term, trunc, act)
     env.step(act)
