@@ -82,7 +82,7 @@ class frame_skip_aec(StepAltWrapper):
             step_agent = self.env.agent_selection
 
             # if agent is dead, perform a None step
-            if self.env.terminations[step_agent] or self.env.truncations[step_agent]:
+            if (step_agent in self.env.terminations) or (step_agent in self.env.truncations):
                 # reward = self.env.rewards[step_agent]
                 # done = self.env.dones[step_agent]
                 # info = self.env.infos[step_agent]
