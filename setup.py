@@ -31,7 +31,7 @@ setuptools.setup(
     install_requires=[
         "pettingzoo @ git+https://github.com/Farama-Foundation/PettingZoo@API_Update",
         "tinyscaler>=1.0.4",
-        "gym>=0.24.1",
+        "gym>=0.26.0",
         "pygame==2.1.2",
         "pymunk==6.2.1",
     ],
