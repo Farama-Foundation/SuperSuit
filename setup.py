@@ -29,7 +29,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     python_requires=">=3.7",
     install_requires=[
-        "pettingzoo @ git+https://github.com/Farama-Foundation/PettingZoo@API_Update",
+        "pettingzoo @ git+https://github.com/Farama-Foundation/PettingZoo",
         "tinyscaler>=1.0.4",
         "gym>=0.26.0",
         "pygame==2.1.2",
