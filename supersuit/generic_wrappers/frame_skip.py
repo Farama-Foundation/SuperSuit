@@ -64,18 +64,24 @@ class frame_skip_aec(StepAltWrapper):
 
     def step(self, action):
         self._has_updated = True
+
+        # if agent is dead, perform a None step
         if self.terminations[self.agent_selection] or self.truncations[self.agent_selection]:
             if self.env.agents and self.agent_selection == self.env.agent_selection:
                 self.env.step(None)
             self._was_dead_step(action)
             return
+
         cur_agent = self.agent_selection
         self._cumulative_rewards[cur_agent] = 0
         self.rewards = make_defaultdict({a: 0.0 for a in self.agents})
-        self.skip_num[cur_agent] = self.num_frames
+        self.skip_num[cur_agent] = self.num_frames  # set the skip num to the param inputted in the frame_skip wrapper
         self.old_actions[cur_agent] = action
-        while self.old_actions[self.env.agent_selection] is not None:
+
+        while self.old_actions[self.env.agent_selection] is not None:  # this is like `for x in range(num_skips):` (L18)
             step_agent = self.env.agent_selection
+
+            # if agent is dead, perform a None step
             if self.env.terminations[step_agent] or self.env.truncations[step_agent]:
                 # reward = self.env.rewards[step_agent]
                 # done = self.env.dones[step_agent]
@@ -83,10 +89,10 @@ class frame_skip_aec(StepAltWrapper):
                 observe, reward, termination, truncation, info = self.env.last(observe=False)
                 action = self.old_actions[step_agent]
                 self.env.step(action)
-
                 for agent in self.env.agents:
                     self.rewards[agent] += self.env.rewards[agent]
                 self.infos[self.env.agent_selection] = info
+
                 while self.env.agents and (self.env.terminations[self.env.agent_selection] or self.env.truncations[self.env.agent_selection]):
                     dead_agent = self.env.agent_selection
                     self.terminations[dead_agent] = self.env.terminations[dead_agent]
@@ -97,7 +103,7 @@ class frame_skip_aec(StepAltWrapper):
 
             self.skip_num[step_agent] -= 1
             if self.skip_num[step_agent] == 0:
-                self.old_actions[step_agent] = None
+                self.old_actions[step_agent] = None  # if it is time to skip, set action to None, effectively breaking the while loop
 
         my_agent_set = set(self.agents)
         for agent in self.env.agents:
