@@ -41,27 +41,27 @@ def test_frame_stack():
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
     env = frame_stack_v1(base_env, 4)
     obs = env.reset()
-    obs, _, _, _ = env.last()
+    obs, _, _, _, _ = env.last()
     assert obs.shape == (2, 3, 4)
     env.step(2)
-    first_obs, _, _, _ = env.last()
+    first_obs, _, _, _, _ = env.last()
     assert np.all(np.equal(first_obs[:, :, -1], base_obs["a1"], dtype=np.float32))
 
     base_obs = {"a{}".format(idx): idx + 3 for idx in range(2)}
     base_env = DummyEnv(base_obs, base_act_spaces, base_act_spaces)
     env = frame_stack_v1(base_env, 4)
     obs = env.reset()
-    obs, _, _, _ = env.last()
+    obs, _, _, _, _ = env.last()
     assert env.observation_space(env.agent_selection).n == 5**4
     env.step(2)
-    first_obs, _, _, _ = env.last()
+    first_obs, _, _, _, _ = env.last()
     assert first_obs == 4
     env.step(2)
-    second_obs, _, _, _ = env.last()
+    second_obs, _, _, _, _ = env.last()
     assert second_obs == 3 * 5 + 3
     for x in range(8):
         nth_obs = env.step(2)
-        nth_obs, _, _, _ = env.last()
+        nth_obs, _, _, _, _ = env.last()
     assert nth_obs == ((3 * 5 + 3) * 5 + 3) * 5 + 3
 
     # frame_stack_v1 test
@@ -76,27 +76,27 @@ def test_frame_stack():
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
     env = frame_stack_v2(base_env, 4)
     obs = env.reset()
-    obs, _, _, _ = env.last()
+    obs, _, _, _, _ = env.last()
     assert obs.shape == (2, 3, 4)
     env.step(2)
-    first_obs, _, _, _ = env.last()
+    first_obs, _, _, _, _ = env.last()
     assert np.all(np.equal(first_obs[:, :, -1], base_obs["a1"], dtype=np.float32))
 
     base_obs = {"a{}".format(idx): idx + 3 for idx in range(2)}
     base_env = DummyEnv(base_obs, base_act_spaces, base_act_spaces)
     env = frame_stack_v2(base_env, 4)
     obs = env.reset()
-    obs, _, _, _ = env.last()
+    obs, _, _, _, _ = env.last()
     assert env.observation_space(env.agent_selection).n == 5**4
     env.step(2)
-    first_obs, _, _, _ = env.last()
+    first_obs, _, _, _, _ = env.last()
     assert first_obs == ((4 * 5 + 4) * 5 + 4) * 5 + 4
     env.step(2)
-    second_obs, _, _, _ = env.last()
+    second_obs, _, _, _, _ = env.last()
     assert second_obs == ((3 * 5 + 3) * 5 + 3) * 5 + 3
     for x in range(8):
         nth_obs = env.step(2)
-        nth_obs, _, _, _ = env.last()
+        nth_obs, _, _, _, _ = env.last()
     assert nth_obs == ((3 * 5 + 3) * 5 + 3) * 5 + 3
 
 
@@ -105,8 +105,8 @@ def test_frame_skip():
     env = supersuit.frame_skip_v0(base_env, 3)
     env.reset()
     for a in env.agent_iter(8):
-        obs, rew, done, info = env.last()
-        env.step(0 if not done else None)
+        obs, rew, term, trunc, info = env.last()
+        env.step(0 if not term or not trunc else None)
 
 
 def test_agent_indicator():
@@ -123,14 +123,14 @@ def test_agent_indicator():
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
     env = supersuit.agent_indicator_v0(base_env, type_only=True)
     env.reset()
-    obs, _, _, _ = env.last()
+    obs, _, _, _, _ = env.last()
     assert obs.shape == (2, 3, 3)
     assert env.observation_space("a_0").shape == (2, 3, 3)
     first_obs = env.step(2)
 
     env = supersuit.agent_indicator_v0(base_env, type_only=False)
     env.reset()
-    obs, _, _, _ = env.last()
+    obs, _, _, _, _ = env.last()
     assert obs.shape == (2, 3, 4)
     assert env.observation_space("a_0").shape == (2, 3, 4)
     env.step(2)
@@ -140,10 +140,10 @@ def test_reshape():
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
     env = reshape_v0(base_env, (64, 3))
     env.reset()
-    obs, _, _, _ = env.last()
+    obs, _, _, _, _ = env.last()
     assert obs.shape == (64, 3)
     env.step(5)
-    first_obs, _, _, _ = env.last()
+    first_obs, _, _, _, _ = env.last()
     assert np.all(np.equal(first_obs, base_obs["a1"].reshape([64, 3])))
 
 
@@ -220,7 +220,7 @@ wrappers = [
 @pytest.mark.parametrize("env", wrappers)
 def test_basic_wrappers(env):
     env.reset(seed=5)
-    obs, _, _, _ = env.last()
+    obs, _, _, _, _ = env.last()
     act_space = env.action_space(env.agent_selection)
     obs_space = env.observation_space(env.agent_selection)
     first_obs = env.observe("a_0")
@@ -229,7 +229,7 @@ def test_basic_wrappers(env):
     env.step(act_space.sample())
     for agent in env.agent_iter():
         act_space = env.action_space(env.agent_selection)
-        env.step(act_space.sample() if not env.dones[agent] else None)
+        env.step(act_space.sample() if not (env.truncations[agent] or env.terminations[agent]) else None)
 
 
 def test_rew_lambda():
@@ -245,11 +245,11 @@ def test_observation_lambda():
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
     env = observation_lambda_v0(base_env, add1)
     env.reset()
-    obs0, _, _, _ = env.last()
+    obs0, _, _, _, _ = env.last()
     assert int(obs0[0][0][0]) == 1
     env = observation_lambda_v0(env, add1)
     env.reset()
-    obs0, _, _, _ = env.last()
+    obs0, _, _, _, _ = env.last()
     assert int(obs0[0][0][0]) == 2
 
     def tile_obs(obs, obs_space):
@@ -260,7 +260,7 @@ def test_observation_lambda():
 
     env = observation_lambda_v0(env, tile_obs)
     env.reset()
-    obs0, _, _, _ = env.last()
+    obs0, _, _, _, _ = env.last()
     assert env.observation_space(env.agent_selection).shape == (16, 8, 3)
 
     def change_shape_fn(obs_space):
@@ -268,7 +268,7 @@ def test_observation_lambda():
 
     env = observation_lambda_v0(env, tile_obs)
     env.reset()
-    obs0, _, _, _ = env.last()
+    obs0, _, _, _, _ = env.last()
     assert env.observation_space(env.agent_selection).shape == (32, 8, 3)
     assert obs0.shape == (32, 8, 3)
 
