@@ -229,7 +229,11 @@ def test_basic_wrappers(env):
     env.step(act_space.sample())
     for agent in env.agent_iter():
         act_space = env.action_space(env.agent_selection)
-        env.step(act_space.sample() if not (env.truncations[agent] or env.terminations[agent]) else None)
+        env.step(
+            act_space.sample()
+            if not (env.truncations[agent] or env.terminations[agent])
+            else None
+        )
 
 
 def test_rew_lambda():
