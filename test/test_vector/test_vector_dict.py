@@ -60,15 +60,17 @@ def dict_vec_env_test(env):
             actions,
             create_empty_array(env.action_space, env.num_envs),
         )
-        obss, rews, dones, infos = env.step(actions)
+        obss, rews, terms, truncs, infos = env.step(actions)
         assert obss["feature"][1][0] == 1
         assert {
             "feature": obss["feature"][1][:],
             "id": [o[1] for o in obss["id"]],
         } in env.observation_space
         # no agent death, only env death
-        if any(dones):
-            assert all(dones)
+        if any(terms):
+            assert all(terms)
+        if any(truncs):
+            assert all(truncs)
 
 
 def test_pettingzoo_vec_env():
