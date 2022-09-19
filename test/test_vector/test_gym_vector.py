@@ -42,12 +42,13 @@ def check_vec_env_equivalency(venv1, venv2, check_info=True):
         action = [venv1.action_space.sample() for env in range(venv1.num_envs)]
         assert np.all(np.equal(obs1, obs2))
 
-        obs1, rew1, done1, info1 = venv1.step(action)
-        obs2, rew2, done2, info2 = venv2.step(action)
+        obs1, rew1, term1, trunc1, info1 = venv1.step(action)
+        obs2, rew2, term2, trunc2, info2 = venv2.step(action)
 
         # uses close rather than equal due to inconsistency in reporting rewards as float32 or float64
         assert np.allclose(rew1, rew2)
-        assert np.all(np.equal(done1, done2))
+        assert np.all(np.equal(term1, term2))
+        assert np.all(np.equal(trunc1, trunc2))
         assert recursive_equal(info1, info2) or not check_info
 
 
