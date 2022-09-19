@@ -21,7 +21,7 @@ def test_reshape():
     env = reshape_v0(base_env, (64, 3))
     obs = env.reset()
     assert obs.shape == (64, 3)
-    first_obs, _, _, _ = env.step(5)
+    first_obs, _, _, _, _ = env.step(5)
     assert np.all(np.equal(first_obs, base_obs.reshape([64, 3])))
 
 
