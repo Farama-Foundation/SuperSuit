@@ -106,7 +106,7 @@ def test_frame_skip():
     env.reset()
     for a in env.agent_iter(8):
         obs, rew, term, trunc, info = env.last()
-        env.step(0 if not term or not trunc else None)
+        env.step(0 if not (term or trunc) else None)
 
 
 def test_agent_indicator():
