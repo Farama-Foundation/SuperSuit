@@ -62,7 +62,7 @@ def scale_actions_v0(env, scale):
 
     return action_lambda_v1(
         env,
-        lambda action, act_space: np.asarray(action) * scale,
+        lambda action, act_space: np.asarray(action) * scale if action is not None else None,
         lambda act_space: change_act_space(act_space),
     )
 
