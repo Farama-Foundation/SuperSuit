@@ -1,3 +1,5 @@
+import numpy as np
+
 from supersuit.utils.frame_skip import check_transform_frameskip
 from supersuit.utils.wrapper_chooser import WrapperChooser
 from pettingzoo.utils.wrappers import BaseWrapper, BaseParallelWraper
