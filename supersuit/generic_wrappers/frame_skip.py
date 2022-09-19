@@ -14,7 +14,7 @@ class frame_skip_gym(gym.Wrapper):
 
     def step(self, action):
         low, high = self.num_frames
-        num_skips = int(self.np_random.randint(low, high + 1))
+        num_skips = int(self.np_random.integers(low, high + 1))
         total_reward = 0.0
 
         for x in range(num_skips):
