@@ -21,6 +21,7 @@ setuptools.setup(
     author="SuperSuit Community",
     author_email="jkterry@farama.org",
     description="Wrappers for Gym and PettingZoo",
+    license_files=("LICENSE.txt",),
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/PettingZoo-Team/SuperSuit",
