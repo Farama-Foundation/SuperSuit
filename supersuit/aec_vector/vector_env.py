@@ -54,14 +54,20 @@ class SyncAECVectorEnv(VectorAECEnv):
         }
         self.terminations = {
             agent: np.array(
-                [env.terminations[agent] if agent in env.terminations else True for env in self.envs],
+                [
+                    env.terminations[agent] if agent in env.terminations else True
+                    for env in self.envs
+                ],
                 dtype=np.uint8,
             )
             for agent in self.possible_agents
         }
         self.truncations = {
             agent: np.array(
-                [env.truncations[agent] if agent in env.truncations else True for env in self.envs],
+                [
+                    env.truncations[agent] if agent in env.truncations else True
+                    for env in self.envs
+                ],
                 dtype=np.uint8,
             )
             for agent in self.possible_agents
@@ -119,7 +125,9 @@ class SyncAECVectorEnv(VectorAECEnv):
         )
 
     def step(self, actions, observe=True):
-        assert len(actions) == len(self.envs), f"{len(actions)} actions given, but there are {len(self.envs)} environments!"
+        assert len(actions) == len(
+            self.envs
+        ), f"{len(actions)} actions given, but there are {len(self.envs)} environments!"
         old_agent = self.agent_selection
 
         envs_dones = []
@@ -131,13 +139,19 @@ class SyncAECVectorEnv(VectorAECEnv):
             env_done = (terminations & truncations).any()
             envs_dones.append(env_done)
 
-
             if env_done:
                 env.reset()
             elif env.agent_selection == old_agent:
                 if type(act) != type(np.array([])):
                     act = np.array(act)
-                act = act if not (self.terminations[old_agent][i] or self.truncations[old_agent][i]) else None  # if the agent is dead, set action to None
+                act = (
+                    act
+                    if not (
+                        self.terminations[old_agent][i]
+                        or self.truncations[old_agent][i]
+                    )
+                    else None
+                )  # if the agent is dead, set action to None
                 env.step(act)
 
         self.agent_selection = self._agent_selector.next()

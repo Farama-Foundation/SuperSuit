@@ -70,7 +70,7 @@ class frame_skip_aec(StepAltWrapper):
         ):
             if self.env.agents and self.agent_selection == self.env.agent_selection:
                 self.env.step(None)
-            self._was_done_step(action)
+            self._was_dead_step(action)
             return
         cur_agent = self.agent_selection
         self._cumulative_rewards[cur_agent] = 0
@@ -79,7 +79,10 @@ class frame_skip_aec(StepAltWrapper):
         self.old_actions[cur_agent] = action
         while self.old_actions[self.env.agent_selection] is not None:
             step_agent = self.env.agent_selection
-            if step_agent in self.env.terminations or self.env.trunctations:
+            if (
+                step_agent in self.env.terminations
+                or step_agent in self.env.truncations
+            ):
                 # reward = self.env.rewards[step_agent]
                 # done = self.env.dones[step_agent]
                 # info = self.env.infos[step_agent]
@@ -91,16 +94,12 @@ class frame_skip_aec(StepAltWrapper):
                     self.rewards[agent] += self.env.rewards[agent]
                 self.infos[self.env.agent_selection] = info
                 while self.env.agents and (
-                    self.env.trunctations[self.env.agent_selection]
-                    or self.env.trunctations[self.env.agent_selection]
+                    self.env.truncations[self.env.agent_selection]
+                    or self.env.truncations[self.env.agent_selection]
                 ):
                     done_agent = self.env.agent_selection
-                    self.truncations[done_agent] = self.env.trunctations[
-                        self.env.trunctations
-                    ]
-                    self.terminations[done_agent] = self.env.terminations[
-                        self.env.terminations
-                    ]
+                    self.truncations[done_agent] = self.env.truncations[done_agent]
+                    self.terminations[done_agent] = self.env.terminations[done_agent]
                     self._final_observations[done_agent] = self.env.observe(done_agent)
                     self.env.step(None)
                 step_agent = self.env.agent_selection
@@ -112,13 +111,13 @@ class frame_skip_aec(StepAltWrapper):
         my_agent_set = set(self.agents)
         for agent in self.env.agents:
             self.terminations[agent] = self.env.terminations[agent]
-            self.truncations[agent] = self.env.trunctations[agent]
+            self.truncations[agent] = self.env.truncations[agent]
             self.infos[agent] = self.env.infos[agent]
             if agent not in my_agent_set:
                 self.agents.append(agent)
         self.agent_selection = self.env.agent_selection
         self._accumulate_rewards()
-        self._dones_step_first()
+        self._deads_step_first()
 
 
 class frame_skip_par(BaseParallelWraper):
