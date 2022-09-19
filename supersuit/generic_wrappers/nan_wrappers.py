@@ -41,13 +41,20 @@ def nan_random_v0(env):
 
 def nan_noop_v0(env, no_op_action):
     def on_action(action, action_space):
+        if action is None:
+            warnings.warn(
+                "[WARNING]: Step received an None action {}. Evironment is {}. Taking no operation action.".format(
+                    action, env
+                )
+            )
+            return None
         if np.isnan(action).any():
             warnings.warn(
                 "[WARNING]: Step received an NaN action {}. Evironment is {}. Taking no operation action.".format(
                     action, env
                 )
             )
-            action = no_op_action
+            return no_op_action
         return action
 
     return action_lambda_v1(env, on_action, lambda act_space: act_space)
@@ -55,13 +62,20 @@ def nan_noop_v0(env, no_op_action):
 
 def nan_zeros_v0(env):
     def on_action(action, action_space):
+        if action is None:
+            warnings.warn(
+                "[WARNING]: Step received an None action {}. Environment is {}. Taking the all zeroes action.".format(
+                    action, env
+                )
+            )
+            return None
         if np.isnan(action).any():
             warnings.warn(
                 "[WARNING]: Step received an NaN action {}. Environment is {}. Taking the all zeroes action.".format(
                     action, env
                 )
             )
-            action = np.zeros_like(action)
+            return np.zeros_like(action)
         return action
 
     return action_lambda_v1(env, on_action, lambda act_space: act_space)

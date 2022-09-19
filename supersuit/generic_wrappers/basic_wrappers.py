@@ -48,7 +48,9 @@ def normalize_obs_v0(env, env_min=0.0, env_max=1.0):
 def clip_actions_v0(env):
     return action_lambda_v1(
         env,
-        lambda action, act_space: np.clip(action, act_space.low, act_space.high),
+        lambda action, act_space: np.clip(action, act_space.low, act_space.high)
+        if action is not None
+        else None,
         lambda act_space: act_space,
     )
 
@@ -62,7 +64,9 @@ def scale_actions_v0(env, scale):
 
     return action_lambda_v1(
         env,
-        lambda action, act_space: np.asarray(action) * scale,
+        lambda action, act_space: np.asarray(action) * scale
+        if action is not None
+        else None,
         lambda act_space: change_act_space(act_space),
     )
 
