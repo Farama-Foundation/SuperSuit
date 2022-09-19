@@ -64,10 +64,7 @@ class frame_skip_aec(StepAltWrapper):
 
     def step(self, action):
         self._has_updated = True
-        if (
-            self.terminations[self.agent_selection]
-            or self.truncations[self.agent_selection]
-        ):
+        if self.terminations[self.agent_selection] or self.truncations[self.agent_selection]:
             if self.env.agents and self.agent_selection == self.env.agent_selection:
                 self.env.step(None)
             self._was_dead_step(action)
@@ -79,28 +76,22 @@ class frame_skip_aec(StepAltWrapper):
         self.old_actions[cur_agent] = action
         while self.old_actions[self.env.agent_selection] is not None:
             step_agent = self.env.agent_selection
-            if (
-                step_agent in self.env.terminations
-                or step_agent in self.env.truncations
-            ):
+            if self.env.terminations[step_agent] or self.env.truncations[step_agent]:
                 # reward = self.env.rewards[step_agent]
                 # done = self.env.dones[step_agent]
                 # info = self.env.infos[step_agent]
-                observe, reward, term, trunc, info = self.env.last(observe=False)
+                observe, reward, termination, truncation, info = self.env.last(observe=False)
                 action = self.old_actions[step_agent]
                 self.env.step(action)
 
                 for agent in self.env.agents:
                     self.rewards[agent] += self.env.rewards[agent]
                 self.infos[self.env.agent_selection] = info
-                while self.env.agents and (
-                    self.env.truncations[self.env.agent_selection]
-                    or self.env.truncations[self.env.agent_selection]
-                ):
-                    done_agent = self.env.agent_selection
-                    self.truncations[done_agent] = self.env.truncations[done_agent]
-                    self.terminations[done_agent] = self.env.terminations[done_agent]
-                    self._final_observations[done_agent] = self.env.observe(done_agent)
+                while self.env.agents and (self.env.terminations[self.env.agent_selection] or self.env.truncations[self.env.agent_selection]):
+                    dead_agent = self.env.agent_selection
+                    self.terminations[dead_agent] = self.env.terminations[dead_agent]
+                    self.truncations[dead_agent] = self.env.truncations[dead_agent]
+                    self._final_observations[dead_agent] = self.env.observe(dead_agent)
                     self.env.step(None)
                 step_agent = self.env.agent_selection
 
@@ -144,8 +135,8 @@ class frame_skip_par(BaseParallelWraper):
 
             for agent, rew in rews.items():
                 total_reward[agent] += rew
-                total_truncations[agent] = trunc[agent]
                 total_terminations[agent] = term[agent]
+                total_truncations[agent] = trunc[agent]
                 total_infos[agent] = info[agent]
                 total_obs[agent] = obs[agent]
 
@@ -156,7 +147,7 @@ class frame_skip_par(BaseParallelWraper):
                     ), "parallel environments that use frame_skip_v0 must provide a `default_action` argument for steps between an agent being generated and an agent taking its first step"
                     action[agent] = self.default_action
 
-            if all(term.values()) or all(trunc.values()):
+            if (np.fromiter(term.values(), dtype=bool) | np.fromiter(trunc.values(), dtype=bool)).all():
                 break
 
         # delete any values created by agents which were
@@ -165,19 +156,13 @@ class frame_skip_par(BaseParallelWraper):
         for agent in list(total_reward):
             if agent not in final_agents and agent not in orig_agents:
                 del total_reward[agent]
-                del total_truncations[agent]
                 del total_terminations[agent]
+                del total_truncations[agent]
                 del total_infos[agent]
                 del total_obs[agent]
 
         self.agents = self.env.agents[:]
-        return (
-            total_obs,
-            total_reward,
-            total_terminations,
-            total_truncations,
-            total_infos,
-        )
+        return total_obs, total_reward, total_terminations, total_truncations, total_infos
 
 
 frame_skip_v0 = WrapperChooser(
