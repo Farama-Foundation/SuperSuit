@@ -118,6 +118,8 @@ class ProcConcatVec(gym.vector.VectorEnv):
     def __init__(
         self, vec_env_constrs, observation_space, action_space, tot_num_envs, metadata
     ):
+        raise NotImplementedError("The wrapper ProcConcatVec is temporarily depreciated whilst it is being debugged. "
+                                  "Please refer to https://github.com/Farama-Foundation/SuperSuit/pull/165 for more information, or to contact the devs in regard to this.")
         self.observation_space = observation_space
         self.action_space = action_space
         self.num_envs = num_envs = tot_num_envs
