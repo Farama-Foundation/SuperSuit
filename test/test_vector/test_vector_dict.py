@@ -1,3 +1,5 @@
+import pytest
+
 from ..dummy_aec_env import DummyEnv
 from gym.spaces import Box, Discrete, Dict, Tuple
 from gym.vector.utils import concatenate, create_empty_array
@@ -85,7 +87,8 @@ def test_single_threaded_concatenate():
     env = concat_vec_envs_v1(env, 2, num_cpus=1)
     dict_vec_env_test(env)
 
-# TODO: Fix this!
+
+@pytest.mark.skip(reason="Wrapper depreciated, see https://github.com/Farama-Foundation/SuperSuit/issues/188")
 def test_multi_threaded_concatenate():
     env = make_env()
     env = pettingzoo_env_to_vec_env_v1(env)
