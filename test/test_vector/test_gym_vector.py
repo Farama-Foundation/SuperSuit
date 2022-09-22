@@ -108,7 +108,7 @@ def test_multiproc_buffer():
 
         # Check we're not passing a thing that gets mutated
         keep_obs = copy.deepcopy(obss)
-        new_obss, rews, dones, infos = env.step(actions)
+        new_obss, rews, terms, truncs, infos = env.step(actions)
 
         assert hash(str(keep_obs)) == hash(str(obss))
 
