@@ -50,7 +50,7 @@ def numpy_deepcopy(buf):
         raise ValueError("numpy_deepcopy ")
 
 
-def async_loop(vec_env_constr, inpt_p, pipe, shared_obs, shared_rews, shared_dones):
+def async_loop(vec_env_constr, inpt_p, pipe, shared_obs, shared_rews, shared_terms, shared_truncs):
     inpt_p.close()
     try:
         vec_env = vec_env_constr()
@@ -78,7 +78,8 @@ def async_loop(vec_env_constr, inpt_p, pipe, shared_obs, shared_rews, shared_don
                         comp_infos = compress_info(infos)
 
                     write_observations(vec_env, env_start_idx, shared_obs, observations)
-                    shared_dones.np_arr[env_start_idx:env_end_idx] = False
+                    shared_terms.np_arr[env_start_idx:env_end_idx] = False
+                    shared_truncs.np_arr[env_start_idx:env_end_idx] = False
                     shared_rews.np_arr[env_start_idx:env_end_idx] = 0.0
 
                 elif name == "step":
@@ -88,9 +89,10 @@ def async_loop(vec_env_constr, inpt_p, pipe, shared_obs, shared_rews, shared_don
                         actions,
                         create_empty_array(vec_env.action_space, n=len(actions)),
                     )
-                    observations, rewards, dones, infos = vec_env.step(actions)
+                    observations, rewards, terms, truncs, infos = vec_env.step(actions)
                     write_observations(vec_env, env_start_idx, shared_obs, observations)
-                    shared_dones.np_arr[env_start_idx:env_end_idx] = dones
+                    shared_terms.np_arr[env_start_idx:env_end_idx] = terms
+                    shared_truncs.np_arr[env_start_idx:env_end_idx] = truncs
                     shared_rews.np_arr[env_start_idx:env_end_idx] = rewards
                     comp_infos = compress_info(infos)
 
@@ -126,7 +128,8 @@ class ProcConcatVec(gym.vector.VectorEnv):
         self.shared_obs = create_shared_memory(self.observation_space, n=self.num_envs)
         self.shared_act = create_shared_memory(self.action_space, n=self.num_envs)
         self.shared_rews = SharedArray((num_envs,), dtype=np.float32)
-        self.shared_dones = SharedArray((num_envs,), dtype=np.uint8)
+        self.shared_terms = SharedArray((num_envs,), dtype=np.uint8)
+        self.shared_truncs = SharedArray((num_envs,), dtype=np.uint8)
 
         self.observations_buffers = read_from_shared_memory(
             self.observation_space, self.shared_obs, n=self.num_envs
@@ -145,7 +148,8 @@ class ProcConcatVec(gym.vector.VectorEnv):
                     outpt,
                     self.shared_obs,
                     self.shared_rews,
-                    self.shared_dones,
+                    self.shared_terms,
+                    self.shared_truncs,
                 ),
             )
             proc.start()
@@ -201,11 +205,13 @@ class ProcConcatVec(gym.vector.VectorEnv):
         compressed_infos = self._receive_info()
         infos = decompress_info(self.num_envs, self.idx_starts, compressed_infos)
         rewards = self.shared_rews.np_arr
-        dones = self.shared_dones.np_arr
+        terms = self.shared_terms.np_arr
+        truncs = self.shared_truncs.np_arr
         return (
             numpy_deepcopy(self.observations_buffers),
             rewards.copy(),
-            dones.astype(bool).copy(),
+            terms.astype(bool).copy(),
+            truncs.astype(bool).copy(),
             copy.deepcopy(infos),
         )
 
