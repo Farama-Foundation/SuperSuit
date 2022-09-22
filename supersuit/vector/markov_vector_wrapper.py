@@ -72,10 +72,13 @@ class MarkovVectorEnv(gym.vector.VectorEnv):
             for i, agent in enumerate(self.par_env.possible_agents)
             if agent in agent_set
         }
-        observations, rewards, dones, infos = self.par_env.step(act_dict)
+        observations, rewards, terms, truncs, infos = self.par_env.step(act_dict)
 
         # adds last observation to info where user can get it
-        if all(dones.values()):
+        terminations = np.fromiter(terms.values(), dtype=bool)
+        truncations = np.fromiter(truncs.values(), dtype=bool)
+        env_done = (terminations | truncations).all()
+        if env_done:
             for agent, obs in observations.items():
                 infos[agent]["terminal_observation"] = obs
 
@@ -83,20 +86,24 @@ class MarkovVectorEnv(gym.vector.VectorEnv):
             [rewards.get(agent, 0) for agent in self.par_env.possible_agents],
             dtype=np.float32,
         )
-        dns = np.array(
-            [dones.get(agent, False) for agent in self.par_env.possible_agents],
+        tms = np.array(
+            [terms.get(agent, False) for agent in self.par_env.possible_agents],
+            dtype=np.uint8,
+        )
+        tcs = np.array(
+            [truncs.get(agent, False) for agent in self.par_env.possible_agents],
             dtype=np.uint8,
         )
         infs = [infos.get(agent, {}) for agent in self.par_env.possible_agents]
 
-        if all(dones.values()):
+        if env_done:
             observations = self.reset()
         else:
             observations = self.concat_obs(observations)
         assert (
             self.black_death or self.par_env.agents == self.par_env.possible_agents
         ), "MarkovVectorEnv does not support environments with varying numbers of active agents unless black_death is set to True"
-        return observations, rews, dns, infs
+        return observations, rews, tms, tcs, infs
 
     def render(self, mode="human"):
         return self.par_env.render(mode)

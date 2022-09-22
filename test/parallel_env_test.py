@@ -18,7 +18,8 @@ class DummyParEnv(ParallelEnv):
         self._action_spaces = action_spaces
 
         self.rewards = {a: 1 for a in self.agents}
-        self.dones = {a: False for a in self.agents}
+        self.terminations = {a: False for a in self.agents}
+        self.truncations = {a: False for a in self.agents}
         self.infos = {a: {} for a in self.agents}
 
     def observation_space(self, agent):
@@ -30,7 +31,13 @@ class DummyParEnv(ParallelEnv):
     def step(self, actions):
         for agent, action in actions.items():
             assert action in self.action_space(agent)
-        return self._observations, self.rewards, self.dones, self.infos
+        return (
+            self._observations,
+            self.rewards,
+            self.terminations,
+            self.truncations,
+            self.infos,
+        )
 
     def reset(self, seed=None, return_info=False, options=None):
         if not return_info:
@@ -60,4 +67,4 @@ def test_basic():
     orig_obs = env.reset()
     for i in range(10):
         action = {agent: env.action_space(agent).sample() for agent in env.agents}
-        obs, rew, done, info = env.step(action)
+        obs, rew, termination, truncation, info = env.step(action)

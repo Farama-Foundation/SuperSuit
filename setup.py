@@ -28,7 +28,13 @@ setuptools.setup(
     keywords=["Reinforcement Learning", "gym"],
     packages=setuptools.find_packages(),
     python_requires=">=3.7",
-    install_requires=["pettingzoo>=1.19.0", "tinyscaler>=1.0.4", "gym>=0.24.1"],
+    install_requires=[
+        "pettingzoo @ git+https://github.com/Farama-Foundation/PettingZoo",
+        "tinyscaler>=1.0.4",
+        "gym>=0.26.0",
+        "pygame==2.1.2",
+        "pymunk==6.2.1",
+    ],
     classifiers=[
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",

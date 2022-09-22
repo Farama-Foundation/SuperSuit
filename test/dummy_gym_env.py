@@ -10,7 +10,7 @@ class DummyEnv(gym.Env):
         self.action_space = action_space
 
     def step(self, action):
-        return self._observation, 1, False, {}
+        return self._observation, 1, False, False, {}
 
     def reset(self, seed=None, return_info=False, options=None):
         if not return_info:

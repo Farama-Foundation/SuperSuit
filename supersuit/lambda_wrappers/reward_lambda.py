@@ -50,8 +50,8 @@ class gym_reward_lambda(gym.Wrapper):
         super().__init__(env)
 
     def step(self, action):
-        obs, rew, done, info = super().step(action)
-        return obs, self._change_reward_fn(rew), done, info
+        obs, rew, termination, truncation, info = super().step(action)
+        return obs, self._change_reward_fn(rew), termination, truncation, info
 
 
 reward_lambda_v0 = WrapperChooser(

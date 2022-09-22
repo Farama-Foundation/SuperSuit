@@ -27,14 +27,15 @@ class SingleVecEnv:
         self.gym_env.close()
 
     def step(self, actions):
-        observations, reward, done, info = self.gym_env.step(actions[0])
-        if done:
+        observations, reward, term, trunc, info = self.gym_env.step(actions[0])
+        if term or trunc:
             observations = self.gym_env.reset()
         observations = np.expand_dims(observations, 0)
         rewards = np.array([reward], dtype=np.float32)
-        dones = np.array([done], dtype=np.uint8)
+        terms = np.array([term], dtype=np.uint8)
+        truncs = np.array([trunc], dtype=np.uint8)
         infos = [info]
-        return observations, rewards, dones, infos
+        return observations, rewards, terms, truncs, infos
 
     def env_is_wrapped(self, wrapper_class):
         env_tmp = self.gym_env

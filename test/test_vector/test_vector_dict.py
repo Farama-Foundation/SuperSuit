@@ -1,3 +1,5 @@
+import pytest
+
 from ..dummy_aec_env import DummyEnv
 from gym.spaces import Box, Discrete, Dict, Tuple
 from gym.vector.utils import concatenate, create_empty_array
@@ -60,15 +62,17 @@ def dict_vec_env_test(env):
             actions,
             create_empty_array(env.action_space, env.num_envs),
         )
-        obss, rews, dones, infos = env.step(actions)
+        obss, rews, terms, truncs, infos = env.step(actions)
         assert obss["feature"][1][0] == 1
         assert {
             "feature": obss["feature"][1][:],
             "id": [o[1] for o in obss["id"]],
         } in env.observation_space
         # no agent death, only env death
-        if any(dones):
-            assert all(dones)
+        if any(terms):
+            assert all(terms)
+        if any(truncs):
+            assert all(truncs)
 
 
 def test_pettingzoo_vec_env():
@@ -84,6 +88,7 @@ def test_single_threaded_concatenate():
     dict_vec_env_test(env)
 
 
+@pytest.mark.skip(reason="Wrapper depreciated, see https://github.com/Farama-Foundation/SuperSuit/issues/188")
 def test_multi_threaded_concatenate():
     env = make_env()
     env = pettingzoo_env_to_vec_env_v1(env)

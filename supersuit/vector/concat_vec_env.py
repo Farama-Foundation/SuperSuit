@@ -101,12 +101,13 @@ class ConcatVecEnv(gym.vector.VectorEnv):
                 )
             )
             idx += venv.num_envs
-        observations, rewards, dones, infos = transpose(data)
+        observations, rewards, terminations, truncations, infos = transpose(data)
         observations = self.concat_obs(observations)
         rewards = np.concatenate(rewards, axis=0)
-        dones = np.concatenate(dones, axis=0)
+        terminations = np.concatenate(terminations, axis=0)
+        truncations = np.concatenate(truncations, axis=0)
         infos = sum(infos, [])
-        return observations, rewards, dones, infos
+        return observations, rewards, terminations, truncations, infos
 
     def render(self, mode="human"):
         return self.vec_envs[0].render(mode)
