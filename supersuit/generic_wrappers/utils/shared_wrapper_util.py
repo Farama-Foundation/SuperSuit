@@ -56,10 +56,7 @@ class shared_wrapper_aec(PettingzooWrap):
     def step(self, action):
         mod = self.modifiers[self.agent_selection]
         action = mod.modify_action(action)
-        if (
-            self.terminations[self.agent_selection]
-            or self.truncations[self.agent_selection]
-        ):
+        if self.terminations[self.agent_selection] or self.truncations[self.agent_selection]:
             action = None
         super().step(action)
         self.add_modifiers(self.agents)
@@ -148,11 +145,9 @@ class shared_wrapper_gym(gym.Wrapper):
         return obs
 
     def step(self, action):
-        obs, rew, terminations, truncations, info = super().step(
-            self.modifier.modify_action(action)
-        )
+        obs, rew, term, trunc, info = super().step(self.modifier.modify_action(action))
         obs = self.modifier.modify_obs(obs)
-        return obs, rew, terminations, truncations, info
+        return obs, rew, term, trunc, info
 
 
 shared_wrapper = WrapperChooser(

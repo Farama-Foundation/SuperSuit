@@ -1,14 +1,16 @@
 """
-Just to ensure PZ runs (trunc version)
+Just to ensure wrappers run
 """
 import numpy as np
 from pettingzoo.butterfly import pistonball_v6
+from supersuit.multiagent_wrappers import black_death_v3
 
 env = pistonball_v6.env()
+env = black_death_v3(env)
 
 env.reset()
-for agent in env.agent_iter():
-    obs, reward, trunc, term, info = env.last()
+for agent in env.agent_iter(1000000):
+    obs, rew, term, trunc, info = env.last()
     act = None if (term or trunc) else env.action_space(agent).sample()
     terminations = np.fromiter(env.terminations.values(), dtype=bool)
     truncations = np.fromiter(env.truncations.values(), dtype=bool)
@@ -17,4 +19,3 @@ for agent in env.agent_iter():
         env.reset()
         break
     env.step(act)
-    env.render()

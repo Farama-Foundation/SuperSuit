@@ -18,16 +18,19 @@ def test_good_env():
 
         # Check we're not passing a thing that gets mutated
         keep_obs = copy.deepcopy(obss)
-        new_obss, rews, dones, infos = env.step(actions)
+        new_obss, rews, terms, truncs, infos = env.step(actions)
 
         assert hash(str(keep_obs)) == hash(str(obss))
         assert len(new_obss) == max_num_agents
         assert len(rews) == max_num_agents
-        assert len(dones) == max_num_agents
+        assert len(terms) == max_num_agents
+        assert len(truncs) == max_num_agents
         assert len(infos) == max_num_agents
         # no agent death, only env death
-        if any(dones):
-            assert all(dones)
+        if any(terms):
+            assert all(terms)
+        if any(truncs):
+            assert all(truncs)
         obss = new_obss
 
 
@@ -44,16 +47,19 @@ def test_good_vecenv():
 
         # Check we're not passing a thing that gets mutated
         keep_obs = copy.deepcopy(obss)
-        new_obss, rews, dones, infos = env.step(actions)
+        new_obss, rews, terms, truncs, infos = env.step(actions)
 
         assert hash(str(keep_obs)) == hash(str(obss))
         assert len(new_obss) == max_num_agents
         assert len(rews) == max_num_agents
-        assert len(dones) == max_num_agents
+        assert len(terms) == max_num_agents
+        assert len(truncs) == max_num_agents
         assert len(infos) == max_num_agents
         # no agent death, only env death
-        if any(dones):
-            assert all(dones)
+        if any(terms):
+            assert all(terms)
+        if any(truncs):
+            assert all(truncs)
         obss = new_obss
 
 
@@ -71,7 +77,7 @@ def test_env_black_death_assertion():
             env.reset()
             for i in range(2000):
                 actions = [env.action_space.sample() for i in range(env.num_envs)]
-                obss, rews, dones, infos = env.step(actions)
+                obss, rews, terms, truncs, infos = env.step(actions)
 
 
 def test_env_black_death_wrapper():
@@ -81,4 +87,4 @@ def test_env_black_death_wrapper():
     env.reset()
     for i in range(300):
         actions = [env.action_space.sample() for i in range(env.num_envs)]
-        obss, rews, dones, infos = env.step(actions)
+        obss, rews, terms, truncs, infos = env.step(actions)
