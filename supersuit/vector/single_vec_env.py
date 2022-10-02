@@ -20,8 +20,8 @@ class SingleVecEnv:
     def step_wait(self):
         return self.step(self._saved_actions)
 
-    def render(self, mode="human"):
-        return self.gym_env.render(mode)
+    def render(self):
+        return self.gym_env.render()
 
     def close(self):
         self.gym_env.close()

@@ -230,8 +230,8 @@ class ProcConcatVec(gym.vector.VectorEnv):
         for proc in self.procs:
             proc.join()
 
-    def render(self, mode="human"):
-        self.pipes[0].send(("render", mode))
+    def render(self):
+        self.pipes[0].send("render")
         render_result = self.pipes[0].recv()
 
         if isinstance(render_result, tuple):
