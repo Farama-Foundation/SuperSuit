@@ -5,7 +5,7 @@ import supersuit
 
 
 class DummyParEnv(ParallelEnv):
-    metadata = {"render.modes": ["human"]}
+    metadata = {"render_modes": ["human"]}
 
     def __init__(self, observations, observation_spaces, action_spaces):
         super().__init__()

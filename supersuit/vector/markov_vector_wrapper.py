@@ -105,8 +105,8 @@ class MarkovVectorEnv(gym.vector.VectorEnv):
         ), "MarkovVectorEnv does not support environments with varying numbers of active agents unless black_death is set to True"
         return observations, rews, tms, tcs, infs
 
-    def render(self, mode="human"):
-        return self.par_env.render(mode)
+    def render(self):
+        return self.par_env.render()
 
     def close(self):
         return self.par_env.close()

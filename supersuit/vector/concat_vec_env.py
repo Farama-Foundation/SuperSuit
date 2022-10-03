@@ -109,8 +109,8 @@ class ConcatVecEnv(gym.vector.VectorEnv):
         infos = sum(infos, [])
         return observations, rewards, terminations, truncations, infos
 
-    def render(self, mode="human"):
-        return self.vec_envs[0].render(mode)
+    def render(self):
+        return self.vec_envs[0].render()
 
     def close(self):
         for vec_env in self.vec_envs:

@@ -4,7 +4,7 @@ from pettingzoo.utils.agent_selector import agent_selector
 
 
 class DummyEnv(AECEnv):
-    metadata = {"render.modes": ["human"], "is_parallelizable": True}
+    metadata = {"render_modes": ["human"], "is_parallelizable": True}
 
     def __init__(self, observations, observation_spaces, action_spaces):
         super().__init__()
