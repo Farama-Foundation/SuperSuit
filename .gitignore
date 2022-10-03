@@ -3,4 +3,4 @@ pettingzoo
 dist/*
 build/*
 SuperSuit.egg-info/*
-.vscode/
+venv/
