@@ -239,8 +239,7 @@ class ProcConcatVec(gym.vector.VectorEnv):
             print(tb)
             raise e
 
-        if mode == "rgb_array":
-            return render_result
+        return render_result
 
     def close(self):
         for pipe in self.pipes:
