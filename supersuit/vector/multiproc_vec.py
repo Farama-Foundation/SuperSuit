@@ -239,7 +239,7 @@ class ProcConcatVec(gym.vector.VectorEnv):
             print(tb)
             raise e
 
-        if mode == "rgb_array":
+        if self.render_mode == "rgb_array":
             return render_result
 
     def close(self):

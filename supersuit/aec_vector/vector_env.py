@@ -142,7 +142,7 @@ class SyncAECVectorEnv(VectorAECEnv):
             if env_done:
                 env.reset()
             elif env.agent_selection == old_agent:
-                if type(act) != type(np.array([])):
+                if isinstance(type(act), np.ndarray):
                     act = np.array(act)
                 act = (
                     act
