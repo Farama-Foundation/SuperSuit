@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="SuperSuit_Text.png" width="500px"/>
+    <img src="supersuit-text.png" width="500px"/>
 </p>
 
 
