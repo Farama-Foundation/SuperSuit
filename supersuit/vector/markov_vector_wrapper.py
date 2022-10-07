@@ -1,13 +1,13 @@
 import numpy as np
-import gym.vector
-from gym.vector.utils import concatenate, iterate, create_empty_array
+import gymnasium.vector
+from gymnasium.vector.utils import concatenate, iterate, create_empty_array
 
 
-class MarkovVectorEnv(gym.vector.VectorEnv):
+class MarkovVectorEnv(gymnasium.vector.VectorEnv):
     def __init__(self, par_env, black_death=False):
         """
         parameters:
-            - par_env: the pettingzoo Parallel environment that will be converted to a gym vector environment
+            - par_env: the pettingzoo Parallel environment that will be converted to a gymnasium vector environment
             - black_death: whether to give zero valued observations and 0 rewards when an agent is done, allowing for environments with multiple numbers of agents.
                             Is equivalent to adding the black death wrapper, but somewhat more efficient.
 
@@ -113,7 +113,7 @@ class MarkovVectorEnv(gym.vector.VectorEnv):
 
     def env_is_wrapped(self, wrapper_class):
         """
-        env_is_wrapped only suppors vector and gym environments
+        env_is_wrapped only suppors vector and gymnasium environments
         currently, not pettingzoo environments
         """
         return [False] * self.num_envs

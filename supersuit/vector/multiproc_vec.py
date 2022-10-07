@@ -4,8 +4,8 @@ from .utils.shared_array import SharedArray
 import multiprocessing as mp
 import numpy as np
 import traceback
-import gym.vector
-from gym.vector.utils import (
+import gymnasium.vector
+from gymnasium.vector.utils import (
     create_shared_memory,
     create_empty_array,
     write_to_shared_memory,
@@ -116,7 +116,7 @@ def async_loop(vec_env_constr, inpt_p, pipe, shared_obs, shared_rews, shared_ter
         pipe.send((e, tb))
 
 
-class ProcConcatVec(gym.vector.VectorEnv):
+class ProcConcatVec(gymnasium.vector.VectorEnv):
     def __init__(
         self, vec_env_constrs, observation_space, action_space, tot_num_envs, metadata
     ):
@@ -141,7 +141,7 @@ class ProcConcatVec(gym.vector.VectorEnv):
         procs = []
         for constr in vec_env_constrs:
             inpt, outpt = mp.Pipe()
-            constr = gym.vector.async_vector_env.CloudpickleWrapper(constr)
+            constr = gymnasium.vector.async_vector_env.CloudpickleWrapper(constr)
             proc = mp.Process(
                 target=async_loop,
                 args=(

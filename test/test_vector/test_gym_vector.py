@@ -9,7 +9,7 @@ from supersuit import (
     pettingzoo_env_to_vec_env_v1,
 )
 from pettingzoo.mpe import simple_spread_v2
-import gym
+import gymnasium
 import numpy as np
 
 
@@ -56,7 +56,7 @@ def check_vec_env_equivalency(venv1, venv2, check_info=True):
 
 @pytest.mark.skip(reason="Wrapper depreciated, see https://github.com/Farama-Foundation/SuperSuit/issues/188")
 def test_gym_supersuit_equivalency():
-    env = gym.make("MountainCarContinuous-v0")
+    env = gymnasium.make("MountainCarContinuous-v0")
     num_envs = 3
     venv1 = concat_vec_envs_v1(env, num_envs)
     venv2 = gym_vec_env_v0(env, num_envs)
@@ -65,7 +65,7 @@ def test_gym_supersuit_equivalency():
 
 @pytest.mark.skip(reason="Wrapper depreciated, see https://github.com/Farama-Foundation/SuperSuit/issues/188")
 def test_inital_state_dissimilarity():
-    env = gym.make("CartPole-v1")
+    env = gymnasium.make("CartPole-v1")
     venv = concat_vec_envs_v1(env, 2)
     observations = venv.reset()
     assert not np.equal(observations[0], observations[1]).all()
@@ -73,7 +73,7 @@ def test_inital_state_dissimilarity():
 
 # we really don't want to have a stable baselines dependency even in tests
 # def test_stable_baselines_supersuit_equivalency():
-#     env = gym.make("MountainCarContinuous-v0")
+#     env = gymnasium.make("MountainCarContinuous-v0")
 #     num_envs = 3
 #     venv1 = supersuit_vec_env(env, num_envs, base_class='stable_baselines3')
 #     venv2 = stable_baselines3_vec_env(env, num_envs)
@@ -82,7 +82,7 @@ def test_inital_state_dissimilarity():
 
 @pytest.mark.skip(reason="Wrapper depreciated, see https://github.com/Farama-Foundation/SuperSuit/issues/188")
 def test_mutliproc_single_proc_equivalency():
-    env = gym.make("CartPole-v1")
+    env = gymnasium.make("CartPole-v1")
     num_envs = 3
     # uses single threaded vector environment
     venv1 = concat_vec_envs_v1(env, num_envs, num_cpus=0)
@@ -106,7 +106,7 @@ def test_multiagent_mutliproc_single_proc_equivalency():
 @pytest.mark.skip(reason="Wrapper depreciated, see https://github.com/Farama-Foundation/SuperSuit/issues/188")
 def test_multiproc_buffer():
     num_envs = 2
-    env = gym.make("CartPole-v1")
+    env = gymnasium.make("CartPole-v1")
     env = concat_vec_envs_v1(env, num_envs, num_cpus=2)
 
     obss = env.reset()

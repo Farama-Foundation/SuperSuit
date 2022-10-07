@@ -1,5 +1,5 @@
 import numpy as np
-from gym.spaces import Box, Discrete
+from gymnasium.spaces import Box, Discrete
 
 
 def get_tile_shape(shape, stack_size, stack_dim=-1):

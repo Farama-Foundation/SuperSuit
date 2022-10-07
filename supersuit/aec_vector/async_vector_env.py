@@ -2,7 +2,7 @@ import multiprocessing as mp
 from pettingzoo.utils.agent_selector import agent_selector
 import numpy as np
 import ctypes
-import gym
+import gymnasium
 from .base_aec_vec_env import VectorAECEnv
 import warnings
 import signal
@@ -11,11 +11,11 @@ import traceback
 
 class SpaceWrapper:
     def __init__(self, space):
-        if isinstance(space, gym.spaces.Discrete):
+        if isinstance(space, gymnasium.spaces.Discrete):
             self.shape = ()
             self.dtype = np.dtype(np.int64)
             self.low = 0
-        elif isinstance(space, gym.spaces.Box):
+        elif isinstance(space, gymnasium.spaces.Box):
             self.shape = space.shape
             self.dtype = np.dtype(space.dtype)
             self.low = space.low

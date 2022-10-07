@@ -1,7 +1,7 @@
 import functools
-import gym
+import gymnasium
 import numpy as np
-from gym.spaces import Box, Space
+from gymnasium.spaces import Box, Space
 from supersuit.utils.base_aec_wrapper import BaseWrapper
 from supersuit.utils.wrapper_chooser import WrapperChooser
 
@@ -68,7 +68,7 @@ class aec_observation_lambda(BaseWrapper):
             return self.change_observation_fn(observation, old_obs_space)
 
 
-class gym_observation_lambda(gym.Wrapper):
+class gym_observation_lambda(gymnasium.Wrapper):
     def __init__(self, env, change_observation_fn, change_obs_space_fn=None):
         assert callable(
             change_observation_fn
@@ -105,7 +105,7 @@ class gym_observation_lambda(gym.Wrapper):
             new_space = self.change_obs_space_fn(space)
             assert isinstance(
                 new_space, Space
-            ), "output of change_obs_space_fn to observation_lambda_wrapper must be a gym space"
+            ), "output of change_obs_space_fn to observation_lambda_wrapper must be a gymnasium space"
         self.observation_space = new_space
 
     def _modify_observation(self, observation):

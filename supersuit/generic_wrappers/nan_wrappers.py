@@ -3,7 +3,7 @@ from .utils.shared_wrapper_util import shared_wrapper
 import warnings
 from supersuit.lambda_wrappers import action_lambda_v1
 import numpy as np
-import gym
+import gymnasium
 
 
 def nan_random_v0(env):
@@ -12,7 +12,7 @@ def nan_random_v0(env):
             super().__init__()
 
         def reset(self, seed=None, return_info=False, options=None):
-            self.np_random, seed = gym.utils.seeding.np_random(seed)
+            self.np_random, seed = gymnasium.utils.seeding.np_random(seed)
 
             return super().reset(seed, return_info=return_info, options=options)
 

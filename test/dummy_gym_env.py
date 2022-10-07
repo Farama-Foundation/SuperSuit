@@ -1,8 +1,8 @@
-import gym
+import gymnasium
 import copy
 
 
-class DummyEnv(gym.Env):
+class DummyEnv(gymnasium.Env):
     def __init__(self, observation, observation_space, action_space):
         super().__init__()
         self._observation = observation

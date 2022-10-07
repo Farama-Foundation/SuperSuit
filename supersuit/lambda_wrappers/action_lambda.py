@@ -1,8 +1,8 @@
 import functools
-from gym.spaces import Space
+from gymnasium.spaces import Space
 from supersuit.utils.base_aec_wrapper import BaseWrapper
 from supersuit.utils.wrapper_chooser import WrapperChooser
-import gym
+import gymnasium
 
 
 class aec_action_lambda(BaseWrapper):
@@ -42,7 +42,7 @@ class aec_action_lambda(BaseWrapper):
             return self.change_action_fn(action, old_act_space)
 
 
-class gym_action_lambda(gym.Wrapper):
+class gym_action_lambda(gymnasium.Wrapper):
     def __init__(self, env, change_action_fn, change_space_fn):
         assert callable(
             change_action_fn
@@ -60,7 +60,7 @@ class gym_action_lambda(gym.Wrapper):
         new_space = self.change_space_fn(self.action_space)
         assert isinstance(
             new_space, Space
-        ), "output of change_space_fn argument to action_lambda_wrapper must be a gym space"
+        ), "output of change_space_fn argument to action_lambda_wrapper must be a gymnasium space"
         self.action_space = new_space
 
     def _modify_action(self, action):

@@ -5,7 +5,7 @@ from supersuit.lambda_wrappers import (
     reward_lambda_v0,
 )
 import numpy as np
-from gym.spaces import Box
+from gymnasium.spaces import Box
 
 
 def basic_obs_wrapper(env, module, param):

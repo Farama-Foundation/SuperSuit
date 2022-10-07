@@ -1,5 +1,5 @@
 from supersuit.utils.frame_stack import stack_obs_space, stack_init, stack_obs
-from gym.spaces import Box, Discrete
+from gymnasium.spaces import Box, Discrete
 import numpy as np
 import pytest
 

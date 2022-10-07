@@ -1,6 +1,6 @@
 from pettingzoo.utils.wrappers import BaseParallelWraper
 import numpy as np
-import gym
+import gymnasium
 from supersuit.utils.wrapper_chooser import WrapperChooser
 
 
@@ -12,7 +12,7 @@ class black_death_par(BaseParallelWraper):
         for agent in self.agents:
             space = self.observation_space(agent)
             assert isinstance(
-                space, gym.spaces.Box
+                space, gymnasium.spaces.Box
             ), f"observation sapces for black death must be Box spaces, is {space}"
 
     def reset(self, seed=None, return_info=False, options=None):

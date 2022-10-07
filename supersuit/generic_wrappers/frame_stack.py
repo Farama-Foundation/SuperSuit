@@ -1,6 +1,6 @@
 from .utils.base_modifier import BaseModifier
 from .utils.shared_wrapper_util import shared_wrapper
-from gym.spaces import Box, Discrete
+from gymnasium.spaces import Box, Discrete
 from supersuit.utils.frame_stack import stack_obs_space, stack_init, stack_obs
 
 

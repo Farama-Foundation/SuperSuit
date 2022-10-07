@@ -1,4 +1,4 @@
-import gym
+import gymnasium
 import cloudpickle
 from . import MakeCPUAsyncConstructor, MarkovVectorEnv
 from pettingzoo.utils.env import ParallelEnv
@@ -14,9 +14,9 @@ def vec_env_args(env, num_envs):
 
 
 def warn_not_gym_env(env, fn_name):
-    if not isinstance(env, gym.Env):
+    if not isinstance(env, gymnasium.Env):
         warnings.warn(
-            f"{fn_name} took in an environment which does not inherit from gym.Env. Note that gym_vec_env only takes in gym-style environments, not pettingzoo environments."
+            f"{fn_name} took in an environment which does not inherit from gymnasium.Env. Note that gym_vec_env only takes in gymnasium-style environments, not pettingzoo environments."
         )
 
 
@@ -24,7 +24,7 @@ def gym_vec_env_v0(env, num_envs, multiprocessing=False):
     warn_not_gym_env(env, "gym_vec_env")
     args = vec_env_args(env, num_envs)
     constructor = (
-        gym.vector.AsyncVectorEnv if multiprocessing else gym.vector.SyncVectorEnv
+        gymnasium.vector.AsyncVectorEnv if multiprocessing else gymnasium.vector.SyncVectorEnv
     )
     return constructor(*args)
 
@@ -55,11 +55,11 @@ def stable_baselines3_vec_env_v0(env, num_envs, multiprocessing=False):
     return constructor(*args)
 
 
-def concat_vec_envs_v1(vec_env, num_vec_envs, num_cpus=0, base_class="gym"):
+def concat_vec_envs_v1(vec_env, num_vec_envs, num_cpus=0, base_class="gymnasium"):
     num_cpus = min(num_cpus, num_vec_envs)
     vec_env = MakeCPUAsyncConstructor(num_cpus)(*vec_env_args(vec_env, num_vec_envs))
 
-    if base_class == "gym":
+    if base_class == "gymnasium":
         return vec_env
     elif base_class == "stable_baselines":
         from .sb_vector_wrapper import SBVecEnvWrapper
@@ -71,7 +71,7 @@ def concat_vec_envs_v1(vec_env, num_vec_envs, num_cpus=0, base_class="gym"):
         return SB3VecEnvWrapper(vec_env)
     else:
         raise ValueError(
-            "supersuit_vec_env only supports 'gym', 'stable_baselines', and 'stable_baselines3' for its base_class"
+            "supersuit_vec_env only supports 'gymnasium', 'stable_baselines', and 'stable_baselines3' for its base_class"
         )
 
 

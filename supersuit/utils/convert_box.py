@@ -1,4 +1,4 @@
-from gym.spaces import Box
+from gymnasium.spaces import Box
 
 
 def convert_box(convert_obs_fn, old_box):

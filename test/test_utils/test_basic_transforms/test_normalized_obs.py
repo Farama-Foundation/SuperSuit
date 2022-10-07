@@ -3,7 +3,7 @@ from supersuit.utils.basic_transforms.normalize_obs import (
     change_obs_space,
     change_observation,
 )
-from gym.spaces import Box
+from gymnasium.spaces import Box
 import numpy as np
 import pytest
 

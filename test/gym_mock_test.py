@@ -1,5 +1,5 @@
 from .dummy_gym_env import DummyEnv
-from gym.spaces import Box, Discrete
+from gymnasium.spaces import Box, Discrete
 import numpy as np
 from supersuit import (
     frame_stack_v1,

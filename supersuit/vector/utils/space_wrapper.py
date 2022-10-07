@@ -1,13 +1,13 @@
-import gym
+import gymnasium
 import numpy as np
 
 
 class SpaceWrapper:
     def __init__(self, space):
-        if isinstance(space, gym.spaces.Discrete):
+        if isinstance(space, gymnasium.spaces.Discrete):
             self.shape = ()
             self.dtype = np.dtype(np.int64)
-        elif isinstance(space, gym.spaces.Box):
+        elif isinstance(space, gymnasium.spaces.Box):
             self.shape = space.shape
             self.dtype = np.dtype(space.dtype)
         else:

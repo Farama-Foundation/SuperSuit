@@ -1,10 +1,10 @@
 from supersuit import gym_vec_env_v0
-import gym
+import gymnasium
 import numpy as np
 
 
 def test_vec_env_args():
-    env = gym.make("Acrobot-v1")
+    env = gymnasium.make("Acrobot-v1")
     num_envs = 8
     vec_env = gym_vec_env_v0(env, num_envs)
     vec_env.reset()
@@ -16,6 +16,6 @@ def test_vec_env_args():
 
 def test_all_vec_env_fns():
     num_envs = 8
-    env = gym.make("Acrobot-v1")
+    env = gymnasium.make("Acrobot-v1")
     vec_env = gym_vec_env_v0(env, num_envs, False)
     vec_env = gym_vec_env_v0(env, num_envs, True)

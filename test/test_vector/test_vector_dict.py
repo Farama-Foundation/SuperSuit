@@ -1,8 +1,8 @@
 import pytest
 
 from ..dummy_aec_env import DummyEnv
-from gym.spaces import Box, Discrete, Dict, Tuple
-from gym.vector.utils import concatenate, create_empty_array
+from gymnasium.spaces import Box, Discrete, Dict, Tuple
+from gymnasium.vector.utils import concatenate, create_empty_array
 import numpy as np
 from pettingzoo.utils.conversions import aec_to_parallel
 from supersuit import pettingzoo_env_to_vec_env_v1, concat_vec_envs_v1

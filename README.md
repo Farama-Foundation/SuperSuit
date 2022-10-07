@@ -7,13 +7,13 @@ Once the planned wrapper rewrite of Gymnasium is complete and the vector API is 
 
 
 SuperSuit introduces a collection of small functions which can wrap reinforcement learning environments to do preprocessing ('microwrappers').
-We support Gym for single agent environments and PettingZoo for multi-agent environments (both AECEnv and ParallelEnv environments). Using it to convert space invaders to have a grey scale observation space and stack the last 4 frames looks like:
+We support Gymnasium for single agent environments and PettingZoo for multi-agent environments (both AECEnv and ParallelEnv environments). Using it to convert space invaders to have a grey scale observation space and stack the last 4 frames looks like:
 
 ```
-import gym
+import gymnasium
 from supersuit import color_reduction_v0, frame_stack_v1
 
-env = gym.make('SpaceInvaders-v0')
+env = gymnasium.make('SpaceInvaders-v0')
 
 env = frame_stack_v1(color_reduction_v0(env, 'full'), 4)
 ```
@@ -41,7 +41,7 @@ You can install SuperSuit via `pip install supersuit`
 
 `flatten_v0(env)` flattens observations into a 1D array.
 
-`frame_skip_v0(env, num_frames)` skips `num_frames` number of frames by reapplying old actions over and over. Observations skipped over are ignored. Rewards skipped over are accumulated. Like Gym Atari's frameskip parameter, `num_frames` can also be a tuple `(min_skip, max_skip)`, which indicates a range of possible skip lengths which are randomly chosen from (in single agent environments only).
+`frame_skip_v0(env, num_frames)` skips `num_frames` number of frames by reapplying old actions over and over. Observations skipped over are ignored. Rewards skipped over are accumulated. Like Gymnasium Atari's frameskip parameter, `num_frames` can also be a tuple `(min_skip, max_skip)`, which indicates a range of possible skip lengths which are randomly chosen from (in single agent environments only).
 
 `delay_observations_v0(env, delay)` Delays observation by `delay` frames. Before `delay` frames have been executed, the observation is all zeros. Along with frame_skip, this is the preferred way to implement reaction time for high FPS games.
 
@@ -94,15 +94,15 @@ wrappers which require these attributes:
 
 ## Environment Vectorization
 
-These functions turn plain Gym environments into vectorized environments, for every common vector environment spec.
+These functions turn plain Gymnasium environments into vectorized environments, for every common vector environment spec.
 
-`gym_vec_env_v0(env, num_envs, multiprocessing=False)` creates a Gym vector environment with `num_envs` copies of the environment. If `multiprocessing` is True, AsyncVectorEnv is used instead of SyncVectorEnv.
+`gym_vec_env_v0(env, num_envs, multiprocessing=False)` creates a Gymnasium vector environment with `num_envs` copies of the environment. If `multiprocessing` is True, AsyncVectorEnv is used instead of SyncVectorEnv.
 
 `stable_baselines_vec_env_v0(env, num_envs, multiprocessing=False)` creates a stable_baselines vector environment with num_envs copies of the environment. If `multiprocessing` is True, SubprocVecEnv is used instead of DummyVecEnv. Needs stable_baselines to be installed to work.
 
 `stable_baselines3_vec_env_v0(env, num_envs, multiprocessing=False)` creates a stable_baselines vector environment with num_envs copies of the environment. If `multiprocessing` is True, SubprocVecEnv is used instead of DummyVecEnv. Needs stable_baselines3 to be installed to work.
 
-`concat_vec_envs_v1(vec_env, num_vec_envs, num_cpus=0, base_class='gym')` takes in an `vec_env` which is vector environment (should not have multithreading enabled). Creates a new vector environment with `num_vec_envs` copies of that vector environment concatenated together and runs them on `num_cpus` cpus as balanced as possible between cpus. `num_cpus=0` or `num_cpus=1` means to create 0 new threads, i.e. run the process in an efficient single threaded manner. A use case for this function is given below. If the base class of the resulting vector environment matters as it does for stable baselines, you can use the `base_class` parameter to switch between `"gym"` base class and `"stable_baselines3"`'s base class. Note that both have identical functionality.
+`concat_vec_envs_v1(vec_env, num_vec_envs, num_cpus=0, base_class='gymnasium')` takes in an `vec_env` which is vector environment (should not have multithreading enabled). Creates a new vector environment with `num_vec_envs` copies of that vector environment concatenated together and runs them on `num_cpus` cpus as balanced as possible between cpus. `num_cpus=0` or `num_cpus=1` means to create 0 new threads, i.e. run the process in an efficient single threaded manner. A use case for this function is given below. If the base class of the resulting vector environment matters as it does for stable baselines, you can use the `base_class` parameter to switch between `"gymnasium"` base class and `"stable_baselines3"`'s base class. Note that both have identical functionality.
 
 ### Parallel Environment vectorization
 
@@ -119,7 +119,7 @@ Where each agent's observation, reward, done, and info will be that environment'
 
 The following function performs this conversion.
 
-`pettingzoo_env_to_vec_env_v1(env)`: Takes a PettingZoo ParallelEnv with the following assumptions: no agent death or generation, homogeneous action and observation spaces. Returns a gym vector environment where each "environment" in the vector represents one agent. An arbitrary PettingZoo parallel environment can be enforced to have these assumptions by wrapping it with the pad_action_space, pad_observations, and the black_death wrapper). This conversion to a vector environment can be used to train appropriate pettingzoo environments with standard single agent RL methods such as stable baselines's A2C out of box (example below).
+`pettingzoo_env_to_vec_env_v1(env)`: Takes a PettingZoo ParallelEnv with the following assumptions: no agent death or generation, homogeneous action and observation spaces. Returns a gymnasium vector environment where each "environment" in the vector represents one agent. An arbitrary PettingZoo parallel environment can be enforced to have these assumptions by wrapping it with the pad_action_space, pad_observations, and the black_death wrapper). This conversion to a vector environment can be used to train appropriate pettingzoo environments with standard single agent RL methods such as stable baselines's A2C out of box (example below).
 
 You can also use the `concat_vec_envs_v1` functionality to train on several vector environments in parallel, forming a vector which looks like
 
@@ -169,7 +169,7 @@ If none of the included in micro-wrappers are suitable for your needs, you can u
 
 `observation_lambda_v0(env, observation_fn, observation_space_fn)` allows you to define arbitrary changes to the via `observation_fn(observation, obs_space) : observation`, and `observation_space_fn(obs_space) : obs_space`. For Box-Box transformations the space transformation will be inferred from `change_observation_fn` if `change_obs_space_fn=None` by passing the `high` and `low` bounds through the `observation_space_fn`. In multi-agent environments only, the lambda functions can optionally accept an `agent` parameter, which lets you know the agent name of the observation/observation space, e.g. `observation_fn(observation, obs_space, agent) : observation`.
 
-`reward_lambda_v0(env, change_reward_fn)` allows you to make arbitrary changes to rewards by passing in a `change_reward_fn(reward) : reward` function. For Gym environments this is called every step to transform the returned reward. For AECEnv, this function is used to change each element in the rewards dictionary every step.
+`reward_lambda_v0(env, change_reward_fn)` allows you to make arbitrary changes to rewards by passing in a `change_reward_fn(reward) : reward` function. For Gymnasium environments this is called every step to transform the returned reward. For AECEnv, this function is used to change each element in the rewards dictionary every step.
 
 ### Lambda Function Examples
 
@@ -184,7 +184,7 @@ Adding noise to a box observation and increasing the high and low bounds to acco
 ```
 env = observation_lambda_v0(env,
     lambda x : x + np.random.normal(size=x.shape),
-    lambda obs_space : gym.spaces.Box(obs_space.low-5,obs_space.high+5))
+    lambda obs_space : gymnasium.spaces.Box(obs_space.low-5,obs_space.high+5))
 ```
 
 Changing 1d box action space to a Discrete space by mapping the discrete actions to one-hot vectors looks like:
@@ -197,7 +197,7 @@ def one_hot(x,n):
 
 env = action_lambda_v1(env,
     lambda action, act_space : one_hot(action, act_space.shape[0]),
-    lambda act_space : gym.spaces.Discrete(act_space.shape[0]))
+    lambda act_space : gymnasium.spaces.Discrete(act_space.shape[0]))
 ```
 
 Note that many of the supersuit wrappers are implemented with a lambda wrapper behind the scenes. See [here](https://github.com/Farama-Foundation/SuperSuit/blob/master/supersuit/generic_wrappers/basic_wrappers.py) for some examples.

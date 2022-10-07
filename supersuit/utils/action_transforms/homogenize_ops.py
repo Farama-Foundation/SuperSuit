@@ -1,6 +1,6 @@
 import numpy as np
-from gym.spaces import Box, Discrete
-from gym import spaces
+from gymnasium.spaces import Box, Discrete
+from gymnasium import spaces
 
 
 def check_homogenize_spaces(all_spaces):

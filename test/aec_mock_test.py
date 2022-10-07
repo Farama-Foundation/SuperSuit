@@ -1,4 +1,4 @@
-from gym.spaces import Box, Discrete
+from gymnasium.spaces import Box, Discrete
 from .dummy_aec_env import DummyEnv
 import numpy as np
 from supersuit import (

@@ -31,7 +31,7 @@ jobs:
         sudo apt-get install python-opengl xvfb
     - name: Install python dependencies
       run: |
-        pip install flake8 pytest atari_py magent gym tinyscaler
+        pip install flake8 pytest atari_py magent gymnasium tinyscaler
         git clone https://github.com/Farama-Foundation/PettingZoo.git
         pip install -e ./PettingZoo[classic]
         pip install -e ./PettingZoo[butterfly]

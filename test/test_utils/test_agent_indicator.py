@@ -3,7 +3,7 @@ from supersuit.utils.agent_indicator import (
     change_observation,
     get_indicator_map,
 )
-from gym.spaces import Box, Discrete
+from gymnasium.spaces import Box, Discrete
 import numpy as np
 import pytest
 

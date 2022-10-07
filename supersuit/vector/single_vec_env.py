@@ -1,5 +1,5 @@
 import numpy as np
-import gym
+import gymnasium
 
 
 class SingleVecEnv:
@@ -39,7 +39,7 @@ class SingleVecEnv:
 
     def env_is_wrapped(self, wrapper_class):
         env_tmp = self.gym_env
-        while isinstance(env_tmp, gym.Wrapper):
+        while isinstance(env_tmp, gymnasium.Wrapper):
             if isinstance(env_tmp, wrapper_class):
                 return [True]
             env_tmp = env_tmp.env

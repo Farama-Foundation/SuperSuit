@@ -3,11 +3,11 @@ import numpy as np
 from supersuit.utils.frame_skip import check_transform_frameskip
 from supersuit.utils.wrapper_chooser import WrapperChooser
 from pettingzoo.utils.wrappers import BaseWrapper, BaseParallelWraper
-import gym
+import gymnasium
 from supersuit.utils.make_defaultdict import make_defaultdict
 
 
-class frame_skip_gym(gym.Wrapper):
+class frame_skip_gym(gymnasium.Wrapper):
     def __init__(self, env, num_frames):
         super().__init__(env)
         self.num_frames = check_transform_frameskip(num_frames)

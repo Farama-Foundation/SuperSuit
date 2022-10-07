@@ -1,4 +1,4 @@
-from gym.spaces import Box, Discrete
+from gymnasium.spaces import Box, Discrete
 import numpy as np
 import pytest
 from supersuit.utils.action_transforms.homogenize_ops import (

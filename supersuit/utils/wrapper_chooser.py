@@ -1,4 +1,4 @@
-import gym
+import gymnasium
 from pettingzoo.utils.env import AECEnv, ParallelEnv
 from pettingzoo.utils.conversions import aec_to_parallel, parallel_to_aec
 
@@ -13,10 +13,10 @@ class WrapperChooser:
         self.parallel_wrapper = parallel_wrapper
 
     def __call__(self, env, *args, **kwargs):
-        if isinstance(env, gym.Env):
+        if isinstance(env, gymnasium.Env):
             if self.gym_wrapper is None:
                 raise ValueError(
-                    f"{self.wrapper_name} does not apply to gym environments, pettingzoo environments only"
+                    f"{self.wrapper_name} does not apply to gymnasium environments, pettingzoo environments only"
                 )
             return self.gym_wrapper(env, *args, **kwargs)
         elif isinstance(env, AECEnv):
@@ -35,5 +35,5 @@ class WrapperChooser:
                 )
         else:
             raise ValueError(
-                "environment passed to supersuit wrapper must either be a gym environment or a pettingzoo environment"
+                "environment passed to supersuit wrapper must either be a gymnasium environment or a pettingzoo environment"
             )

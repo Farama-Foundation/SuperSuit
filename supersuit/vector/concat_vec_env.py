@@ -1,8 +1,8 @@
 import numpy as np
 from .single_vec_env import SingleVecEnv
-import gym.vector
-from gym.vector.utils import concatenate, iterate, create_empty_array
-from gym.spaces import Discrete
+import gymnasium.vector
+from gymnasium.vector.utils import concatenate, iterate, create_empty_array
+from gymnasium.spaces import Discrete
 
 
 def transpose(ll):
@@ -17,7 +17,7 @@ def iterate_discrete(space, items):
         raise TypeError(f"Unable to iterate over the following elements: {items}")
 
 
-class ConcatVecEnv(gym.vector.VectorEnv):
+class ConcatVecEnv(gymnasium.vector.VectorEnv):
     def __init__(self, vec_env_fns, obs_space=None, act_space=None):
         self.vec_envs = vec_envs = [vec_env_fn() for vec_env_fn in vec_env_fns]
         for i in range(len(vec_envs)):

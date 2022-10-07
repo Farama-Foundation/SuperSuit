@@ -1,6 +1,6 @@
 from .utils.base_modifier import BaseModifier
 from .utils.shared_wrapper_util import shared_wrapper
-import gym
+import gymnasium
 
 
 def sticky_actions_v0(env, repeat_action_probability):
@@ -11,7 +11,7 @@ def sticky_actions_v0(env, repeat_action_probability):
             super().__init__()
 
         def reset(self, seed=None, return_info=False, options=None):
-            self.np_random, _ = gym.utils.seeding.np_random(seed)
+            self.np_random, _ = gymnasium.utils.seeding.np_random(seed)
             self.old_action = None
 
         def modify_action(self, action):
