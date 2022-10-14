@@ -1,9 +1,9 @@
 <p align="center">
-    <img src="supersuit-text.png" width="500px"/>
+    <img src="https://raw.githubusercontent.com/Farama-Foundation/SuperSuit/master/supersuit-text.png" width="500px"/>
 </p>
 
 
-Once the planned wrapper rewrite of Gymnasium is complete and the vector API is stabilized, this project will be deprecated and rewritten as part of a new wrappers package in pettingzoo and the vectorized API will be redone, taking inspiration from the functionality currently in gymnasium. 
+Once the planned wrapper rewrite of Gymnasium is complete and the vector API is stabilized, this project will be deprecated and rewritten as part of a new wrappers package in pettingzoo and the vectorized API will be redone, taking inspiration from the functionality currently in gymnasium.
 
 
 SuperSuit introduces a collection of small functions which can wrap reinforcement learning environments to do preprocessing ('microwrappers').
@@ -47,13 +47,7 @@ You can install SuperSuit via `pip install supersuit`
 
 `sticky_actions_v0(env, repeat_action_probability)` assigns a probability of an old action "sticking" to the environment and not updating as requested. This is to prevent agents from learning predefined action patterns in highly deterministic games like Atari. Note that the stickiness is cumulative, so an action has a repeat_action_probability^2 chance of an action sticking for two turns in a row, etc. This is the recommended way of adding randomness to Atari by *"Machado et al. (2018), "Revisiting the Arcade Learning Environment: Evaluation Protocols and Open Problems for General Agents"*
 
-`frame_stack_v1(env, num_frames=4, stack_dim=0)` stacks the most recent frames. For vector games observed via plain vectors (1D arrays), the output is just concatenated to a longer 1D array. 2D or 3D arrays are stacked to be taller 3D arrays. Stacked dimension can be set to dim=0 (default dim=-1) by stack_dim=0. At the start of the game, frames that don't yet exist are filled with 0s. `num_frames=1` is analogous to not using this function.
-
 `frame_stack_v2(env, num_frames=4, stack_dim=0)` stacks the most recent frames. For vector games observed via plain vectors (1D arrays), the output is just concatenated to a longer 1D array. 2D or 3D arrays are stacked to be taller 3D arrays. Stacked dimension can be set to dim=0 (default dim=-1) with stack_dim=0. At the start of the game, frames that don't yet exist are filled with the copies of the first frame. `num_frames=1` is analogous to not using this function.
-
-`max_observation_v0(env, memory)` the resulting observation becomes the max over `memory` number of prior frames. This is important for Atari environments, as many games have elements that are intermitently flashed on the instead of being constant, due to the peculiarities of the console and CRT TVs. The OpenAI baselines MaxAndSkip Atari wrapper is equivalent to doing `memory=2` and then a  `frame_skip` of 4.
-
-`normalize_obs_v0(env, env_min=0, env_max=1)` linearly scales observations to the range `env_min` (default 0) to `env_max` (default 1), given the known minimum and maximum observation values defined in the observation space. Only works on Box observations with float32 or float64 dtypes and finite bounds. If you wish to normalize another type, you can first apply the dtype wrapper to convert your type to float32 or float64.
 
 `reshape_v0(env, shape)` reshapes observations into given shape.
 
@@ -96,11 +90,7 @@ wrappers which require these attributes:
 
 These functions turn plain Gymnasium environments into vectorized environments, for every common vector environment spec.
 
-`gym_vec_env_v0(env, num_envs, multiprocessing=False)` creates a Gymnasium vector environment with `num_envs` copies of the environment. If `multiprocessing` is True, AsyncVectorEnv is used instead of SyncVectorEnv.
-
 `stable_baselines_vec_env_v0(env, num_envs, multiprocessing=False)` creates a stable_baselines vector environment with num_envs copies of the environment. If `multiprocessing` is True, SubprocVecEnv is used instead of DummyVecEnv. Needs stable_baselines to be installed to work.
-
-`stable_baselines3_vec_env_v0(env, num_envs, multiprocessing=False)` creates a stable_baselines vector environment with num_envs copies of the environment. If `multiprocessing` is True, SubprocVecEnv is used instead of DummyVecEnv. Needs stable_baselines3 to be installed to work.
 
 `concat_vec_envs_v1(vec_env, num_vec_envs, num_cpus=0, base_class='gymnasium')` takes in an `vec_env` which is vector environment (should not have multithreading enabled). Creates a new vector environment with `num_vec_envs` copies of that vector environment concatenated together and runs them on `num_cpus` cpus as balanced as possible between cpus. `num_cpus=0` or `num_cpus=1` means to create 0 new threads, i.e. run the process in an efficient single threaded manner. A use case for this function is given below. If the base class of the resulting vector environment matters as it does for stable baselines, you can use the `base_class` parameter to switch between `"gymnasium"` base class and `"stable_baselines3"`'s base class. Note that both have identical functionality.
 
@@ -121,7 +111,7 @@ The following function performs this conversion.
 
 `pettingzoo_env_to_vec_env_v1(env)`: Takes a PettingZoo ParallelEnv with the following assumptions: no agent death or generation, homogeneous action and observation spaces. Returns a gymnasium vector environment where each "environment" in the vector represents one agent. An arbitrary PettingZoo parallel environment can be enforced to have these assumptions by wrapping it with the pad_action_space, pad_observations, and the black_death wrapper). This conversion to a vector environment can be used to train appropriate pettingzoo environments with standard single agent RL methods such as stable baselines's A2C out of box (example below).
 
-You can also use the `concat_vec_envs_v1` functionality to train on several vector environments in parallel, forming a vector which looks like
+You have to also use the `concat_vec_envs_v1` functionality to train on several vector environments in parallel, forming a vector which looks like
 
 ```
 env_1_agent_1
@@ -148,6 +138,8 @@ env = ss.concat_vec_envs_v1(env, 8, num_cpus=4, base_class='stable_baselines3')
 model = PPO('CnnPolicy', env, verbose=3, n_steps=16)
 model.learn(total_timesteps=2000000)
 ```
+
+if you only want to use one vectorized enviroment, set `num_envs=1` for only one environment.
 
 `vectorize_aec_env_v0(aec_env, num_envs, num_cpus=0)` creates an AEC Vector env (API documented in source [here](https://github.com/Farama-Foundation/SuperSuit/blob/master/supersuit/aec_vector/base_aec_vec_env.py)). `num_cpus=0` indicates that the process will run in a single thread. Values of 1 or more will spawn at most that number of processes.
 
