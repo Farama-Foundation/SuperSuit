@@ -1,9 +1,9 @@
 <p align="center">
-    <img src="supersuit-text.png" width="500px"/>
+    <img src="https://raw.githubusercontent.com/Farama-Foundation/SuperSuit/master/supersuit-text.png" width="500px"/>
 </p>
 
 
-Once the planned wrapper rewrite of Gymnasium is complete and the vector API is stabilized, this project will be deprecated and rewritten as part of a new wrappers package in pettingzoo and the vectorized API will be redone, taking inspiration from the functionality currently in gymnasium. 
+Once the planned wrapper rewrite of Gymnasium is complete and the vector API is stabilized, this project will be deprecated and rewritten as part of a new wrappers package in pettingzoo and the vectorized API will be redone, taking inspiration from the functionality currently in gymnasium.
 
 
 SuperSuit introduces a collection of small functions which can wrap reinforcement learning environments to do preprocessing ('microwrappers').
