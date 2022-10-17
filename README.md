@@ -27,8 +27,24 @@ env = pistonball_v0.env()
 env = frame_stack_v1(color_reduction_v0(env, 'full'), 4)
 ```
 
-You can install SuperSuit via `pip install supersuit`
+## Installing SuperSuit
+To install SuperSuit from pypi:
 
+```
+python3 -m venv env
+source env/bin/activate
+pip install --upgrade pip
+pip install supersuit
+```
+
+Alternatively, to install SuperSuit from source, clone this repo, `cd` to it, and then:
+
+```
+python3 -m venv env
+source env/bin/activate
+pip install --upgrade pip
+pip install -e .
+```
 
 ## Citation
 
