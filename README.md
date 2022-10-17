@@ -6,6 +6,10 @@
 SuperSuit introduces a collection of small functions which can wrap reinforcement learning environments to do preprocessing ('microwrappers').
 We support Gymnasium for single agent environments and PettingZoo for multi-agent environments (both AECEnv and ParallelEnv environments). 
 
+
+Please note: Once the planned wrapper rewrite of Gymnasium is complete and the vector API is stabilized, this project will be deprecated and rewritten as part of a new wrappers package in PettingZoo and the vectorized API will be redone, taking inspiration from the functionality currently in Gymnasium.
+
+## Usage
 Using it with Gymnasium to convert space invaders to have a grey scale observation space and stack the last 4 frames looks like:
 
 ```
@@ -26,8 +30,6 @@ env = pistonball_v0.env()
 env = frame_stack_v1(color_reduction_v0(env, 'full'), 4)
 ```
 
-
-Please note: Once the planned wrapper rewrite of Gymnasium is complete and the vector API is stabilized, this project will be deprecated and rewritten as part of a new wrappers package in PettingZoo and the vectorized API will be redone, taking inspiration from the functionality currently in Gymnasium.
 
 ## Installing SuperSuit
 To install SuperSuit from pypi:
