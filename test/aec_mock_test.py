@@ -45,7 +45,7 @@ def test_frame_stack():
     assert obs.shape == (2, 3, 4)
     env.step(2)
     first_obs, _, _, _, _ = env.last()
-    assert np.all(np.equal(first_obs[:, :, -1], base_obs["a1"], dtype=np.float32))
+    assert np.array_equal(first_obs[:, :, -1], base_obs["a1"])
 
     base_obs = {"a{}".format(idx): idx + 3 for idx in range(2)}
     base_env = DummyEnv(base_obs, base_act_spaces, base_act_spaces)
@@ -80,7 +80,7 @@ def test_frame_stack():
     assert obs.shape == (2, 3, 4)
     env.step(2)
     first_obs, _, _, _, _ = env.last()
-    assert np.all(np.equal(first_obs[:, :, -1], base_obs["a1"], dtype=np.float32))
+    assert np.array_equal(first_obs[:, :, -1], base_obs["a1"])
 
     base_obs = {"a{}".format(idx): idx + 3 for idx in range(2)}
     base_env = DummyEnv(base_obs, base_act_spaces, base_act_spaces)

@@ -45,7 +45,7 @@ setup(
     keywords=["Reinforcement Learning", "game", "RL", "AI", "gymnasium"],
     python_requires=">=3.7, <3.11",
     packages=find_packages(),
-    install_requires=["numpy>=1.18.0", "gymnasium>=0.26.0"],
+    install_requires=["numpy>=1.19.0", "gymnasium>=0.26.0"],
     extras={"dev": ["pettingzoo[butterfly]"]},
     classifiers=[
         "Programming Language :: Python :: 3.10",
