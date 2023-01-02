@@ -43,11 +43,12 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     keywords=["Reinforcement Learning", "game", "RL", "AI", "gymnasium"],
-    python_requires=">=3.7, <3.11",
+    python_requires=">=3.7, <3.12",
     packages=find_packages(),
     install_requires=["numpy>=1.19.0", "gymnasium>=0.26.0"],
     extras={"dev": ["pettingzoo[butterfly]"]},
     classifiers=[
+        "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.8",
