@@ -1,0 +1,57 @@
+# Package ######################################################################
+
+[build-system]
+requires = ["setuptools >= 61.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "supersuit"
+description = "Wrappers for Gymnasium and PettingZoo"
+readme = "README.md"
+requires-python = ">= 3.7"
+authors = [{ name = "Farama Foundation", email = "contact@farama.org" }]
+license = { text = "MIT License" }
+keywords = ["Reinforcement Learning", "game", "RL", "AI", "gymnasium"]
+classifiers = [
+    "Development Status :: 4 - Beta",  # change to `5 - Production/Stable` when ready
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    'Intended Audience :: Science/Research',
+    'Topic :: Scientific/Engineering :: Artificial Intelligence',
+]
+dependencies = [
+    "numpy >=1.21.0",
+    "gymnasium>=0.26.0"
+]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+# Update dependencies in `all` if any are added or removed
+dev = ["pettingzoo[butterfly]"]
+
+[project.urls]
+Homepage = "https://farama.org"
+Repository = "https://github.com/Farama-Foundation/SuperSuit"
+Documentation = "https://github.com/Farama-Foundation/SuperSuit"
+"Bug Report" = "https://github.com/Farama-Foundation/SuperSuit/issues"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+include = []
+
+# Linters and Test tools #######################################################
+
+[tool.black]
+safe = true
+
+[tool.isort]
+atomic = true
+profile = "black"
+src_paths = ["supersuit", "test"]
