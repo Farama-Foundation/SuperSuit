@@ -2,7 +2,7 @@ import functools
 import gymnasium
 from pettingzoo.utils.wrappers import OrderEnforcingWrapper as PettingzooWrap
 from supersuit.utils.wrapper_chooser import WrapperChooser
-from pettingzoo.utils import BaseParallelWraper
+from pettingzoo.utils import BaseParallelWrapper
 
 
 class shared_wrapper_aec(PettingzooWrap):
@@ -68,7 +68,7 @@ class shared_wrapper_aec(PettingzooWrap):
         return self.modifiers[agent].get_last_obs()
 
 
-class shared_wrapper_parr(BaseParallelWraper):
+class shared_wrapper_parr(BaseParallelWrapper):
     def __init__(self, env, modifier_class):
         super().__init__(env)
 

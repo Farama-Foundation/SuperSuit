@@ -1,10 +1,10 @@
-from pettingzoo.utils.wrappers import BaseParallelWraper
+from pettingzoo.utils.wrappers import BaseParallelWrapper
 import numpy as np
 import gymnasium
 from supersuit.utils.wrapper_chooser import WrapperChooser
 
 
-class black_death_par(BaseParallelWraper):
+class black_death_par(BaseParallelWrapper):
     def __init__(self, env):
         super().__init__(env)
 
