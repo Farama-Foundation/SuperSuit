@@ -55,3 +55,4 @@ safe = true
 atomic = true
 profile = "black"
 src_paths = ["supersuit", "test"]
+
