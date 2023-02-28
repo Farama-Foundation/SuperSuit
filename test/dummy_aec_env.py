@@ -43,7 +43,7 @@ class DummyEnv(AECEnv):
         self._accumulate_rewards()
         self._deads_step_first()
 
-    def reset(self, seed=None, return_info=False, options=None):
+    def reset(self, seed=None, options=None):
         self.agents = self.possible_agents[:]
         self._agent_selector = agent_selector(self.agents)
         self.agent_selection = self._agent_selector.reset()

@@ -29,40 +29,20 @@ class ConcatVecEnv(gymnasium.vector.VectorEnv):
         tot_num_envs = sum(env.num_envs for env in vec_envs)
         self.num_envs = tot_num_envs
 
-    def reset(self, seed=None, return_info=False, options=None):
+    def reset(self, seed=None, options=None):
         _res_obs = []
 
-        if not return_info:
-            if seed is not None:
-                for i in range(len(self.vec_envs)):
-                    _obs = self.vec_envs[i].reset(seed=seed + i, options=options)
-                    _res_obs.append(_obs)
-            else:
-                _res_obs = [
-                    vec_env.reset(seed=None, options=options)
-                    for vec_env in self.vec_envs
-                ]
-
-            return self.concat_obs(_res_obs)
-
+        if seed is not None:
+            for i in range(len(self.vec_envs)):
+                _obs = self.vec_envs[i].reset(seed=seed + i, options=options)
+                _res_obs.append(_obs)
         else:
-            _res_info = []
-            if seed is not None:
-                for i in range(len(self.vec_envs)):
-                    _obs, _info = self.vec_envs[i].reset(
-                        seed=seed + i, return_info=return_info, options=options
-                    )
-                    _res_obs.append(_obs)
-                    _res_info.append(_info)
-            else:
-                for vec_env in self.vec_envs:
-                    _obs, _info = vec_env.reset(
-                        seed=None, return_info=return_info, options=options
-                    )
-                    _res_obs.append(_obs)
-                    _res_info.append(_info)
+            _res_obs = [
+                vec_env.reset(seed=None, options=options)
+                for vec_env in self.vec_envs
+            ]
 
-            return self.concat_obs(_res_obs), sum(_res_info, [])
+        return self.concat_obs(_res_obs)
 
     def concat_obs(self, observations):
         return concatenate(
