@@ -1,14 +1,11 @@
 import numpy as np
-from pettingzoo.test import api_test, seed_test, parallel_test
-from pettingzoo.test.example_envs import (
-    generated_agents_parallel_v0,
-    generated_agents_env_v0,
-)
+import pytest
+from pettingzoo.test import api_test, parallel_test
+from pettingzoo.test.example_envs import (generated_agents_env_v0,
+                                          generated_agents_parallel_v0)
 
 import supersuit
 from supersuit import dtype_v0
-import pytest
-
 
 wrappers = [
     supersuit.dtype_v0(generated_agents_parallel_v0.env(), np.int32),

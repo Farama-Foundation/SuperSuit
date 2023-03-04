@@ -1,18 +1,15 @@
 import copy
+import multiprocessing as mp
+import traceback
+
+import gymnasium.vector
+import numpy as np
+from gymnasium.vector.utils import (concatenate, create_empty_array,
+                                    create_shared_memory, iterate,
+                                    read_from_shared_memory,
+                                    write_to_shared_memory)
 
 from .utils.shared_array import SharedArray
-import multiprocessing as mp
-import numpy as np
-import traceback
-import gymnasium.vector
-from gymnasium.vector.utils import (
-    create_shared_memory,
-    create_empty_array,
-    write_to_shared_memory,
-    read_from_shared_memory,
-    concatenate,
-    iterate,
-)
 
 
 def compress_info(infos):
@@ -50,12 +47,14 @@ def numpy_deepcopy(buf):
         raise ValueError("numpy_deepcopy ")
 
 
-def async_loop(vec_env_constr, inpt_p, pipe, shared_obs, shared_rews, shared_terms, shared_truncs):
+def async_loop(
+    vec_env_constr, inpt_p, pipe, shared_obs, shared_rews, shared_terms, shared_truncs
+):
     inpt_p.close()
     try:
         vec_env = vec_env_constr()
 
-        pipe.send((vec_env.num_envs))
+        pipe.send(vec_env.num_envs)
         env_start_idx = pipe.recv()
         env_end_idx = env_start_idx + vec_env.num_envs
         while True:
@@ -120,8 +119,10 @@ class ProcConcatVec(gymnasium.vector.VectorEnv):
     def __init__(
         self, vec_env_constrs, observation_space, action_space, tot_num_envs, metadata
     ):
-        raise NotImplementedError("The wrapper ProcConcatVec is temporarily depreciated whilst it is being debugged. "
-                                  "Please refer to https://github.com/Farama-Foundation/SuperSuit/pull/165 for more information, or to contact the devs in regard to this.")
+        raise NotImplementedError(
+            "The wrapper ProcConcatVec is temporarily depreciated whilst it is being debugged. "
+            "Please refer to https://github.com/Farama-Foundation/SuperSuit/pull/165 for more information, or to contact the devs in regard to this."
+        )
         self.observation_space = observation_space
         self.action_space = action_space
         self.num_envs = num_envs = tot_num_envs

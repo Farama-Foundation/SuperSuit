@@ -1,11 +1,12 @@
+import numpy as np
 import pytest
+from gymnasium.spaces import Box, Dict, Discrete, Tuple
+from gymnasium.vector.utils import concatenate, create_empty_array
+from pettingzoo.utils.conversions import aec_to_parallel
+
+from supersuit import concat_vec_envs_v1, pettingzoo_env_to_vec_env_v1
 
 from ..dummy_aec_env import DummyEnv
-from gymnasium.spaces import Box, Discrete, Dict, Tuple
-from gymnasium.vector.utils import concatenate, create_empty_array
-import numpy as np
-from pettingzoo.utils.conversions import aec_to_parallel
-from supersuit import pettingzoo_env_to_vec_env_v1, concat_vec_envs_v1
 
 n_agents = 5
 
@@ -88,7 +89,9 @@ def test_single_threaded_concatenate():
     dict_vec_env_test(env)
 
 
-@pytest.mark.skip(reason="Wrapper depreciated, see https://github.com/Farama-Foundation/SuperSuit/issues/188")
+@pytest.mark.skip(
+    reason="Wrapper depreciated, see https://github.com/Farama-Foundation/SuperSuit/issues/188"
+)
 def test_multi_threaded_concatenate():
     env = make_env()
     env = pettingzoo_env_to_vec_env_v1(env)
@@ -97,7 +100,5 @@ def test_multi_threaded_concatenate():
 
 
 if __name__ == "__main__":
-    from pettingzoo.test import parallel_api_test
-
     test_multi_threaded_concatenate()
     exit(0)

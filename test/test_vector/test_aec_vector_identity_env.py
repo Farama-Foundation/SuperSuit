@@ -1,7 +1,7 @@
-from pettingzoo.butterfly import knights_archers_zombies_v10
-from pettingzoo.mpe import simple_push_v2
-from supersuit import frame_skip_v0, vectorize_aec_env_v0
 import numpy as np
+from pettingzoo.butterfly import knights_archers_zombies_v10
+
+from supersuit import vectorize_aec_env_v0
 
 
 def recursive_equal(info1, info2):
@@ -28,8 +28,26 @@ def test_identical():
     for agent in env1.agent_iter(200000):
         assert env1.agent_selection == env2.agent_selection
         agent = env1.agent_selection
-        obs1, rew1, agent_term1, agent_trunc1, env_term1, env_trunc1, agent_passes1, infos1 = env1.last()
-        obs2, rew2, agent_term2, agent_trunc2, env_term2, env_trunc2, agent_passes2, infos2 = env2.last()
+        (
+            obs1,
+            rew1,
+            agent_term1,
+            agent_trunc1,
+            env_term1,
+            env_trunc1,
+            agent_passes1,
+            infos1,
+        ) = env1.last()
+        (
+            obs2,
+            rew2,
+            agent_term2,
+            agent_trunc2,
+            env_term2,
+            env_trunc2,
+            agent_passes2,
+            infos2,
+        ) = env2.last()
         assert np.all(np.equal(obs1, obs2))
         assert np.all(np.equal(agent_term1, agent_term2))
         assert np.all(np.equal(agent_trunc1, agent_trunc2))

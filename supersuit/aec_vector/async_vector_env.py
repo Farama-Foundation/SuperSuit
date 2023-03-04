@@ -1,12 +1,14 @@
-import multiprocessing as mp
-from pettingzoo.utils.agent_selector import agent_selector
-import numpy as np
 import ctypes
-import gymnasium
-from .base_aec_vec_env import VectorAECEnv
-import warnings
+import multiprocessing as mp
 import signal
 import traceback
+import warnings
+
+import gymnasium
+import numpy as np
+from pettingzoo.utils.agent_selector import agent_selector
+
+from .base_aec_vec_env import VectorAECEnv
 
 
 class SpaceWrapper:
@@ -182,7 +184,9 @@ def init_parallel_env():
     signal.signal(signal.SIGTERM, sig_handle)
 
 
-def write_out_data(rewards, cumulative_rews, terms, truncs, num_envs, start_index, shared_data):
+def write_out_data(
+    rewards, cumulative_rews, terms, truncs, num_envs, start_index, shared_data
+):
     for agent in shared_data:
         rews = np.asarray(rewards[agent], dtype=np.float32)
         cum_rews = np.asarray(cumulative_rews[agent], dtype=np.float32)
@@ -194,7 +198,7 @@ def write_out_data(rewards, cumulative_rews, terms, truncs, num_envs, start_inde
             start_index : start_index + num_envs
         ] = cum_rews
         cur_data.terms.np_arr[start_index : start_index + num_envs] = tms
-        cur_data.truncs.np_arr[start_index: start_index + num_envs] = tcs
+        cur_data.truncs.np_arr[start_index : start_index + num_envs] = tcs
 
 
 def write_env_data(env_dones, indexes, num_envs, start_index, shared_data):

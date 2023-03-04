@@ -1,7 +1,9 @@
 import functools
+
 import gymnasium
 import numpy as np
 from gymnasium.spaces import Box, Space
+
 from supersuit.utils.base_aec_wrapper import BaseWrapper
 from supersuit.utils.wrapper_chooser import WrapperChooser
 

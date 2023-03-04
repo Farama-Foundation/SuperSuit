@@ -4,7 +4,7 @@
 
 
 SuperSuit introduces a collection of small functions which can wrap reinforcement learning environments to do preprocessing ('microwrappers').
-We support Gymnasium for single agent environments and PettingZoo for multi-agent environments (both AECEnv and ParallelEnv environments). 
+We support Gymnasium for single agent environments and PettingZoo for multi-agent environments (both AECEnv and ParallelEnv environments).
 
 
 Using it with Gymnasium to convert space invaders to have a grey scale observation space and stack the last 4 frames looks like:

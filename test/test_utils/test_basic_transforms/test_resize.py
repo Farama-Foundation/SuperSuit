@@ -1,7 +1,9 @@
-from supersuit.utils.basic_transforms.resize import check_param, change_observation
-from gymnasium.spaces import Box
 import numpy as np
 import pytest
+from gymnasium.spaces import Box
+
+from supersuit.utils.basic_transforms.resize import (change_observation,
+                                                     check_param)
 
 test_shape = (6, 4, 3)
 high_val = np.ones(test_shape) + np.arange(4).reshape(1, 4, 1)

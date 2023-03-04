@@ -1,5 +1,6 @@
-from . import convert_box
 import numpy as np
+
+from . import convert_box
 
 
 def check_param(obs_space, resize):
