@@ -1,18 +1,20 @@
 import functools
+
+import gymnasium
 from gymnasium.spaces import Space
+
 from supersuit.utils.base_aec_wrapper import BaseWrapper
 from supersuit.utils.wrapper_chooser import WrapperChooser
-import gymnasium
 
 
 class aec_action_lambda(BaseWrapper):
     def __init__(self, env, change_action_fn, change_space_fn):
         assert callable(
             change_action_fn
-        ), "change_action_fn needs to be a function. It is {}".format(change_action_fn)
+        ), f"change_action_fn needs to be a function. It is {change_action_fn}"
         assert callable(
             change_space_fn
-        ), "change_space_fn needs to be a function. It is {}".format(change_space_fn)
+        ), f"change_space_fn needs to be a function. It is {change_space_fn}"
 
         self.change_action_fn = change_action_fn
         self.change_space_fn = change_space_fn
@@ -46,10 +48,10 @@ class gym_action_lambda(gymnasium.Wrapper):
     def __init__(self, env, change_action_fn, change_space_fn):
         assert callable(
             change_action_fn
-        ), "change_action_fn needs to be a function. It is {}".format(change_action_fn)
+        ), f"change_action_fn needs to be a function. It is {change_action_fn}"
         assert callable(
             change_space_fn
-        ), "change_space_fn needs to be a function. It is {}".format(change_space_fn)
+        ), f"change_space_fn needs to be a function. It is {change_space_fn}"
         self.change_action_fn = change_action_fn
         self.change_space_fn = change_space_fn
 

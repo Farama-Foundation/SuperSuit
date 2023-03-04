@@ -1,7 +1,9 @@
+import numpy as np
+
+from supersuit.utils.accumulator import Accumulator
+
 from .utils.base_modifier import BaseModifier
 from .utils.shared_wrapper_util import shared_wrapper
-from supersuit.utils.accumulator import Accumulator
-import numpy as np
 
 
 def max_observation_v0(env, memory):

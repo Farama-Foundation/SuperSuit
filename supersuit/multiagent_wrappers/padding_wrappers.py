@@ -1,6 +1,7 @@
 from pettingzoo.utils.env import AECEnv, ParallelEnv
+
+from supersuit import action_lambda_v1, observation_lambda_v0
 from supersuit.utils.action_transforms import homogenize_ops
-from supersuit import observation_lambda_v0, action_lambda_v1
 
 
 def pad_action_space_v0(env):

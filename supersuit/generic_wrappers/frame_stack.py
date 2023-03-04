@@ -1,7 +1,9 @@
+from gymnasium.spaces import Box, Discrete
+
+from supersuit.utils.frame_stack import stack_init, stack_obs, stack_obs_space
+
 from .utils.base_modifier import BaseModifier
 from .utils.shared_wrapper_util import shared_wrapper
-from gymnasium.spaces import Box, Discrete
-from supersuit.utils.frame_stack import stack_obs_space, stack_init, stack_obs
 
 
 def frame_stack_v1(env, stack_size=4, stack_dim=-1):
@@ -44,7 +46,7 @@ def frame_stack_v1(env, stack_size=4, stack_dim=-1):
 
 def frame_stack_v2(env, stack_size=4, stack_dim=-1):
     assert isinstance(stack_size, int), "stack size of frame_stack must be an int"
-    assert "stack_dim should be 0 or -1, not {}".format(stack_dim)
+    assert f"stack_dim should be 0 or -1, not {stack_dim}"
 
     class FrameStackModifier(BaseModifier):
         def modify_obs_space(self, obs_space):

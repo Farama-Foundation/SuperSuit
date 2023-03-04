@@ -1,8 +1,10 @@
-import gymnasium
-import cloudpickle
-from . import MakeCPUAsyncConstructor, MarkovVectorEnv
-from pettingzoo.utils.env import ParallelEnv
 import warnings
+
+import cloudpickle
+import gymnasium
+from pettingzoo.utils.env import ParallelEnv
+
+from . import MakeCPUAsyncConstructor, MarkovVectorEnv
 
 
 def vec_env_args(env, num_envs):
@@ -24,7 +26,9 @@ def gym_vec_env_v0(env, num_envs, multiprocessing=False):
     warn_not_gym_env(env, "gym_vec_env")
     args = vec_env_args(env, num_envs)
     constructor = (
-        gymnasium.vector.AsyncVectorEnv if multiprocessing else gymnasium.vector.SyncVectorEnv
+        gymnasium.vector.AsyncVectorEnv
+        if multiprocessing
+        else gymnasium.vector.SyncVectorEnv
     )
     return constructor(*args)
 

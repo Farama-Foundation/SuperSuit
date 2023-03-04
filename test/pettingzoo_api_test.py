@@ -1,18 +1,16 @@
 import numpy as np
-from pettingzoo.test import api_test, seed_test, parallel_test
-from pettingzoo.mpe import simple_push_v2, simple_world_comm_v2
+import pytest
 from pettingzoo.butterfly import knights_archers_zombies_v10
-# from pettingzoo.classic import chess_v5
-# from pettingzoo.magent import combined_arms_v6
+from pettingzoo.mpe import simple_push_v2, simple_world_comm_v2
+from pettingzoo.test import api_test, parallel_test, seed_test
 
 import supersuit
-import pytest
 from supersuit import (
+    dtype_v0,
+    frame_skip_v0,
     frame_stack_v1,
     pad_action_space_v0,
-    frame_skip_v0,
     sticky_actions_v0,
-    dtype_v0,
 )
 
 
@@ -27,10 +25,10 @@ def test_pettingzoo_frame_skip():
     env = frame_skip_v0(env, 3)
     env.reset()
     x = 0
-    for agent in env.agent_iter(25):
+    for _ in env.agent_iter(25):
         assert env.env.steps == (x // 2) * 3
         action = env.action_space(env.agent_selection).sample()
-        next_obs = env.step(action)
+        env.step(action)
         x += 1
 
 

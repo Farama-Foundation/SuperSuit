@@ -1,6 +1,7 @@
-from pettingzoo.utils.wrappers import BaseParallelWraper
-import numpy as np
 import gymnasium
+import numpy as np
+from pettingzoo.utils.wrappers import BaseParallelWraper
+
 from supersuit.utils.wrapper_chooser import WrapperChooser
 
 

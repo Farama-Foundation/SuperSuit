@@ -1,7 +1,8 @@
 import re
+import warnings
+
 import numpy as np
 from gymnasium.spaces import Box, Discrete
-import warnings
 
 
 def change_obs_space(space, num_indicators):

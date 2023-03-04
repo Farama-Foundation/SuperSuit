@@ -1,11 +1,11 @@
-from supersuit import vectorize_aec_env_v0
-from pettingzoo.classic import rps_v2
-from pettingzoo.butterfly import knights_archers_zombies_v10
-from pettingzoo.mpe import simple_world_comm_v2
-import numpy as np
 import random
-import time
-import supersuit
+
+import numpy as np
+from pettingzoo.butterfly import knights_archers_zombies_v10
+from pettingzoo.classic import rps_v2
+from pettingzoo.mpe import simple_world_comm_v2
+
+from supersuit import vectorize_aec_env_v0
 
 
 def test_all():
@@ -13,16 +13,32 @@ def test_all():
 
     def test_vec_env(vec_env):
         vec_env.reset()
-        obs, rew, agent_term, agent_trunc, env_term, env_trunc, agent_passes, infos = vec_env.last()
+        (
+            obs,
+            rew,
+            agent_term,
+            agent_trunc,
+            env_term,
+            env_trunc,
+            agent_passes,
+            infos,
+        ) = vec_env.last()
         print(np.asarray(obs).shape)
         assert len(obs) == NUM_ENVS
         act_space = vec_env.action_space(vec_env.agent_selection)
         assert np.all(np.equal(obs, vec_env.observe(vec_env.agent_selection)))
         assert len(vec_env.observe(vec_env.agent_selection)) == NUM_ENVS
         vec_env.step([act_space.sample() for _ in range(NUM_ENVS)])
-        obs, rew, agent_term, agent_trunc, env_term, env_trunc, agent_passes, infos = vec_env.last(
-            observe=False
-        )
+        (
+            obs,
+            rew,
+            agent_term,
+            agent_trunc,
+            env_term,
+            env_trunc,
+            agent_passes,
+            infos,
+        ) = vec_env.last(observe=False)
         assert obs is None
 
     def test_infos(vec_env):

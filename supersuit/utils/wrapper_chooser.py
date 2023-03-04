@@ -1,6 +1,6 @@
 import gymnasium
-from pettingzoo.utils.env import AECEnv, ParallelEnv
 from pettingzoo.utils.conversions import aec_to_parallel, parallel_to_aec
+from pettingzoo.utils.env import AECEnv, ParallelEnv
 
 
 class WrapperChooser:
