@@ -1,13 +1,24 @@
+from test.dummy_gym_env import DummyEnv
+
 import numpy as np
 from gymnasium import spaces
 
-from supersuit import (clip_actions_v0, clip_reward_v0, color_reduction_v0,
-                       delay_observations_v0, dtype_v0, flatten_v0,
-                       frame_skip_v0, frame_stack_v1, max_observation_v0,
-                       nan_random_v0, nan_zeros_v0, normalize_obs_v0,
-                       scale_actions_v0, sticky_actions_v0)
-
-from .dummy_gym_env import DummyEnv
+from supersuit import (
+    clip_actions_v0,
+    clip_reward_v0,
+    color_reduction_v0,
+    delay_observations_v0,
+    dtype_v0,
+    flatten_v0,
+    frame_skip_v0,
+    frame_stack_v1,
+    max_observation_v0,
+    nan_random_v0,
+    nan_zeros_v0,
+    normalize_obs_v0,
+    scale_actions_v0,
+    sticky_actions_v0,
+)
 
 
 def unwrapped_check(env):

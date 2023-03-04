@@ -5,8 +5,7 @@ import numpy as np
 import pytest
 from pettingzoo.mpe import simple_spread_v2
 
-from supersuit import (concat_vec_envs_v1, gym_vec_env_v0,
-                       pettingzoo_env_to_vec_env_v1)
+from supersuit import concat_vec_envs_v1, gym_vec_env_v0, pettingzoo_env_to_vec_env_v1
 
 
 def recursive_equal(info1, info2):

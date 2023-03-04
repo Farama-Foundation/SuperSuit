@@ -8,7 +8,7 @@ import gymnasium
 import numpy as np
 from pettingzoo.utils.agent_selector import agent_selector
 
-from .base_aec_vec_env import VectorAECEnv
+from supersuit.base_aec_vec_env import VectorAECEnv
 
 
 class SpaceWrapper:

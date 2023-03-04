@@ -2,9 +2,11 @@ import numpy as np
 import pytest
 from gymnasium.spaces import Box
 
-from supersuit.utils.basic_transforms.normalize_obs import (change_obs_space,
-                                                            change_observation,
-                                                            check_param)
+from supersuit.utils.basic_transforms.normalize_obs import (
+    change_obs_space,
+    change_observation,
+    check_param,
+)
 
 high_val = np.array([1, 2, 4])
 test_val = np.array([1, 1, 1])

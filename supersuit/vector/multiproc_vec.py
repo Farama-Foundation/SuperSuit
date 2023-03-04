@@ -4,10 +4,14 @@ import traceback
 
 import gymnasium.vector
 import numpy as np
-from gymnasium.vector.utils import (concatenate, create_empty_array,
-                                    create_shared_memory, iterate,
-                                    read_from_shared_memory,
-                                    write_to_shared_memory)
+from gymnasium.vector.utils import (
+    concatenate,
+    create_empty_array,
+    create_shared_memory,
+    iterate,
+    read_from_shared_memory,
+    write_to_shared_memory,
+)
 
 from .utils.shared_array import SharedArray
 

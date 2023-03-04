@@ -2,8 +2,7 @@ import numpy as np
 import pytest
 from gymnasium.spaces import Box
 
-from supersuit.utils.basic_transforms.reshape import (change_observation,
-                                                      check_param)
+from supersuit.utils.basic_transforms.reshape import change_observation, check_param
 
 test_obs_space = Box(
     low=np.float32(0.0), high=np.float32(1.0), shape=(4, 4, 3), dtype=np.float32

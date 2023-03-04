@@ -1,8 +1,11 @@
 import numpy as np
 from gymnasium.spaces import Box
 
-from supersuit.lambda_wrappers import (action_lambda_v1, observation_lambda_v0,
-                                       reward_lambda_v0)
+from supersuit.lambda_wrappers import (
+    action_lambda_v1,
+    observation_lambda_v0,
+    reward_lambda_v0,
+)
 from supersuit.utils import basic_transforms
 
 

@@ -4,8 +4,7 @@ import pytest
 from pettingzoo.butterfly import knights_archers_zombies_v10
 from pettingzoo.mpe import simple_spread_v2, simple_world_comm_v2
 
-from supersuit import (black_death_v3, concat_vec_envs_v1,
-                       pettingzoo_env_to_vec_env_v1)
+from supersuit import black_death_v3, concat_vec_envs_v1, pettingzoo_env_to_vec_env_v1
 
 
 def test_good_env():

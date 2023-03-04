@@ -5,8 +5,13 @@ from pettingzoo.mpe import simple_push_v2, simple_world_comm_v2
 from pettingzoo.test import api_test, parallel_test, seed_test
 
 import supersuit
-from supersuit import (dtype_v0, frame_skip_v0, frame_stack_v1,
-                       pad_action_space_v0, sticky_actions_v0)
+from supersuit import (
+    dtype_v0,
+    frame_skip_v0,
+    frame_stack_v1,
+    pad_action_space_v0,
+    sticky_actions_v0,
+)
 
 
 def test_pettingzoo_frame_stack():

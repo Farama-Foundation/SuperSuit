@@ -2,8 +2,11 @@ import numpy as np
 from gymnasium.spaces import Box, Discrete
 
 from supersuit.utils.action_transforms.homogenize_ops import (
-    check_homogenize_spaces, dehomogenize_actions, homogenize_observations,
-    homogenize_spaces)
+    check_homogenize_spaces,
+    dehomogenize_actions,
+    homogenize_observations,
+    homogenize_spaces,
+)
 
 box_spaces = [
     Box(low=np.float32(0), high=np.float32(1), shape=(5, 4)),

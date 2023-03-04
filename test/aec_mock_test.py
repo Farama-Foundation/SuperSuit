@@ -1,14 +1,21 @@
+from test.dummy_aec_env import DummyEnv
+
 import numpy as np
 import pytest
 from gymnasium.spaces import Box, Discrete
 from pettingzoo.utils.wrappers import OrderEnforcingWrapper as PettingzooWrap
 
 import supersuit
-from supersuit import (action_lambda_v1, dtype_v0, frame_stack_v1,
-                       frame_stack_v2, observation_lambda_v0,
-                       pad_action_space_v0, reshape_v0, scale_actions_v0)
-
-from .dummy_aec_env import DummyEnv
+from supersuit import (
+    action_lambda_v1,
+    dtype_v0,
+    frame_stack_v1,
+    frame_stack_v2,
+    observation_lambda_v0,
+    pad_action_space_v0,
+    reshape_v0,
+    scale_actions_v0,
+)
 
 base_obs = {
     f"a{idx}": np.zeros([8, 8, 3], dtype=np.float32) + np.arange(3) + idx

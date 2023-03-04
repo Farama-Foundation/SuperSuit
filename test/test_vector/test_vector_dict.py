@@ -1,3 +1,5 @@
+from test.dummy_aec_env import DummyEnv
+
 import numpy as np
 import pytest
 from gymnasium.spaces import Box, Dict, Discrete, Tuple
@@ -5,8 +7,6 @@ from gymnasium.vector.utils import concatenate, create_empty_array
 from pettingzoo.utils.conversions import aec_to_parallel
 
 from supersuit import concat_vec_envs_v1, pettingzoo_env_to_vec_env_v1
-
-from ..dummy_aec_env import DummyEnv
 
 n_agents = 5
 

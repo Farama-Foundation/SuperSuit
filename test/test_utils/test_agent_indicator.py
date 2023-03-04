@@ -2,9 +2,11 @@ import numpy as np
 import pytest
 from gymnasium.spaces import Box, Discrete
 
-from supersuit.utils.agent_indicator import (change_obs_space,
-                                             change_observation,
-                                             get_indicator_map)
+from supersuit.utils.agent_indicator import (
+    change_obs_space,
+    change_observation,
+    get_indicator_map,
+)
 
 obs_space_3d = Box(low=np.float32(0.0), high=np.float32(1.0), shape=(4, 4, 3))
 obs_space_2d = Box(low=np.float32(0.0), high=np.float32(1.0), shape=(4, 3))
