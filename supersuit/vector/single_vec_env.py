@@ -1,5 +1,5 @@
-import numpy as np
 import gymnasium
+import numpy as np
 
 
 class SingleVecEnv:

@@ -1,14 +1,15 @@
-from supersuit.utils.base_aec_wrapper import PettingzooWrap
-from supersuit.utils.wrapper_chooser import WrapperChooser
 import gymnasium
+
+from supersuit.utils.base_aec_wrapper import PettingzooWrap
 from supersuit.utils.make_defaultdict import make_defaultdict
+from supersuit.utils.wrapper_chooser import WrapperChooser
 
 
 class aec_reward_lambda(PettingzooWrap):
     def __init__(self, env, change_reward_fn):
         assert callable(
             change_reward_fn
-        ), "change_reward_fn needs to be a function. It is {}".format(change_reward_fn)
+        ), f"change_reward_fn needs to be a function. It is {change_reward_fn}"
         self._change_reward_fn = change_reward_fn
 
         super().__init__(env)
@@ -44,7 +45,7 @@ class gym_reward_lambda(gymnasium.Wrapper):
     def __init__(self, env, change_reward_fn):
         assert callable(
             change_reward_fn
-        ), "change_reward_fn needs to be a function. It is {}".format(change_reward_fn)
+        ), f"change_reward_fn needs to be a function. It is {change_reward_fn}"
         self._change_reward_fn = change_reward_fn
 
         super().__init__(env)

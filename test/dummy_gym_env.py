@@ -1,5 +1,4 @@
 import gymnasium
-import copy
 
 
 class DummyEnv(gymnasium.Env):

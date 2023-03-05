@@ -17,7 +17,7 @@ def get_tile_shape(shape, stack_size, stack_dim=-1):
             tile_shape = (1, 1, stack_size)
             new_shape = shape + (1,)
         else:
-            assert False, "Stacking is only avaliable for 1,2 or 3 dimentional arrays"
+            assert False, "Stacking is only available for 1,2 or 3 dimensional arrays"
 
     elif stack_dim == 0:
         if obs_dim == 1:
@@ -31,7 +31,7 @@ def get_tile_shape(shape, stack_size, stack_dim=-1):
             tile_shape = (stack_size, 1, 1)
             new_shape = (1,) + shape
         else:
-            assert False, "Stacking is only avaliable for 1,2 or 3 dimentional arrays"
+            assert False, "Stacking is only available for 1,2 or 3 dimensional arrays"
 
     return tile_shape, new_shape
 

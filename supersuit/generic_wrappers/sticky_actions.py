@@ -1,6 +1,7 @@
+import gymnasium
+
 from .utils.base_modifier import BaseModifier
 from .utils.shared_wrapper_util import shared_wrapper
-import gymnasium
 
 
 def sticky_actions_v0(env, repeat_action_probability):

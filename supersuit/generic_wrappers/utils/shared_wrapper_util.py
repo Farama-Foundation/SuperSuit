@@ -1,8 +1,10 @@
 import functools
+
 import gymnasium
-from pettingzoo.utils.wrappers import OrderEnforcingWrapper as PettingzooWrap
-from supersuit.utils.wrapper_chooser import WrapperChooser
 from pettingzoo.utils import BaseParallelWraper
+from pettingzoo.utils.wrappers import OrderEnforcingWrapper as PettingzooWrap
+
+from supersuit.utils.wrapper_chooser import WrapperChooser
 
 
 class shared_wrapper_aec(PettingzooWrap):
@@ -56,7 +58,10 @@ class shared_wrapper_aec(PettingzooWrap):
     def step(self, action):
         mod = self.modifiers[self.agent_selection]
         action = mod.modify_action(action)
-        if self.terminations[self.agent_selection] or self.truncations[self.agent_selection]:
+        if (
+            self.terminations[self.agent_selection]
+            or self.truncations[self.agent_selection]
+        ):
             action = None
         super().step(action)
         self.add_modifiers(self.agents)

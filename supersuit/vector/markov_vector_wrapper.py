@@ -1,6 +1,6 @@
-import numpy as np
 import gymnasium.vector
-from gymnasium.vector.utils import concatenate, iterate, create_empty_array
+import numpy as np
+from gymnasium.vector.utils import concatenate, create_empty_array, iterate
 
 
 class MarkovVectorEnv(gymnasium.vector.VectorEnv):

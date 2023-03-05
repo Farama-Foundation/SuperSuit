@@ -1,8 +1,9 @@
-import numpy as np
-from .single_vec_env import SingleVecEnv
 import gymnasium.vector
-from gymnasium.vector.utils import concatenate, iterate, create_empty_array
+import numpy as np
 from gymnasium.spaces import Discrete
+from gymnasium.vector.utils import concatenate, create_empty_array, iterate
+
+from .single_vec_env import SingleVecEnv
 
 
 def transpose(ll):

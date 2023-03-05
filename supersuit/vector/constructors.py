@@ -22,7 +22,6 @@ def MakeCPUAsyncConstructor(max_num_cpus):
 
             num_fns = len(env_fn_list)
             envs_per_cpu = (num_fns + max_num_cpus - 1) // max_num_cpus
-            alloced_num_cpus = (num_fns + envs_per_cpu - 1) // envs_per_cpu
 
             env_cpu_div = []
             num_envs_alloced = 0

@@ -17,7 +17,7 @@ class SB3VecEnvWrapper(VecEnvWrapper):
         return self.venv.step_wait()
 
     def env_is_wrapped(self, wrapper_class, indices=None):
-        # ignores indicies
+        # ignores indices
         return self.venv.env_is_wrapped(wrapper_class)
 
     def getattr_recursive(self, name):

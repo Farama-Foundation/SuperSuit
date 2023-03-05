@@ -1,6 +1,7 @@
+from supersuit.utils.obs_delay import Delayer
+
 from .utils.base_modifier import BaseModifier
 from .utils.shared_wrapper_util import shared_wrapper
-from supersuit.utils.obs_delay import Delayer
 
 
 def delay_observations_v0(env, delay):

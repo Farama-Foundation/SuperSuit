@@ -1,9 +1,12 @@
+import warnings
+
+import gymnasium
+import numpy as np
+
+from supersuit.lambda_wrappers import action_lambda_v1
+
 from .utils.base_modifier import BaseModifier
 from .utils.shared_wrapper_util import shared_wrapper
-import warnings
-from supersuit.lambda_wrappers import action_lambda_v1
-import numpy as np
-import gymnasium
 
 
 def nan_random_v0(env):
@@ -43,14 +46,14 @@ def nan_noop_v0(env, no_op_action):
     def on_action(action, action_space):
         if action is None:
             warnings.warn(
-                "[WARNING]: Step received an None action {}. Evironment is {}. Taking no operation action.".format(
+                "[WARNING]: Step received an None action {}. Environment is {}. Taking no operation action.".format(
                     action, env
                 )
             )
             return None
         if np.isnan(action).any():
             warnings.warn(
-                "[WARNING]: Step received an NaN action {}. Evironment is {}. Taking no operation action.".format(
+                "[WARNING]: Step received an NaN action {}. Environment is {}. Taking no operation action.".format(
                     action, env
                 )
             )
