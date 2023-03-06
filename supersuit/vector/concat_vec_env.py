@@ -39,8 +39,7 @@ class ConcatVecEnv(gymnasium.vector.VectorEnv):
                 _res_obs.append(_obs)
         else:
             _res_obs = [
-                vec_env.reset(seed=None, options=options)
-                for vec_env in self.vec_envs
+                vec_env.reset(seed=None, options=options) for vec_env in self.vec_envs
             ]
 
         return self.concat_obs(_res_obs)
