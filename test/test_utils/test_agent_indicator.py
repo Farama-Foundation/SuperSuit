@@ -1,11 +1,12 @@
+import numpy as np
+import pytest
+from gymnasium.spaces import Box, Discrete
+
 from supersuit.utils.agent_indicator import (
     change_obs_space,
     change_observation,
     get_indicator_map,
 )
-from gymnasium.spaces import Box, Discrete
-import numpy as np
-import pytest
 
 obs_space_3d = Box(low=np.float32(0.0), high=np.float32(1.0), shape=(4, 4, 3))
 obs_space_2d = Box(low=np.float32(0.0), high=np.float32(1.0), shape=(4, 3))
@@ -38,9 +39,9 @@ def test_change_observation():
     assert change_observation(
         np.ones((4, 3)), obs_space_2d, (4, NUM_INDICATORS)
     ).shape == (4, 3, 1 + NUM_INDICATORS)
-    assert change_observation(
-        np.ones((41)), obs_space_1d, (4, NUM_INDICATORS)
-    ).shape == (41 + NUM_INDICATORS,)
+    assert change_observation(np.ones(41), obs_space_1d, (4, NUM_INDICATORS)).shape == (
+        41 + NUM_INDICATORS,
+    )
 
     assert (
         change_observation(np.ones((4, 4, 3)), obs_space_3d, (4, NUM_INDICATORS))[

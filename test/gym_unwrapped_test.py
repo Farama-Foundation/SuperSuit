@@ -1,3 +1,5 @@
+from test.dummy_gym_env import DummyEnv
+
 import numpy as np
 from gymnasium import spaces
 
@@ -17,8 +19,6 @@ from supersuit import (
     scale_actions_v0,
     sticky_actions_v0,
 )
-
-from .dummy_gym_env import DummyEnv
 
 
 def unwrapped_check(env):

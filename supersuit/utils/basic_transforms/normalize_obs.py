@@ -1,5 +1,5 @@
-from gymnasium.spaces import Box
 import numpy as np
+from gymnasium.spaces import Box
 
 
 def check_param(obs_space, min_max_pair):
@@ -8,7 +8,7 @@ def check_param(obs_space, min_max_pair):
     ) == np.dtype("float64")
     assert (
         isinstance(min_max_pair, tuple) and len(min_max_pair) == 2
-    ), "range_scale must be tuple of size 2. It is {}".format(min_max_pair)
+    ), f"range_scale must be tuple of size 2. It is {min_max_pair}"
     try:
         min_res = float(min_max_pair[0])
         max_res = float(min_max_pair[1])
@@ -31,7 +31,7 @@ def change_obs_space(obs_space, min_max_pair):
 
 
 def change_observation(obs, obs_space, min_max_pair):
-    min_res, max_res = [float(x) for x in min_max_pair]
+    min_res, max_res = (float(x) for x in min_max_pair)
     old_size = obs_space.high - obs_space.low
     new_size = max_res - min_res
     result = (obs - obs_space.low) / old_size * new_size + min_res

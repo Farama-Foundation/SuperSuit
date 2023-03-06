@@ -1,5 +1,5 @@
-from collections import defaultdict
 import warnings
+from collections import defaultdict
 
 
 def make_defaultdict(d):

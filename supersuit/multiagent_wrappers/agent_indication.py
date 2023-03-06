@@ -1,6 +1,7 @@
-from supersuit.utils import agent_indicator as agent_ider
 from pettingzoo.utils.env import AECEnv, ParallelEnv
+
 from supersuit import observation_lambda_v0
+from supersuit.utils import agent_indicator as agent_ider
 
 
 def agent_indicator_v0(env, type_only=False):

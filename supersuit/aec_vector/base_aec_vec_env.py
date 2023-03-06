@@ -30,7 +30,7 @@ class VectorAECEnv:
     def agent_iter(self, max_iter):
         """
         Unlike aec agent_iter, this does not stop on environment done. Instead,
-        vector environment resets speciic envs when done.
+        vector environment resets specific envs when done.
 
         Instead, just continues until max_iter is reached.
         """

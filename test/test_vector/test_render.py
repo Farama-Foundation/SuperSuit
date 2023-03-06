@@ -1,8 +1,6 @@
-from supersuit import gym_vec_env_v0
-import gymnasium
-import numpy as np
 from pettingzoo.butterfly import pistonball_v6
-from supersuit import concat_vec_envs_v1, pettingzoo_env_to_vec_env_v1
+
+from supersuit import pettingzoo_env_to_vec_env_v1
 
 
 def make_env():
