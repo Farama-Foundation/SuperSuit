@@ -11,8 +11,5 @@ class DummyEnv(gymnasium.Env):
     def step(self, action):
         return self._observation, 1, False, False, {}
 
-    def reset(self, seed=None, return_info=False, options=None):
-        if not return_info:
-            return self._observation
-        else:
-            return self._observation, {}
+    def reset(self, seed=None, options=None):
+        return self._observation

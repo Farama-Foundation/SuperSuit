@@ -11,7 +11,7 @@ def sticky_actions_v0(env, repeat_action_probability):
         def __init__(self):
             super().__init__()
 
-        def reset(self, seed=None, return_info=False, options=None):
+        def reset(self, seed=None, options=None):
             self.np_random, _ = gymnasium.utils.seeding.np_random(seed)
             self.old_action = None
 

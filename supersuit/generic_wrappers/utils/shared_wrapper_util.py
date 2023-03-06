@@ -42,7 +42,7 @@ class shared_wrapper_aec(PettingzooWrap):
                 if self._cur_seed is not None:
                     self._cur_seed += 1
 
-    def reset(self, seed=None, return_info=False, options=None):
+    def reset(self, seed=None, options=None):
         self._cur_seed = seed
         self._cur_options = options
 

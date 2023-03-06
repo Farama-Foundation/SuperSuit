@@ -14,10 +14,10 @@ def nan_random_v0(env):
         def __init__(self):
             super().__init__()
 
-        def reset(self, seed=None, return_info=False, options=None):
+        def reset(self, seed=None, options=None):
             self.np_random, seed = gymnasium.utils.seeding.np_random(seed)
 
-            return super().reset(seed, return_info=return_info, options=options)
+            return super().reset(seed, options=options)
 
         def modify_action(self, action):
             if action is not None and np.isnan(action).any():
