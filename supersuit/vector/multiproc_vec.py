@@ -63,7 +63,7 @@ def async_loop(
         env_end_idx = env_start_idx + vec_env.num_envs
         while True:
             instr = pipe.recv()
-            comp_infos = []
+            response = []
 
             if instr == "close":
                 vec_env.close()
@@ -91,23 +91,20 @@ def async_loop(
                     shared_terms.np_arr[env_start_idx:env_end_idx] = terms
                     shared_truncs.np_arr[env_start_idx:env_end_idx] = truncs
                     shared_rews.np_arr[env_start_idx:env_end_idx] = rewards
-                    comp_infos = compress_info(infos)
+                    response = compress_info(infos)
 
                 elif name == "env_is_wrapped":
-                    comp_infos = vec_env.env_is_wrapped(data)
-
-                elif name == "render":
-                    render_result = vec_env.render(data)
-                    if data == "rgb_array":
-                        comp_infos = render_result
+                    response = vec_env.env_is_wrapped(data)
 
                 else:
                     raise AssertionError("bad tuple instruction name: " + name)
             elif instr == "terminate":
                 return
+            elif instr == "render":
+                response = vec_env.render()
             else:
                 raise AssertionError("bad instruction: " + instr)
-            pipe.send(comp_infos)
+            pipe.send(response)
     except BaseException as e:
         tb = traceback.format_exc()
         pipe.send((e, tb))
