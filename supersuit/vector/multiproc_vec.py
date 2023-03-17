@@ -1,5 +1,6 @@
 import copy
 import multiprocessing as mp
+import time
 import traceback
 
 import gymnasium.vector
@@ -67,6 +68,7 @@ def async_loop(
 
             if instr == "close":
                 vec_env.close()
+                return
 
             elif isinstance(instr, tuple):
                 name, data = instr
@@ -103,8 +105,6 @@ def async_loop(
 
                 else:
                     raise AssertionError("bad tuple instruction name: " + name)
-            elif instr == "terminate":
-                return
             else:
                 raise AssertionError("bad instruction: " + instr)
             pipe.send(comp_infos)
@@ -115,7 +115,13 @@ def async_loop(
 
 class ProcConcatVec(gymnasium.vector.VectorEnv):
     def __init__(
-        self, vec_env_constrs, observation_space, action_space, tot_num_envs, metadata
+        self,
+        vec_env_constrs,
+        observation_space,
+        action_space,
+        tot_num_envs,
+        metadata,
+        graceful_shutdown_timeout=None,
     ):
         raise NotImplementedError(
             "The wrapper ProcConcatVec is temporarily depreciated whilst it is being debugged. "
@@ -125,6 +131,7 @@ class ProcConcatVec(gymnasium.vector.VectorEnv):
         self.action_space = action_space
         self.num_envs = num_envs = tot_num_envs
         self.metadata = metadata
+        self.graceful_shutdown_timeout = graceful_shutdown_timeout
 
         self.shared_obs = create_shared_memory(self.observation_space, n=self.num_envs)
         self.shared_act = create_shared_memory(self.action_space, n=self.num_envs)
@@ -220,15 +227,6 @@ class ProcConcatVec(gymnasium.vector.VectorEnv):
         self.step_async(actions)
         return self.step_wait()
 
-    def __del__(self):
-        for pipe in self.pipes:
-            try:
-                pipe.send("terminate")
-            except ConnectionError:
-                pass
-        for proc in self.procs:
-            proc.join()
-
     def render(self):
         self.pipes[0].send("render")
         render_result = self.pipes[0].recv()
@@ -241,17 +239,27 @@ class ProcConcatVec(gymnasium.vector.VectorEnv):
         return render_result
 
     def close(self):
-        for pipe in self.pipes:
-            pipe.send("close")
-        for pipe in self.pipes:
-            try:
-                pipe.recv()
-            except EOFError:
-                raise RuntimeError(
-                    "only one multiproccessing vector environment can open a window over the duration of a process"
-                )
-            except ConnectionError:
-                pass
+        try:
+            for pipe, proc in zip(self.pipes, self.procs):
+                if proc.is_alive():
+                    pipe.send("close")
+        except OSError:
+            pass
+        else:
+            deadline = (
+                None
+                if self.graceful_shutdown_timeout is None
+                else time.monotonic() + self.graceful_shutdown_timeout
+            )
+            for proc in self.procs:
+                timeout = None if deadline is None else deadline - time.monotonic()
+                if timeout is not None and timeout <= 0:
+                    break
+                proc.join(timeout)
+        for pipe, proc in zip(self.pipes, self.procs):
+            if proc.is_alive():
+                proc.kill()
+            pipe.close()
 
     def env_is_wrapped(self, wrapper_class, indices=None):
         for i, pipe in enumerate(self.pipes):
