@@ -1,7 +1,8 @@
+import cloudpickle
+from pettingzoo import AECEnv
+
 from .async_vector_env import AsyncAECVectorEnv
 from .vector_env import SyncAECVectorEnv
-from pettingzoo import AECEnv
-import cloudpickle
 
 
 def vectorize_aec_env_v0(aec_env, num_envs, num_cpus=0):

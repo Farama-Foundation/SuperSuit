@@ -1,11 +1,11 @@
-from gymnasium.spaces import Box, Discrete
 import numpy as np
-import pytest
+from gymnasium.spaces import Box, Discrete
+
 from supersuit.utils.action_transforms.homogenize_ops import (
     check_homogenize_spaces,
-    homogenize_spaces,
     dehomogenize_actions,
     homogenize_observations,
+    homogenize_spaces,
 )
 
 box_spaces = [

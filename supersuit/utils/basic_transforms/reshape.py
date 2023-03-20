@@ -1,12 +1,13 @@
 import numpy as np
+
 from . import convert_box
 
 
 def check_param(obs_space, shape):
-    assert isinstance(shape, tuple), "shape must be tuple. It is {}".format(shape)
+    assert isinstance(shape, tuple), f"shape must be tuple. It is {shape}"
     assert all(
         isinstance(el, int) for el in shape
-    ), "shape must be tuple of ints, is: {}".format(shape)
+    ), f"shape must be tuple of ints, is: {shape}"
     assert np.prod(shape) == np.prod(
         obs_space.shape
     ), "new shape {} must have as many elements as original shape {}".format(

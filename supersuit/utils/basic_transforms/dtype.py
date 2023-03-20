@@ -1,9 +1,10 @@
 import numpy as np
+
 from . import convert_box
 
 
 def check_param(obs_space, new_dtype):
-    np.dtype(new_dtype)  # type argument must be convertable to a numpy dtype
+    np.dtype(new_dtype)  # type argument must be convertible to a numpy dtype
 
 
 def change_obs_space(obs_space, param):

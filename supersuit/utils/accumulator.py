@@ -1,6 +1,7 @@
 from collections import deque
-import numpy as np
 from functools import reduce
+
+import numpy as np
 
 
 class Accumulator:

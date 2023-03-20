@@ -27,7 +27,7 @@ class BaseWrapper(PettingzooWrap):
     def _update_step(self, agent):
         pass
 
-    def reset(self, seed=None, return_info=False, options=None):
+    def reset(self, seed=None, options=None):
         super().reset(seed=seed, options=options)
         self._update_step(self.agent_selection)
 

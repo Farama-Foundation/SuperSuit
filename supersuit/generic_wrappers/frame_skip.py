@@ -1,10 +1,10 @@
+import gymnasium
 import numpy as np
+from pettingzoo.utils.wrappers import BaseParallelWraper, BaseWrapper
 
 from supersuit.utils.frame_skip import check_transform_frameskip
-from supersuit.utils.wrapper_chooser import WrapperChooser
-from pettingzoo.utils.wrappers import BaseWrapper, BaseParallelWrapper
-import gymnasium
 from supersuit.utils.make_defaultdict import make_defaultdict
+from supersuit.utils.wrapper_chooser import WrapperChooser
 
 
 class frame_skip_gym(gymnasium.Wrapper):
@@ -44,7 +44,7 @@ class frame_skip_aec(StepAltWrapper):
         check_transform_frameskip(num_frames)
         self.num_frames = num_frames
 
-    def reset(self, seed=None, return_info=False, options=None):
+    def reset(self, seed=None, options=None):
         super().reset(seed=seed, options=options)
         self.agents = self.env.agents[:]
         self.terminations = make_defaultdict({agent: False for agent in self.agents})
@@ -68,7 +68,10 @@ class frame_skip_aec(StepAltWrapper):
         self._has_updated = True
 
         # if agent is dead, perform a None step
-        if self.terminations[self.agent_selection] or self.truncations[self.agent_selection]:
+        if (
+            self.terminations[self.agent_selection]
+            or self.truncations[self.agent_selection]
+        ):
             if self.env.agents and self.agent_selection == self.env.agent_selection:
                 self.env.step(None)
             self._was_dead_step(action)
@@ -77,25 +80,38 @@ class frame_skip_aec(StepAltWrapper):
         cur_agent = self.agent_selection
         self._cumulative_rewards[cur_agent] = 0
         self.rewards = make_defaultdict({a: 0.0 for a in self.agents})
-        self.skip_num[cur_agent] = self.num_frames  # set the skip num to the param inputted in the frame_skip wrapper
+        self.skip_num[
+            cur_agent
+        ] = (
+            self.num_frames
+        )  # set the skip num to the param inputted in the frame_skip wrapper
         self.old_actions[cur_agent] = action
 
-        while self.old_actions[self.env.agent_selection] is not None:  # this is like `for x in range(num_skips):` (L18)
+        while (
+            self.old_actions[self.env.agent_selection] is not None
+        ):  # this is like `for x in range(num_skips):` (L18)
             step_agent = self.env.agent_selection
 
             # if agent is dead, perform a None step
-            if (step_agent in self.env.terminations) or (step_agent in self.env.truncations):
+            if (step_agent in self.env.terminations) or (
+                step_agent in self.env.truncations
+            ):
                 # reward = self.env.rewards[step_agent]
                 # done = self.env.dones[step_agent]
                 # info = self.env.infos[step_agent]
-                observe, reward, termination, truncation, info = self.env.last(observe=False)
+                observe, reward, termination, truncation, info = self.env.last(
+                    observe=False
+                )
                 action = self.old_actions[step_agent]
                 self.env.step(action)
                 for agent in self.env.agents:
                     self.rewards[agent] += self.env.rewards[agent]
                 self.infos[self.env.agent_selection] = info
 
-                while self.env.agents and (self.env.terminations[self.env.agent_selection] or self.env.truncations[self.env.agent_selection]):
+                while self.env.agents and (
+                    self.env.terminations[self.env.agent_selection]
+                    or self.env.truncations[self.env.agent_selection]
+                ):
                     dead_agent = self.env.agent_selection
                     self.terminations[dead_agent] = self.env.terminations[dead_agent]
                     self.truncations[dead_agent] = self.env.truncations[dead_agent]
@@ -105,7 +121,9 @@ class frame_skip_aec(StepAltWrapper):
 
             self.skip_num[step_agent] -= 1
             if self.skip_num[step_agent] == 0:
-                self.old_actions[step_agent] = None  # if it is time to skip, set action to None, effectively breaking the while loop
+                self.old_actions[
+                    step_agent
+                ] = None  # if it is time to skip, set action to None, effectively breaking the while loop
 
         my_agent_set = set(self.agents)
         for agent in self.env.agents:
@@ -155,7 +173,10 @@ class frame_skip_par(BaseParallelWrapper):
                     ), "parallel environments that use frame_skip_v0 must provide a `default_action` argument for steps between an agent being generated and an agent taking its first step"
                     action[agent] = self.default_action
 
-            if (np.fromiter(term.values(), dtype=bool) | np.fromiter(trunc.values(), dtype=bool)).all():
+            if (
+                np.fromiter(term.values(), dtype=bool)
+                | np.fromiter(trunc.values(), dtype=bool)
+            ).all():
                 break
 
         # delete any values created by agents which were
@@ -170,7 +191,13 @@ class frame_skip_par(BaseParallelWrapper):
                 del total_obs[agent]
 
         self.agents = self.env.agents[:]
-        return total_obs, total_reward, total_terminations, total_truncations, total_infos
+        return (
+            total_obs,
+            total_reward,
+            total_terminations,
+            total_truncations,
+            total_infos,
+        )
 
 
 frame_skip_v0 = WrapperChooser(
