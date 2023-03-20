@@ -137,7 +137,7 @@ class frame_skip_aec(StepAltWrapper):
         self._deads_step_first()
 
 
-class frame_skip_par(BaseParallelWraper):
+class frame_skip_par(BaseParallelWrapper):
     def __init__(self, env, num_frames, default_action=None):
         super().__init__(env)
         self.num_frames = check_transform_frameskip(num_frames)

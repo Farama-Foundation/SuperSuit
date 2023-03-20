@@ -73,7 +73,7 @@ class shared_wrapper_aec(PettingzooWrap):
         return self.modifiers[agent].get_last_obs()
 
 
-class shared_wrapper_parr(BaseParallelWraper):
+class shared_wrapper_parr(BaseParallelWrapper):
     def __init__(self, env, modifier_class):
         super().__init__(env)
 
