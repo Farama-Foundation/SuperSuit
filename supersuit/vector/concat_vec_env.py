@@ -33,16 +33,23 @@ class ConcatVecEnv(gymnasium.vector.VectorEnv):
     def reset(self, seed=None, options=None):
         _res_obs = []
 
+        _res_info = []
         if seed is not None:
             for i in range(len(self.vec_envs)):
-                _obs = self.vec_envs[i].reset(seed=seed + i, options=options)
+                _obs, _info = self.vec_envs[i].reset(
+                    seed=seed + i, options=options
+                )
                 _res_obs.append(_obs)
+                _res_info.append(_info)
         else:
-            _res_obs = [
-                vec_env.reset(seed=None, options=options) for vec_env in self.vec_envs
-            ]
+            for vec_env in self.vec_envs:
+                _obs, _info = vec_env.reset(
+                    seed=None, options=options
+                )
+                _res_obs.append(_obs)
+                _res_info.append(_info)
 
-        return self.concat_obs(_res_obs)
+        return self.concat_obs(_res_obs), sum(_res_info, [])
 
     def concat_obs(self, observations):
         return concatenate(
