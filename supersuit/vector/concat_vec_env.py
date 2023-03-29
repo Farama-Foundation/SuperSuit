@@ -36,16 +36,12 @@ class ConcatVecEnv(gymnasium.vector.VectorEnv):
         _res_info = []
         if seed is not None:
             for i in range(len(self.vec_envs)):
-                _obs, _info = self.vec_envs[i].reset(
-                    seed=seed + i, options=options
-                )
+                _obs, _info = self.vec_envs[i].reset(seed=seed + i, options=options)
                 _res_obs.append(_obs)
                 _res_info.append(_info)
         else:
             for vec_env in self.vec_envs:
-                _obs, _info = vec_env.reset(
-                    seed=None, options=options
-                )
+                _obs, _info = vec_env.reset(seed=None, options=options)
                 _res_obs.append(_obs)
                 _res_info.append(_info)
 

@@ -52,9 +52,7 @@ class MarkovVectorEnv(gymnasium.vector.VectorEnv):
         return self.step(self._saved_actions)
 
     def reset(self, seed=None, options=None):
-        _observations, infos = self.par_env.reset(
-            seed=seed, options=options
-        )
+        _observations, infos = self.par_env.reset(seed=seed, options=options)
         infs = [infos.get(agent, {}) for agent in self.par_env.possible_agents]
         observations = self.concat_obs(_observations)
         return observations, infs

@@ -17,9 +17,7 @@ class black_death_par(BaseParallelWrapper):
             ), f"observation sapces for black death must be Box spaces, is {space}"
 
     def reset(self, seed=None, options=None):
-        obss, infos = self.env.reset(
-            seed=seed, options=options
-        )
+        obss, infos = self.env.reset(seed=seed, options=options)
 
         self.agents = self.env.agents[:]
         self._check_valid_for_black_death()
