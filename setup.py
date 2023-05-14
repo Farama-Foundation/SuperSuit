@@ -47,7 +47,11 @@ setup(
     python_requires=">=3.7, <3.12",
     packages=find_packages(),
     install_requires=["numpy>=1.19.0", "gymnasium>=0.26.0", "tinyscaler>=1.2.5"],
-    extras={"dev": ["pettingzoo[butterfly] @ git+https://github.com/Farama-Foundation/PettingZoo.git"]},
+    extras={
+        "dev": [
+            "pettingzoo[butterfly] @ git+https://github.com/Farama-Foundation/PettingZoo.git"
+        ]
+    },
     classifiers=[
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.10",
