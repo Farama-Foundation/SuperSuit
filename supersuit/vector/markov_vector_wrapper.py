@@ -52,9 +52,10 @@ class MarkovVectorEnv(gymnasium.vector.VectorEnv):
         return self.step(self._saved_actions)
 
     def reset(self, seed=None, options=None):
-        _observations = self.par_env.reset(seed=seed, options=options)
+        # TODO: should this be changed to infos?
+        _observations, infos = self.par_env.reset(seed=seed, options=options)
         observations = self.concat_obs(_observations)
-        return observations
+        return observations, infos
 
     def step(self, actions):
         actions = list(iterate(self.action_space, actions))
@@ -89,7 +90,7 @@ class MarkovVectorEnv(gymnasium.vector.VectorEnv):
         infs = [infos.get(agent, {}) for agent in self.par_env.possible_agents]
 
         if env_done:
-            observations = self.reset()
+            observations, infs = self.reset()
         else:
             observations = self.concat_obs(observations)
         assert (

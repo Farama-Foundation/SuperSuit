@@ -183,6 +183,7 @@ class ProcConcatVec(gymnasium.vector.VectorEnv):
 
         self._receive_info()
 
+        # TODO: should this include info
         return numpy_deepcopy(self.observations_buffers)
 
     def step_async(self, actions):

@@ -35,6 +35,7 @@ class ConcatVecEnv(gymnasium.vector.VectorEnv):
 
         if seed is not None:
             for i in range(len(self.vec_envs)):
+                # TODO: should this be changed to _obs, _infos?
                 _obs = self.vec_envs[i].reset(seed=seed + i, options=options)
                 _res_obs.append(_obs)
         else:

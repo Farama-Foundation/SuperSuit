@@ -112,7 +112,7 @@ class shared_wrapper_parr(BaseParallelWrapper):
         self._cur_seed = seed
         self._cur_options = options
 
-        observations = super().reset(seed=seed, options=options)
+        observations, infos = super().reset(seed=seed, options=options)
         self.add_modifiers(self.agents)
         for agent, mod in self.modifiers.items():
             mod.reset(seed=seed, options=options)
@@ -120,7 +120,7 @@ class shared_wrapper_parr(BaseParallelWrapper):
             agent: self.modifiers[agent].modify_obs(obs)
             for agent, obs in observations.items()
         }
-        return observations
+        return observations, infos
 
     def step(self, actions):
         actions = {

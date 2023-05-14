@@ -13,7 +13,7 @@ def test_good_env():
     env = pettingzoo_env_to_vec_env_v1(env)
     assert env.num_envs == max_num_agents
 
-    obss = env.reset()
+    obss, infos = env.reset()
     for i in range(55):
         actions = [env.action_space.sample() for i in range(env.num_envs)]
 
@@ -42,7 +42,7 @@ def test_good_vecenv():
     env = pettingzoo_env_to_vec_env_v1(env)
     env = concat_vec_envs_v1(env, num_envs)
 
-    obss = env.reset()
+    obss, infos = env.reset()
     for i in range(55):
         actions = [env.action_space.sample() for i in range(env.num_envs)]
 
