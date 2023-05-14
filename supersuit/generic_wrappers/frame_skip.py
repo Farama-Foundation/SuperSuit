@@ -1,6 +1,6 @@
 import gymnasium
 import numpy as np
-from pettingzoo.utils.wrappers import BaseParallelWraper, BaseWrapper
+from pettingzoo.utils.wrappers import BaseParallelWrapper, BaseWrapper
 
 from supersuit.utils.frame_skip import check_transform_frameskip
 from supersuit.utils.make_defaultdict import make_defaultdict
@@ -137,7 +137,7 @@ class frame_skip_aec(StepAltWrapper):
         self._deads_step_first()
 
 
-class frame_skip_par(BaseParallelWraper):
+class frame_skip_par(BaseParallelWrapper):
     def __init__(self, env, num_frames, default_action=None):
         super().__init__(env)
         self.num_frames = check_transform_frameskip(num_frames)
