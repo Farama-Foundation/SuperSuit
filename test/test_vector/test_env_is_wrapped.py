@@ -1,6 +1,6 @@
 import gymnasium
 import pytest
-from pettingzoo.mpe import simple_spread_v2
+from pettingzoo.mpe import simple_spread_v3
 
 from supersuit import concat_vec_envs_v1, pettingzoo_env_to_vec_env_v1
 from supersuit.generic_wrappers.frame_skip import frame_skip_gym
@@ -33,7 +33,7 @@ def test_env_is_wrapped_cpu():
 
 
 def test_env_is_wrapped_pettingzoo():
-    env = simple_spread_v2.parallel_env()
+    env = simple_spread_v3.parallel_env()
     venv1 = pettingzoo_env_to_vec_env_v1(env)
     num_envs = 3
     venv1 = concat_vec_envs_v1(venv1, num_envs)

@@ -3,7 +3,7 @@ import random
 import numpy as np
 from pettingzoo.butterfly import knights_archers_zombies_v10
 from pettingzoo.classic import rps_v2
-from pettingzoo.mpe import simple_world_comm_v2
+from pettingzoo.mpe import simple_world_comm_v3
 
 from supersuit import vectorize_aec_env_v0
 
@@ -79,6 +79,6 @@ def test_all():
         )
         test_vec_env(
             vectorize_aec_env_v0(
-                simple_world_comm_v2.env(), NUM_ENVS, num_cpus=num_cpus
+                simple_world_comm_v3.env(), NUM_ENVS, num_cpus=num_cpus
             )
         )
