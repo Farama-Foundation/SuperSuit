@@ -34,8 +34,5 @@ def change_observation(obs, obs_space, min_max_pair):
     min_res, max_res = (float(x) for x in min_max_pair)
     old_size = obs_space.high - obs_space.low
     new_size = max_res - min_res
-    try:
-        result = (obs - obs_space.low) / old_size * new_size + min_res
-    except ValueError:
-        return np.zeros(new_size)
+    result = (obs - obs_space.low) / old_size * new_size + min_res
     return result
