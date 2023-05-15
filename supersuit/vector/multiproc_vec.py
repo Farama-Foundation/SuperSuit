@@ -72,7 +72,8 @@ def async_loop(
                 name, data = instr
 
                 if name == "reset":
-                    observations = vec_env.reset(seed=data[0], options=data[1])
+                    observations, infos = vec_env.reset(seed=data[0], options=data[1])
+                    comp_infos = compress_info(infos)
 
                     write_observations(vec_env, env_start_idx, shared_obs, observations)
                     shared_terms.np_arr[env_start_idx:env_end_idx] = False
