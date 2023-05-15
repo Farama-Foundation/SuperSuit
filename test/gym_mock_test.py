@@ -15,7 +15,7 @@ base_act_spaces = Discrete(5)
 def test_reshape():
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
     env = reshape_v0(base_env, (64, 3))
-    obs = env.reset()
+    obs, info = env.reset()
     assert obs.shape == (64, 3)
     first_obs, _, _, _, _ = env.step(5)
     assert np.all(np.equal(first_obs, base_obs.reshape([64, 3])))
