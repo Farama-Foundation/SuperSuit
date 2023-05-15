@@ -118,7 +118,6 @@ class gym_observation_lambda(gymnasium.Wrapper):
         observation = self._modify_observation(observation)
         return observation, rew, termination, truncation, info
 
-    # TODO: these changes might not be necessary (gymnasium rather than pettingzoo) but might as well be consistent in case it's used
     def reset(self, seed=None, options=None):
         observation, infos = self.env.reset(seed=seed, options=options)
         observation = self._modify_observation(observation)
