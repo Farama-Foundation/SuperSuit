@@ -41,7 +41,7 @@ class DummyParEnv(ParallelEnv):
         )
 
     def reset(self, seed=None, options=None):
-        return self._observations
+        return self._observations, self.infos
 
     def close(self):
         pass
