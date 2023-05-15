@@ -14,7 +14,9 @@ class SB3VecEnvWrapper(VecEnvWrapper):
         return self.venv.reset()
 
     def step_wait(self):
-        return self.venv.step_wait()
+        obss, rews, terms, truncs, infos = self.venv.step_wait()
+        dones = truncs | terms
+        return obss, rews, dones, infos
 
     def env_is_wrapped(self, wrapper_class, indices=None):
         # ignores indices

@@ -26,7 +26,6 @@ class black_death_par(BaseParallelWrapper):
             for agent in self.agents
             if agent not in obss
         }
-
         return {**obss, **black_obs}, infos
 
     def step(self, actions):
