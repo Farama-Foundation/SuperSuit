@@ -92,7 +92,9 @@ class ConcatVecEnv(gymnasium.vector.VectorEnv):
         rewards = np.concatenate(rewards, axis=0)
         terminations = np.concatenate(terminations, axis=0)
         truncations = np.concatenate(truncations, axis=0)
-        infos = [info for sublist in infos for info in sublist] # flatten infos from nested lists
+        infos = [
+            info for sublist in infos for info in sublist
+        ]  # flatten infos from nested lists
         return observations, rewards, terminations, truncations, infos
 
     def render(self):
