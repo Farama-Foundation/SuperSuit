@@ -145,9 +145,9 @@ class shared_wrapper_gym(gymnasium.Wrapper):
 
     def reset(self, seed=None, options=None):
         self.modifier.reset(seed=seed, options=options)
-        obs = super().reset(seed=seed, options=options)
+        obs, info = super().reset(seed=seed, options=options)
         obs = self.modifier.modify_obs(obs)
-        return obs
+        return obs, info
 
     def step(self, action):
         obs, rew, term, trunc, info = super().step(self.modifier.modify_action(action))
