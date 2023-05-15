@@ -55,7 +55,8 @@ class MarkovVectorEnv(gymnasium.vector.VectorEnv):
         # TODO: should this be changed to infos?
         _observations, infos = self.par_env.reset(seed=seed, options=options)
         observations = self.concat_obs(_observations)
-        return observations, infos
+        infs = [infos.get(agent, {}) for agent in self.par_env.possible_agents]
+        return observations, infs
 
     def step(self, actions):
         actions = list(iterate(self.action_space, actions))

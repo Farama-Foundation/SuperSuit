@@ -32,18 +32,23 @@ class ConcatVecEnv(gymnasium.vector.VectorEnv):
 
     def reset(self, seed=None, options=None):
         _res_obs = []
+        _res_infos = []
 
         if seed is not None:
             for i in range(len(self.vec_envs)):
-                # TODO: should this be changed to _obs, _infos?
-                _obs = self.vec_envs[i].reset(seed=seed + i, options=options)
+                _obs, _info = self.vec_envs[i].reset(seed=seed + i, options=options)
                 _res_obs.append(_obs)
+                _res_infos.append(_info)
         else:
-            _res_obs = [
-                vec_env.reset(seed=None, options=options) for vec_env in self.vec_envs
-            ]
+            for i in range(len(self.vec_envs)):
+                _obs, _info = self.vec_envs[i].reset(options=options)
+                _res_obs.append(_obs)
+                _res_infos.append(_info)
 
-        return self.concat_obs(_res_obs)
+        # flatten infos (also done in step function)
+        flattened_infos = [info for sublist in _res_infos for info in sublist]
+
+        return self.concat_obs(_res_obs), flattened_infos
 
     def concat_obs(self, observations):
         return concatenate(
@@ -87,7 +92,7 @@ class ConcatVecEnv(gymnasium.vector.VectorEnv):
         rewards = np.concatenate(rewards, axis=0)
         terminations = np.concatenate(terminations, axis=0)
         truncations = np.concatenate(truncations, axis=0)
-        infos = sum(infos, [])
+        infos = [info for sublist in infos for info in sublist] # flatten infos from nested lists
         return observations, rewards, terminations, truncations, infos
 
     def render(self):
