@@ -20,8 +20,7 @@ class SB3VecEnvWrapper(VecEnvWrapper):
 
     def step_wait(self):
         observations, rewards, terminations, truncations, infos = self.venv.step_wait()
-
-        # Note: SB3 expects dones to be an np array (TODO: they should fix this, and cast the dones to an array)
+        # Note: SB3 expects dones to be an np.array
         dones = np.array(
             [terminations[i] or truncations[i] for i in range(len(terminations))]
         )
@@ -39,7 +38,7 @@ class SB3VecEnvWrapper(VecEnvWrapper):
 
     def get_attr(self, attr_name: str, indices: VecEnvIndices = None) -> List[Any]:
         attr = self.venv.get_attr(attr_name)
-        # Note: SB3 expects render_mode to be returned as an array (TODO: they should fix this)
+        # Note: SB3 expects render_mode to be returned as an array, with values for each env
         if attr_name == "render_mode":
             return [attr for _ in range(self.num_envs)]
         else:
