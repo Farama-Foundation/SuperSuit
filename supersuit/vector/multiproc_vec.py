@@ -1,6 +1,5 @@
 import copy
 import multiprocessing as mp
-import time
 import traceback
 
 import gymnasium.vector
@@ -68,7 +67,6 @@ def async_loop(
 
             if instr == "close":
                 vec_env.close()
-                return
 
             elif isinstance(instr, tuple):
                 name, data = instr
@@ -106,6 +104,8 @@ def async_loop(
 
                 else:
                     raise AssertionError("bad tuple instruction name: " + name)
+            elif instr == "terminate":
+                return
             else:
                 raise AssertionError("bad instruction: " + instr)
             pipe.send(comp_infos)
@@ -116,19 +116,12 @@ def async_loop(
 
 class ProcConcatVec(gymnasium.vector.VectorEnv):
     def __init__(
-        self,
-        vec_env_constrs,
-        observation_space,
-        action_space,
-        tot_num_envs,
-        metadata,
-        graceful_shutdown_timeout=None,
+        self, vec_env_constrs, observation_space, action_space, tot_num_envs, metadata
     ):
         self.observation_space = observation_space
         self.action_space = action_space
         self.num_envs = num_envs = tot_num_envs
         self.metadata = metadata
-        self.graceful_shutdown_timeout = graceful_shutdown_timeout
 
         self.shared_obs = create_shared_memory(self.observation_space, n=self.num_envs)
         self.shared_act = create_shared_memory(self.action_space, n=self.num_envs)
@@ -224,6 +217,15 @@ class ProcConcatVec(gymnasium.vector.VectorEnv):
     def step(self, actions):
         self.step_async(actions)
         return self.step_wait()
+
+    def __del__(self):
+        for pipe in self.pipes:
+            try:
+                pipe.send("terminate")
+            except ConnectionError:
+                pass
+        for proc in self.procs:
+            proc.join()
 
     def render(self):
         self.pipes[0].send("render")
