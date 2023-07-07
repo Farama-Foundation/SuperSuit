@@ -1,5 +1,6 @@
 import copy
 import multiprocessing as mp
+import time
 import traceback
 
 import gymnasium.vector
@@ -133,6 +134,8 @@ class ProcConcatVec(gymnasium.vector.VectorEnv):
             self.observation_space, self.shared_obs, n=self.num_envs
         )
 
+        self.graceful_shutdown_timeout = 10
+
         pipes = []
         procs = []
         for constr in vec_env_constrs:
@@ -219,13 +222,7 @@ class ProcConcatVec(gymnasium.vector.VectorEnv):
         return self.step_wait()
 
     def __del__(self):
-        for pipe in self.pipes:
-            try:
-                pipe.send("terminate")
-            except ConnectionError:
-                pass
-        for proc in self.procs:
-            proc.join()
+        self.close()
 
     def render(self):
         self.pipes[0].send("render")
@@ -239,17 +236,27 @@ class ProcConcatVec(gymnasium.vector.VectorEnv):
         return render_result
 
     def close(self):
-        for pipe in self.pipes:
-            pipe.send("close")
-        for pipe in self.pipes:
-            try:
-                pipe.recv()
-            except EOFError:
-                raise RuntimeError(
-                    "only one multiproccessing vector environment can open a window over the duration of a process"
-                )
-            except ConnectionError:
-                pass
+        try:
+            for pipe, proc in zip(self.pipes, self.procs):
+                if proc.is_alive():
+                    pipe.send("close")
+        except OSError:
+            pass
+        else:
+            deadline = (
+                None
+                if self.graceful_shutdown_timeout is None
+                else time.monotonic() + self.graceful_shutdown_timeout
+            )
+            for proc in self.procs:
+                timeout = None if deadline is None else deadline - time.monotonic()
+                if timeout is not None and timeout <= 0:
+                    break
+                proc.join(timeout)
+        for pipe, proc in zip(self.pipes, self.procs):
+            if proc.is_alive():
+                proc.kill()
+            pipe.close()
 
     def env_is_wrapped(self, wrapper_class, indices=None):
         for i, pipe in enumerate(self.pipes):
