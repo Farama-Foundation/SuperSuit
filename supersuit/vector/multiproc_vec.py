@@ -1,5 +1,6 @@
 import copy
 import multiprocessing as mp
+import time
 import traceback
 
 import gymnasium.vector
