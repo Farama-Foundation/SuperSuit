@@ -74,7 +74,8 @@ def async_loop(
                 name, data = instr
 
                 if name == "reset":
-                    observations = vec_env.reset(seed=data[0], options=data[1])
+                    observations, infos = vec_env.reset(seed=data[0], options=data[1])
+                    comp_infos = compress_info(infos)
 
                     write_observations(vec_env, env_start_idx, shared_obs, observations)
                     shared_terms.np_arr[env_start_idx:env_end_idx] = False
@@ -123,10 +124,6 @@ class ProcConcatVec(gymnasium.vector.VectorEnv):
         metadata,
         graceful_shutdown_timeout=None,
     ):
-        raise NotImplementedError(
-            "The wrapper ProcConcatVec is temporarily depreciated whilst it is being debugged. "
-            "Please refer to https://github.com/Farama-Foundation/SuperSuit/pull/165 for more information, or to contact the devs in regard to this."
-        )
         self.observation_space = observation_space
         self.action_space = action_space
         self.num_envs = num_envs = tot_num_envs
@@ -190,6 +187,7 @@ class ProcConcatVec(gymnasium.vector.VectorEnv):
 
         self._receive_info()
 
+        # TODO: should this include info
         return numpy_deepcopy(self.observations_buffers)
 
     def step_async(self, actions):

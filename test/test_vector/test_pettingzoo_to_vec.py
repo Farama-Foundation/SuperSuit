@@ -2,18 +2,18 @@ import copy
 
 import pytest
 from pettingzoo.butterfly import knights_archers_zombies_v10
-from pettingzoo.mpe import simple_spread_v2, simple_world_comm_v2
+from pettingzoo.mpe import simple_spread_v3, simple_world_comm_v3
 
 from supersuit import black_death_v3, concat_vec_envs_v1, pettingzoo_env_to_vec_env_v1
 
 
 def test_good_env():
-    env = simple_spread_v2.parallel_env()
+    env = simple_spread_v3.parallel_env()
     max_num_agents = len(env.possible_agents)
     env = pettingzoo_env_to_vec_env_v1(env)
     assert env.num_envs == max_num_agents
 
-    obss = env.reset()
+    obss, infos = env.reset()
     for i in range(55):
         actions = [env.action_space.sample() for i in range(env.num_envs)]
 
@@ -37,12 +37,12 @@ def test_good_env():
 
 def test_good_vecenv():
     num_envs = 2
-    env = simple_spread_v2.parallel_env()
+    env = simple_spread_v3.parallel_env()
     max_num_agents = len(env.possible_agents) * num_envs
     env = pettingzoo_env_to_vec_env_v1(env)
     env = concat_vec_envs_v1(env, num_envs)
 
-    obss = env.reset()
+    obss, infos = env.reset()
     for i in range(55):
         actions = [env.action_space.sample() for i in range(env.num_envs)]
 
@@ -65,7 +65,7 @@ def test_good_vecenv():
 
 
 def test_bad_action_spaces_env():
-    env = simple_world_comm_v2.parallel_env()
+    env = simple_world_comm_v3.parallel_env()
     with pytest.raises(AssertionError):
         env = pettingzoo_env_to_vec_env_v1(env)
 

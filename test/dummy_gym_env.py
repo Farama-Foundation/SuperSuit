@@ -12,4 +12,4 @@ class DummyEnv(gymnasium.Env):
         return self._observation, 1, False, False, {}
 
     def reset(self, seed=None, options=None):
-        return self._observation
+        return self._observation, {}

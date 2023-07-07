@@ -55,7 +55,7 @@ def dict_vec_env_test(env):
     # tests that environment really is a vectorized
     # version of the environment returned by make_env
 
-    obss = env.reset()
+    obss, infos = env.reset()
     for i in range(55):
         actions = [env.action_space.sample() for i in range(env.num_envs)]
         actions = concatenate(

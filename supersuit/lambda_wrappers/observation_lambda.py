@@ -119,9 +119,9 @@ class gym_observation_lambda(gymnasium.Wrapper):
         return observation, rew, termination, truncation, info
 
     def reset(self, seed=None, options=None):
-        observation = self.env.reset(seed=seed, options=options)
+        observation, infos = self.env.reset(seed=seed, options=options)
         observation = self._modify_observation(observation)
-        return observation
+        return observation, infos
 
 
 observation_lambda_v0 = WrapperChooser(

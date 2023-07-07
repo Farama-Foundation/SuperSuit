@@ -15,7 +15,7 @@ base_act_spaces = Discrete(5)
 def test_reshape():
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
     env = reshape_v0(base_env, (64, 3))
-    obs = env.reset()
+    obs, info = env.reset()
     assert obs.shape == (64, 3)
     first_obs, _, _, _, _ = env.step(5)
     assert np.all(np.equal(first_obs, base_obs.reshape([64, 3])))
@@ -58,7 +58,7 @@ wrappers = [
 
 @pytest.mark.parametrize("env", wrappers)
 def test_basic_wrappers(env):
-    obs = env.reset(seed=5)
+    obs, info = env.reset(seed=5)
     act_space = env.action_space
     obs_space = env.observation_space
     assert obs_space.contains(obs)
@@ -73,10 +73,10 @@ def test_lambda():
 
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
     env = observation_lambda_v0(base_env, add1)
-    obs0 = env.reset()
+    obs0, info0 = env.reset()
     assert int(obs0[0][0][0]) == 1
     env = observation_lambda_v0(env, add1)
-    obs0 = env.reset()
+    obs0, info0 = env.reset()
     assert int(obs0[0][0][0]) == 2
 
     def tile_obs(obs, obs_space):
@@ -86,14 +86,14 @@ def test_lambda():
         return np.tile(obs, tile_shape)
 
     env = observation_lambda_v0(env, tile_obs)
-    obs0 = env.reset()
+    obs0, info0 = env.reset()
     assert env.observation_space.shape == (16, 8, 3)
 
     def change_shape_fn(obs_space):
         return Box(low=0, high=1, shape=(32, 8, 3))
 
     env = observation_lambda_v0(env, tile_obs)
-    obs0 = env.reset()
+    obs0, info0 = env.reset()
     assert env.observation_space.shape == (32, 8, 3)
     assert obs0.shape == (32, 8, 3)
 

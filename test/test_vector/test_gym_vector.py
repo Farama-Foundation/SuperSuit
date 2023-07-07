@@ -3,7 +3,7 @@ import copy
 import gymnasium
 import numpy as np
 import pytest
-from pettingzoo.mpe import simple_spread_v2
+from pettingzoo.mpe import simple_spread_v3
 
 from supersuit import concat_vec_envs_v1, gym_vec_env_v0, pettingzoo_env_to_vec_env_v1
 
@@ -96,7 +96,7 @@ def test_mutliproc_single_proc_equivalency():
     reason="Wrapper depreciated, see https://github.com/Farama-Foundation/SuperSuit/issues/188"
 )
 def test_multiagent_mutliproc_single_proc_equivalency():
-    env = simple_spread_v2.parallel_env(max_cycles=10)
+    env = simple_spread_v3.parallel_env(max_cycles=10)
     env = pettingzoo_env_to_vec_env_v1(env)
     num_envs = 3
     # uses single threaded vector environment

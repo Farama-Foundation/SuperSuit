@@ -12,6 +12,7 @@ class SingleVecEnv:
         self.metadata = self.gym_env.metadata
 
     def reset(self, seed=None, options=None):
+        # TODO: should this include info
         return np.expand_dims(self.gym_env.reset(seed=seed, options=options), 0)
 
     def step_async(self, actions):
