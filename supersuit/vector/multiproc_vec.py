@@ -134,6 +134,8 @@ class ProcConcatVec(gymnasium.vector.VectorEnv):
             self.observation_space, self.shared_obs, n=self.num_envs
         )
 
+        self.graceful_shutdown_timeout = 10
+
         pipes = []
         procs = []
         for constr in vec_env_constrs:
@@ -220,13 +222,7 @@ class ProcConcatVec(gymnasium.vector.VectorEnv):
         return self.step_wait()
 
     def __del__(self):
-        for pipe in self.pipes:
-            try:
-                pipe.send("terminate")
-            except ConnectionError:
-                pass
-        for proc in self.procs:
-            proc.join()
+        self.close()
 
     def render(self):
         self.pipes[0].send("render")
