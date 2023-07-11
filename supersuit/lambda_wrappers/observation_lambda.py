@@ -45,6 +45,8 @@ class aec_observation_lambda(BaseWrapper):
     def observation_space(self, agent):
         if self.change_obs_space_fn is None:
             space = self.env.observation_space(agent)
+            if isinstance(space, gymnasium.spaces.Dict):
+                space = space["observation"]
             try:
                 trans_low = self.change_observation_fn(space.low, space, agent)
                 trans_high = self.change_observation_fn(space.high, space, agent)
@@ -57,6 +59,8 @@ class aec_observation_lambda(BaseWrapper):
             return Box(low=new_low, high=new_high, dtype=new_low.dtype)
         else:
             old_obs_space = self.env.observation_space(agent)
+            if isinstance(old_obs_space, gymnasium.spaces.Dict):
+                old_obs_space = old_obs_space["observation"]
             try:
                 return self.change_obs_space_fn(old_obs_space, agent)
             except TypeError:
@@ -64,6 +68,8 @@ class aec_observation_lambda(BaseWrapper):
 
     def _modify_observation(self, agent, observation):
         old_obs_space = self.env.observation_space(agent)
+        if isinstance(old_obs_space, gymnasium.spaces.Dict):
+            old_obs_space = old_obs_space["observation"]
         try:
             return self.change_observation_fn(observation, old_obs_space, agent)
         except TypeError:
