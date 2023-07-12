@@ -45,26 +45,38 @@ class aec_observation_lambda(BaseWrapper):
     def observation_space(self, agent):
         if self.change_obs_space_fn is None:
             space = self.env.observation_space(agent)
-            if isinstance(space, gymnasium.spaces.Dict):
-                space = space["observation"]
+            modify_space = space
+            if isinstance(modify_space, gymnasium.spaces.Dict):
+                modify_space = modify_space["observation"]
             try:
-                trans_low = self.change_observation_fn(space.low, space, agent)
-                trans_high = self.change_observation_fn(space.high, space, agent)
+                trans_low = self.change_observation_fn(modify_space.low, modify_space, agent)
+                trans_high = self.change_observation_fn(modify_space.high, modify_space, agent)
             except TypeError:
-                trans_low = self.change_observation_fn(space.low, space)
-                trans_high = self.change_observation_fn(space.high, space)
+                trans_low = self.change_observation_fn(modify_space.low, modify_space)
+                trans_high = self.change_observation_fn(modify_space.high, modify_space)
             new_low = np.minimum(trans_low, trans_high)
             new_high = np.maximum(trans_low, trans_high)
 
-            return Box(low=new_low, high=new_high, dtype=new_low.dtype)
+            if isinstance(space, gymnasium.spaces.Dict):
+                space["observation"] = Box(low=new_low, high=new_high, dtype=new_low.dtype)
+                return space
+            else:
+                return Box(low=new_low, high=new_high, dtype=new_low.dtype)
         else:
             old_obs_space = self.env.observation_space(agent)
-            if isinstance(old_obs_space, gymnasium.spaces.Dict):
-                old_obs_space = old_obs_space["observation"]
+            modify_obs_space = old_obs_space
+            if isinstance(modify_obs_space, gymnasium.spaces.Dict):
+                modify_obs_space = modify_obs_space["observation"]
             try:
-                return self.change_obs_space_fn(old_obs_space, agent)
+                modify_obs_space = self.change_obs_space_fn(modify_obs_space, agent)
             except TypeError:
-                return self.change_obs_space_fn(old_obs_space)
+                modify_obs_space = self.change_obs_space_fn(modify_obs_space)
+            
+            if isinstance(old_obs_space, gymnasium.spaces.Dict):
+                old_obs_space["observation"] = modify_obs_space 
+            else:
+                old_obs_space = modify_obs_space
+            return old_obs_space
 
     def _modify_observation(self, agent, observation):
         old_obs_space = self.env.observation_space(agent)
