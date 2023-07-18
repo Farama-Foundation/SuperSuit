@@ -8,6 +8,7 @@ from supersuit.utils.action_transforms.homogenize_ops import (
     homogenize_spaces,
 )
 
+
 box_spaces = [
     Box(low=np.float32(0), high=np.float32(1), shape=(5, 4)),
     Box(low=np.float32(0), high=np.float32(1), shape=(10, 2)),

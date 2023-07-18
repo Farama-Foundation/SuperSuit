@@ -7,6 +7,7 @@ from supersuit.utils.basic_transforms.color_reduction import (
     check_param,
 )
 
+
 test_obs_space = Box(low=np.float32(0.0), high=np.float32(1.0), shape=(4, 4, 3))
 bad_test_obs_space = Box(low=np.float32(0.0), high=np.float32(1.0), shape=(4, 4, 4))
 test_obs = np.zeros([4, 4, 3]) + np.arange(3)

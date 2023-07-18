@@ -7,6 +7,7 @@ from gymnasium.spaces import Box, Discrete
 import supersuit
 from supersuit import action_lambda_v1, dtype_v0, observation_lambda_v0, reshape_v0
 
+
 base_obs = (np.zeros([8, 8, 3]) + np.arange(3)).astype(np.float32)
 base_obs_space = Box(low=np.float32(0.0), high=np.float32(10.0), shape=[8, 8, 3])
 base_act_spaces = Discrete(5)

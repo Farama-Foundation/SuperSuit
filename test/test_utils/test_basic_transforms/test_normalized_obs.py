@@ -8,6 +8,7 @@ from supersuit.utils.basic_transforms.normalize_obs import (
     check_param,
 )
 
+
 high_val = np.array([1, 2, 4])
 test_val = np.array([1, 1, 1])
 test_obs_space = Box(
