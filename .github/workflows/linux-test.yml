@@ -37,5 +37,6 @@ jobs:
         xvfb-run -s "-screen 0 1400x900x24" pytest ./test
     - name: Test installation
       run: |
-        python setup.py sdist
+        python -m pip install --upgrade build
+        python -m build --sdist
         pip install dist/*.tar.gz
