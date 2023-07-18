@@ -31,7 +31,7 @@ jobs:
         sudo apt-get install python3-opengl xvfb
     - name: Install python dependencies
       run: |
-        pip install -e .[dev]
+        pip install -e .[test]
     - name: Test with pytest
       run: |
         xvfb-run -s "-screen 0 1400x900x24" pytest ./test
