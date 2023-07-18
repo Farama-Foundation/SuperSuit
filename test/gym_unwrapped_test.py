@@ -69,7 +69,7 @@ def test_unwrapped():
         spaces.Box(low=-1.0, high=1.0, shape=[2], dtype=np.float32)
     )
     observation_spaces.append(
-        spaces.Box(low=0, high=255, shape=[64, 64, 3], dtype=np.int8)
+        spaces.Box(low=0, high=255, shape=[64, 64, 3], dtype=np.int16)
     )
     observation_spaces.append(spaces.Discrete(5))
     observation_spaces.append(spaces.MultiBinary([3, 4]))

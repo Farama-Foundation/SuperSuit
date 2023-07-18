@@ -9,6 +9,7 @@ from pettingzoo.test.example_envs import (
 import supersuit
 from supersuit import dtype_v0
 
+
 wrappers = [
     supersuit.dtype_v0(generated_agents_parallel_v0.env(), np.int32),
     supersuit.flatten_v0(generated_agents_parallel_v0.env()),

@@ -134,7 +134,7 @@ def test_unwrapped():
     observation_spaces = []
     base = spaces.Box(low=-1.0, high=1.0, shape=[2], dtype=np.float32)
     observation_spaces.append({f"a{i}": base for i in range(2)})
-    base = spaces.Box(low=0, high=255, shape=[64, 64, 3], dtype=np.int8)
+    base = spaces.Box(low=0, high=255, shape=[64, 64, 3], dtype=np.int16)
     observation_spaces.append({f"a{i}": base for i in range(2)})
     base = spaces.Discrete(5)
     observation_spaces.append({f"a{i}": base for i in range(2)})

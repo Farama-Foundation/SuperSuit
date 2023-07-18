@@ -8,6 +8,7 @@ from supersuit.utils.agent_indicator import (
     get_indicator_map,
 )
 
+
 obs_space_3d = Box(low=np.float32(0.0), high=np.float32(1.0), shape=(4, 4, 3))
 obs_space_2d = Box(low=np.float32(0.0), high=np.float32(1.0), shape=(4, 3))
 obs_space_1d = Box(low=np.float32(0.0), high=np.float32(1.0), shape=(3,))
