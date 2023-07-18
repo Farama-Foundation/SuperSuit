@@ -17,6 +17,7 @@ from supersuit import (
     scale_actions_v0,
 )
 
+
 base_obs = {
     f"a{idx}": np.zeros([8, 8, 3], dtype=np.float32) + np.arange(3) + idx
     for idx in range(2)

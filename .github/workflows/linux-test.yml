@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.7', '3.8', '3.9', '3.10']
+        python-version: ['3.8', '3.9', '3.10', '3.11']
 
     steps:
     - uses: actions/checkout@v2
@@ -31,14 +31,12 @@ jobs:
         sudo apt-get install python3-opengl xvfb
     - name: Install python dependencies
       run: |
-        pip install flake8 pytest atari_py magent gymnasium tinyscaler
-        git clone https://github.com/Farama-Foundation/PettingZoo.git
-        pip install -e ./PettingZoo[classic]
-        pip install -e ./PettingZoo[butterfly]
+        pip install -e .[testing]
     - name: Test with pytest
       run: |
         xvfb-run -s "-screen 0 1400x900x24" pytest ./test
     - name: Test installation
       run: |
-        python setup.py sdist
+        python -m pip install --upgrade build
+        python -m build --sdist
         pip install dist/*.tar.gz

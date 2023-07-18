@@ -8,6 +8,7 @@ from pettingzoo.utils.conversions import aec_to_parallel
 
 from supersuit import concat_vec_envs_v1, pettingzoo_env_to_vec_env_v1
 
+
 n_agents = 5
 
 

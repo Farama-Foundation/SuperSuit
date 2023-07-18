@@ -2,6 +2,7 @@ import numpy as np
 
 from . import convert_box
 
+
 COLOR_RED_LIST = ["full", "R", "G", "B"]
 GRAYSCALE_WEIGHTS = np.array([0.299, 0.587, 0.114], dtype=np.float32)
 

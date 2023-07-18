@@ -3,6 +3,7 @@ from gymnasium.spaces import Box, Discrete
 
 from supersuit.utils.frame_stack import stack_init, stack_obs, stack_obs_space
 
+
 stack_obs_space_3d = Box(low=np.float32(0.0), high=np.float32(1.0), shape=(4, 4, 3))
 stack_obs_space_2d = Box(low=np.float32(0.0), high=np.float32(1.0), shape=(4, 3))
 stack_obs_space_1d = Box(low=np.float32(0.0), high=np.float32(1.0), shape=(3,))
