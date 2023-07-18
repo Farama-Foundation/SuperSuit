@@ -181,10 +181,9 @@ class ProcConcatVec(gymnasium.vector.VectorEnv):
             else:
                 pipe.send(("reset", (seed, options)))
 
-        self._receive_info()
+        info = self._receive_info()
 
-        # TODO: should this include info
-        return numpy_deepcopy(self.observations_buffers)
+        return numpy_deepcopy(self.observations_buffers), copy.deepcopy(info)
 
     def step_async(self, actions):
         actions = list(iterate(self.action_space, actions))

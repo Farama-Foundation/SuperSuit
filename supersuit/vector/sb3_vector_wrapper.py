@@ -11,7 +11,6 @@ class SB3VecEnvWrapper(VecEnvWrapper):
         self.num_envs = venv.num_envs
         self.observation_space = venv.observation_space
         self.action_space = venv.action_space
-        # self.render_mode = venv.render_mode
 
     def reset(self, seed=None, options=None):
         if seed is not None:
