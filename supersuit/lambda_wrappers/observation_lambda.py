@@ -49,8 +49,12 @@ class aec_observation_lambda(BaseWrapper):
             if isinstance(modify_space, gymnasium.spaces.Dict):
                 modify_space = modify_space["observation"]
             try:
-                trans_low = self.change_observation_fn(modify_space.low, modify_space, agent)
-                trans_high = self.change_observation_fn(modify_space.high, modify_space, agent)
+                trans_low = self.change_observation_fn(
+                    modify_space.low, modify_space, agent
+                )
+                trans_high = self.change_observation_fn(
+                    modify_space.high, modify_space, agent
+                )
             except TypeError:
                 trans_low = self.change_observation_fn(modify_space.low, modify_space)
                 trans_high = self.change_observation_fn(modify_space.high, modify_space)
@@ -58,7 +62,9 @@ class aec_observation_lambda(BaseWrapper):
             new_high = np.maximum(trans_low, trans_high)
 
             if isinstance(space, gymnasium.spaces.Dict):
-                space["observation"] = Box(low=new_low, high=new_high, dtype=new_low.dtype)
+                space["observation"] = Box(
+                    low=new_low, high=new_high, dtype=new_low.dtype
+                )
                 return space
             else:
                 return Box(low=new_low, high=new_high, dtype=new_low.dtype)
@@ -71,9 +77,9 @@ class aec_observation_lambda(BaseWrapper):
                 modify_obs_space = self.change_obs_space_fn(modify_obs_space, agent)
             except TypeError:
                 modify_obs_space = self.change_obs_space_fn(modify_obs_space)
-            
+
             if isinstance(old_obs_space, gymnasium.spaces.Dict):
-                old_obs_space["observation"] = modify_obs_space 
+                old_obs_space["observation"] = modify_obs_space
             else:
                 old_obs_space = modify_obs_space
             return old_obs_space
