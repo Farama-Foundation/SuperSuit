@@ -47,7 +47,7 @@ setup(
     python_requires=">=3.8, <3.12",
     packages=find_packages(),
     install_requires=["numpy>=1.19.0", "gymnasium>=0.26.0", "tinyscaler>=1.2.5"],
-    extras={"dev": ["pettingzoo[butterfly]>=1.23.0"]},
+    extras={"dev": ["pettingzoo[butterfly,classic]>=1.23.0"]},
     classifiers=[
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.10",

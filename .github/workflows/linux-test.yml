@@ -31,10 +31,7 @@ jobs:
         sudo apt-get install python3-opengl xvfb
     - name: Install python dependencies
       run: |
-        pip install flake8 pytest atari_py magent gymnasium tinyscaler
-        git clone https://github.com/Farama-Foundation/PettingZoo.git
-        pip install -e ./PettingZoo[classic]
-        pip install -e ./PettingZoo[butterfly]
+        pip install -e .[dev]
     - name: Test with pytest
       run: |
         xvfb-run -s "-screen 0 1400x900x24" pytest ./test
