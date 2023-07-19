@@ -11,11 +11,14 @@ class SB3VecEnvWrapper(VecEnvWrapper):
         self.num_envs = venv.num_envs
         self.observation_space = venv.observation_space
         self.action_space = venv.action_space
+        self.reset_infos = []
 
     def reset(self, seed=None, options=None):
         if seed is not None:
             self.seed(seed=seed)
-        return self.venv.reset()
+        # Note: SB3's vector envs return only observations on reset, and store infos in `self.reset_infos`
+        observations, self.reset_infos = self.venv.reset()
+        return observations
 
     def step_wait(self):
         observations, rewards, terminations, truncations, infos = self.venv.step_wait()
