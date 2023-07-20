@@ -1,8 +1,10 @@
-from pettingzoo.butterfly import pistonball_v6
-from gymnasium.wrappers import normalize
-import supersuit as ss
 import numpy as np
 import pytest
+from gymnasium.wrappers import normalize
+from pettingzoo.butterfly import pistonball_v6
+
+import supersuit as ss
+
 
 @pytest.mark.parametrize("env_fn", [pistonball_v6])
 def test_vec_env_normalize_obs(env_fn):
@@ -16,6 +18,10 @@ def test_vec_env_normalize_obs(env_fn):
 
     obs_range = np.amax(obs) - np.amin(obs)
     normalized_obs_range = np.amax(normalized_obs) - np.amin(normalized_obs)
-    assert (obs_range > 1), "Regular observation space should be greater than 1."
-    assert (normalized_obs_range < 1.0e-4), "Normalized observation space should be smaller than 1.0e-4."
-    assert (obs_range > normalized_obs_range), "Normalized observation space has more range than regular observation space."
+    assert obs_range > 1, "Regular observation space should be greater than 1."
+    assert (
+        normalized_obs_range < 1.0e-4
+    ), "Normalized observation space should be smaller than 1.0e-4."
+    assert (
+        obs_range > normalized_obs_range
+    ), "Normalized observation space has more range than regular observation space."
