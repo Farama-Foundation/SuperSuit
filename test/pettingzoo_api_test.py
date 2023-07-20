@@ -13,7 +13,7 @@ from supersuit import (
     pad_action_space_v0,
     sticky_actions_v0,
 )
-from supersuit.utils import convert_box
+from supersuit.utils.convert_box import convert_box
 
 
 BUTTERFLY_MPE_CLASSIC = [knights_archers_zombies_v10, simple_push_v3, connect_four_v3]
@@ -252,6 +252,21 @@ def test_observation_lambda_action_mask(env_fn):
         change_obs_space_fn=change_obs_space_fn,
         change_observation_fn=change_observation_fn,
     )
+
+    env.reset()
+    obs = env.observe(env.possible_agents[0])
+    assert obs["observation"].shape == (
+        42,
+        2,
+    ), "New observation should be shape (42, 2)"
+    assert np.array_equal(
+        obs["action_mask"], np.zeros(7)
+    ), "New action mask should be all zeros"
+    assert env.observation_space(env.possible_agents[0])["observation"].shape == (
+        42,
+        2,
+    ), "Observation space should be (42, 2)"
+
     api_test(env)
 
 
