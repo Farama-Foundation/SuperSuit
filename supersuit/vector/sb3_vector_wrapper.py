@@ -1,4 +1,5 @@
-from typing import Any, List
+import warnings
+from typing import Any, List, Optional
 
 import numpy as np
 from stable_baselines3.common.vec_env import VecEnvWrapper
@@ -45,3 +46,9 @@ class SB3VecEnvWrapper(VecEnvWrapper):
             return [attr for _ in range(self.num_envs)]
         else:
             return attr
+
+    def render(self, mode: Optional[str] = None) -> Optional[np.ndarray]:
+        warnings.warn(
+            "PettingZoo environments do not take the `render(mode)` argument, to change rendering mode, re-initialize the environment using the `render_mode` argument."
+        )
+        return self.venv.render()
