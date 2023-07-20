@@ -35,15 +35,8 @@ class BaseWrapper(PettingzooWrap):
         obs = super().observe(
             agent
         )  # problem is in this line, the obs is sometimes a different size from the obs space
-        # In the case of more information in the obs
-        # if isinstance(obs, dict):
-        #     obs["observation"] = self._modify_observation(agent, obs["observation"])
-        # else:
-        #     obs = self._modify_observation(agent, obs)
-
-        obs = self._modify_observation(agent, obs)
-
-        return obs
+        observation = self._modify_observation(agent, obs)
+        return observation
 
     def step(self, action):
         agent = self.env.agent_selection
