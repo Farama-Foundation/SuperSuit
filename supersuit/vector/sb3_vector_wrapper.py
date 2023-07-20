@@ -48,5 +48,7 @@ class SB3VecEnvWrapper(VecEnvWrapper):
             return attr
 
     def render(self, mode: Optional[str] = None) -> Optional[np.ndarray]:
-        warnings.warn("PettingZoo environments do not take the `render(mode)` argument, to change rendering mode, re-initialize the environment using the `render_mode` argument.")
+        warnings.warn(
+            "PettingZoo environments do not take the `render(mode)` argument, to change rendering mode, re-initialize the environment using the `render_mode` argument."
+        )
         return self.venv.render()
