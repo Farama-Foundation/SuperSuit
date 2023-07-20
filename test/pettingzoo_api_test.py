@@ -13,7 +13,7 @@ from supersuit import (
     pad_action_space_v0,
     sticky_actions_v0,
 )
-from supersuit.utils.basic_transforms import convert_box
+from supersuit.utils import convert_box
 
 BUTTERFLY_MPE_CLASSIC = [knights_archers_zombies_v10, simple_push_v3, connect_four_v3]
 BUTTERFLY_MPE = [knights_archers_zombies_v10, simple_push_v3]
