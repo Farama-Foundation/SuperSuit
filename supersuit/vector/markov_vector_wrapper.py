@@ -91,9 +91,14 @@ class MarkovVectorEnv(gymnasium.vector.VectorEnv):
         infs = [infos.get(agent, {}) for agent in self.par_env.possible_agents]
 
         if env_done:
-            observations, infs = self.reset()
+            observations, reset_infs = self.reset()
         else:
             observations = self.concat_obs(observations)
+            # empty infos for reset infs
+            reset_infs = [{} for _ in range(self.par_env.possible_agents)]
+        # combine standard infos and reset infos
+        infs = infs + reset_infs
+
         assert (
             self.black_death or self.par_env.agents == self.par_env.possible_agents
         ), "MarkovVectorEnv does not support environments with varying numbers of active agents unless black_death is set to True"
