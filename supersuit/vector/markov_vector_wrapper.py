@@ -95,7 +95,7 @@ class MarkovVectorEnv(gymnasium.vector.VectorEnv):
         else:
             observations = self.concat_obs(observations)
             # empty infos for reset infs
-            reset_infs = [{} for _ in range(self.par_env.possible_agents)]
+            reset_infs = [{} for _ in range(len(self.par_env.possible_agents))]
         # combine standard infos and reset infos
         infs = infs + reset_infs
 
