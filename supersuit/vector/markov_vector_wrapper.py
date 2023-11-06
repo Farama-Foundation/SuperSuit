@@ -97,7 +97,7 @@ class MarkovVectorEnv(gymnasium.vector.VectorEnv):
             # empty infos for reset infs
             reset_infs = [{} for _ in range(len(self.par_env.possible_agents))]
         # combine standard infos and reset infos
-        infs = infs + reset_infs
+        infs = [{**inf, **reset_inf} for inf, reset_inf in zip(infs, reset_infs)]
 
         assert (
             self.black_death or self.par_env.agents == self.par_env.possible_agents
