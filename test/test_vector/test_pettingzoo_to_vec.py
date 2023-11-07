@@ -98,6 +98,7 @@ def test_terminal_obs_are_returned():
     """
     max_cycles = 300
     env = knights_archers_zombies_v10.parallel_env(spawn_rate=50, max_cycles=300)
+    env = black_death_v3(env)
     env = pettingzoo_env_to_vec_env_v1(env)
     env.reset(seed=42)
 
