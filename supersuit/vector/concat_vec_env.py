@@ -25,6 +25,7 @@ class ConcatVecEnv(gymnasium.vector.VectorEnv):
             if not hasattr(vec_envs[i], "num_envs"):
                 vec_envs[i] = SingleVecEnv([lambda: vec_envs[i]])
         self.metadata = self.vec_envs[0].metadata
+        self.render_mode = self.vec_envs[0].render_mode
         self.observation_space = vec_envs[0].observation_space
         self.action_space = vec_envs[0].action_space
         tot_num_envs = sum(env.num_envs for env in vec_envs)
