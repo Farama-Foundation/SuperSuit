@@ -17,6 +17,7 @@ class MarkovVectorEnv(gymnasium.vector.VectorEnv):
         """
         self.par_env = par_env
         self.metadata = par_env.metadata
+        self.render_mode = par_env.render_mode
         self.observation_space = par_env.observation_space(par_env.possible_agents[0])
         self.action_space = par_env.action_space(par_env.possible_agents[0])
         assert all(
