@@ -106,12 +106,6 @@ class MarkovVectorEnv(gymnasium.vector.VectorEnv):
         # combine standard infos and reset infos
         infs = [{**inf, **reset_inf} for inf, reset_inf in zip(infs, reset_infs)]
 
-        # index by agent ids
-        infs = {agent: inf for agent, inf in zip(self.par_env.possible_agents, infs)}
-
-        print("infs", infs)
-        exit()
-
         assert (
             self.black_death or self.par_env.agents == self.par_env.possible_agents
         ), "MarkovVectorEnv does not support environments with varying numbers of active agents unless black_death is set to True"
