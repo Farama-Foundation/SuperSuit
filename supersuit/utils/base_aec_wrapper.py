@@ -1,7 +1,7 @@
-from pettingzoo.utils.wrappers import BaseWrapper
+from pettingzoo.utils.wrappers import OrderEnforcingWrapper as PZBaseWrapper
 
 
-class BaseWrapper(BaseWrapper):
+class BaseWrapper(PZBaseWrapper):
     def __init__(self, env):
         """
         Creates a wrapper around `env`. Extend this class to create changes to the space.

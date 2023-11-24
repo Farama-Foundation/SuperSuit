@@ -2,7 +2,7 @@ import functools
 
 import gymnasium
 from pettingzoo.utils import BaseParallelWrapper
-from pettingzoo.utils.wrappers import BaseWrapper
+from pettingzoo.utils.wrappers import OrderEnforcingWrapper as BaseWrapper
 
 from supersuit.utils.wrapper_chooser import WrapperChooser
 
