@@ -52,13 +52,6 @@ class MarkovVectorEnv(gymnasium.vector.VectorEnv):
         return self.step(self._saved_actions)
 
     def reset(self, seed=None, options=None):
-        if seed is None:
-            # To ensure that subprocesses have different seeds,
-            # we still populate the seed variable when no argument is passed.
-            # Otherwise parallel vec env workers could have identical seeds (env could default to seed if no seed is passed)
-            # when reset is called as part of line 101.
-            seed = int(np.random.randint(0, np.iinfo(np.uint32).max, dtype=np.uint32))
-
         # TODO: should this be changed to infos?
         _observations, infos = self.par_env.reset(seed=seed, options=options)
         observations = self.concat_obs(_observations)
