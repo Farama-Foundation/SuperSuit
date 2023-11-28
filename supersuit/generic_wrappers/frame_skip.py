@@ -10,12 +10,11 @@ from supersuit.utils.wrapper_chooser import WrapperChooser
 class frame_skip_gym(gymnasium.Wrapper):
     def __init__(self, env, num_frames):
         super().__init__(env)
-        self.np_random = env.unwrapped.np_random
         self.num_frames = check_transform_frameskip(num_frames)
 
     def step(self, action):
         low, high = self.num_frames
-        num_skips = int(self.np_random.integers(low, high + 1))
+        num_skips = int(self.env.unwrapped.np_random.integers(low, high + 1))
         total_reward = 0.0
 
         for x in range(num_skips):

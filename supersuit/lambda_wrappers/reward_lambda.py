@@ -24,7 +24,7 @@ class aec_reward_lambda(PettingzooWrap):
         super().reset(seed=seed, options=options)
         self.rewards = {
             agent: self._change_reward_fn(reward)
-            for agent, reward in self.rewards.items()
+            for agent, reward in self.env.rewards.items()  # you don't want to unwrap here, because another reward wrapper might have been applied
         }
         self.__cumulative_rewards = make_defaultdict({a: 0 for a in self.agents})
         self._accumulate_rewards()
@@ -34,7 +34,7 @@ class aec_reward_lambda(PettingzooWrap):
         super().step(action)
         self.rewards = {
             agent: self._change_reward_fn(reward)
-            for agent, reward in self.rewards.items()
+            for agent, reward in self.env.rewards.items()  # you don't want to unwrap here, because another reward wrapper might have been applied
         }
         self.__cumulative_rewards[agent] = 0
         self._cumulative_rewards = self.__cumulative_rewards
