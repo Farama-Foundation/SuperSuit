@@ -9,7 +9,7 @@ class DummyEnv(AECEnv):
         super().__init__()
         self._observations = observations
         self._observation_spaces = observation_spaces
-
+        self.render_mode = None
         self.agents = sorted([x for x in observation_spaces.keys()])
         self.possible_agents = self.agents[:]
         self._agent_selector = agent_selector(self.agents)
