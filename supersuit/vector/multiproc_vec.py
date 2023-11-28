@@ -98,13 +98,12 @@ def async_loop(
                 elif name == "env_is_wrapped":
                     comp_infos = vec_env.env_is_wrapped(data)
 
-                elif name == "render":
-                    render_result = vec_env.render(data)
-                    if data == "rgb_array":
-                        comp_infos = render_result
-
                 else:
                     raise AssertionError("bad tuple instruction name: " + name)
+            elif instr == "render":
+                render_result = vec_env.render()
+                if vec_env.render_mode == "rgb_array":
+                    comp_infos = render_result
             elif instr == "terminate":
                 return
             else:

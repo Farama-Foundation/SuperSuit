@@ -6,6 +6,7 @@ class SingleVecEnv:
     def __init__(self, gym_env_fns, *args):
         assert len(gym_env_fns) == 1
         self.gym_env = gym_env_fns[0]()
+        self.render_mode = self.gym_env.render_mode
         self.observation_space = self.gym_env.observation_space
         self.action_space = self.gym_env.action_space
         self.num_envs = 1
