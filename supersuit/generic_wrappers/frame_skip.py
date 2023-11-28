@@ -14,7 +14,7 @@ class frame_skip_gym(gymnasium.Wrapper):
 
     def step(self, action):
         low, high = self.num_frames
-        num_skips = int(self.np_random.integers(low, high + 1))
+        num_skips = int(self.env.unwrapped.np_random.integers(low, high + 1))
         total_reward = 0.0
 
         for x in range(num_skips):
@@ -146,8 +146,7 @@ class frame_skip_par(BaseParallelWrapper):
     def step(self, action):
         action = {**action}
         low, high = self.num_frames
-        num_skips = int(self.np_random.integers(low, high + 1))
-        self.agents = self.env.agents[:]
+        num_skips = int(self.env.unwrapped.np_random.integers(low, high + 1))
         orig_agents = set(action.keys())
 
         total_reward = make_defaultdict({agent: 0.0 for agent in self.agents})
@@ -190,7 +189,6 @@ class frame_skip_par(BaseParallelWrapper):
                 del total_infos[agent]
                 del total_obs[agent]
 
-        self.agents = self.env.agents[:]
         return (
             total_obs,
             total_reward,
