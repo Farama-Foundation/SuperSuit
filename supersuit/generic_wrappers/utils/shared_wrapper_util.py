@@ -2,12 +2,12 @@ import functools
 
 import gymnasium
 from pettingzoo.utils import BaseParallelWrapper
-from pettingzoo.utils.wrappers import OrderEnforcingWrapper as PettingzooWrap
+from pettingzoo.utils.wrappers import OrderEnforcingWrapper as BaseWrapper
 
 from supersuit.utils.wrapper_chooser import WrapperChooser
 
 
-class shared_wrapper_aec(PettingzooWrap):
+class shared_wrapper_aec(BaseWrapper):
     def __init__(self, env, modifier_class):
         super().__init__(env)
 
