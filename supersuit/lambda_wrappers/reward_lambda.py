@@ -1,6 +1,6 @@
 import gymnasium
+from pettingzoo.utils import BaseWrapper as PettingzooWrap
 
-from supersuit.utils.base_aec_wrapper import PettingzooWrap
 from supersuit.utils.make_defaultdict import make_defaultdict
 from supersuit.utils.wrapper_chooser import WrapperChooser
 
