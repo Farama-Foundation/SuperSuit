@@ -12,7 +12,7 @@ def change_obs_space(space, num_indicators):
             pad_space = np.min(space.high) * np.ones(
                 (num_indicators,), dtype=space.dtype
             )
-            new_low = np.concatenate([space.low, pad_space * 0], axis=0)
+            new_low = np.concatenate([space.low, np.zeros_like(pad_space)], axis=0)
             new_high = np.concatenate([space.high, pad_space], axis=0)
             new_space = Box(low=new_low, high=new_high, dtype=space.dtype)
             return new_space
@@ -77,7 +77,12 @@ def change_observation(obs, space, indicator_data):
         if ndims == 1:
             old_len = len(obs)
             new_obs = np.pad(obs, (0, num_indicators))
-            new_obs[indicator_num + old_len] = np.max(space.high)
+            # if we have a finite high, use that, otherwise use 1.0
+            if not np.isinf(space.high).all():
+                new_obs[indicator_num + old_len] = np.max(space.high)
+            else:
+                new_obs[indicator_num + old_len] = 1.0
+
             return new_obs
         elif ndims == 3 or ndims == 2:
             obs = obs if ndims == 3 else np.expand_dims(obs, 2)
