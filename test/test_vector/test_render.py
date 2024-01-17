@@ -13,8 +13,7 @@ def make_record_env():
     print(env.render_mode)
     env = ss.pettingzoo_env_to_vec_env_v1(env)
     envs = ss.concat_vec_envs_v1(env, 1, num_cpus=0, base_class="stable_baselines3")
-    # envs.render_mode = "rgb_array"
-    envs = VecVideoRecorder(envs, f".", schedule)
+    envs = VecVideoRecorder(envs, f"/tmp", schedule)
     return envs
 
 
