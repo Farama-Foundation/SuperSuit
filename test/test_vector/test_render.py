@@ -8,7 +8,7 @@ def schedule(episode_idx):
     return episode_idx <= 1
 
 
-def make_record_env():
+def make_sb3_record_env():
     env = pistonball_v6.parallel_env(render_mode="rgb_array")
     print(env.render_mode)
     env = ss.pettingzoo_env_to_vec_env_v1(env)
@@ -17,15 +17,12 @@ def make_record_env():
     return envs
 
 
-def record_video_test():
-    envs = make_record_env()
+def test_record_video_sb3():
+    envs = make_sb3_record_env()
     envs.reset()
     for _ in range(100):
         envs.step([envs.action_space.sample() for _ in range(envs.num_envs)])
     envs.close()
-
-
-record_video_test()
 
 
 # def make_env():
