@@ -25,25 +25,24 @@ def test_record_video_sb3():
     envs.close()
 
 
-# def make_env():
-#     env = pistonball_v6.parallel_env(render_mode="rgb_array")
-#     env = ss.pettingzoo_env_to_vec_env_v1(env)
-#     return env
+def make_env():
+    env = pistonball_v6.parallel_env(render_mode="rgb_array")
+    env = ss.pettingzoo_env_to_vec_env_v1(env)
+    return env
 
 
-# unfortunately this test does not pass
-# def test_vector_render_multiproc():
-#     env = make_env()
-#     num_envs = 3
-#     venv = ss.concat_vec_envs_v1(
-#         env, num_envs, num_cpus=num_envs, base_class="stable_baselines3"
-#     )
-#     venv.reset()
-#     arr = venv.render()
-#     venv.reset()
-#     assert len(arr.shape) == 3 and arr.shape[2] == 3
-#     venv.reset()
-#     try:
-#         venv.close()
-#     except RuntimeError:
-#         pass
+def test_vector_render_multiproc():
+    env = make_env()
+    num_envs = 1
+    venv = ss.concat_vec_envs_v1(
+        env, num_envs, num_cpus=num_envs, base_class="stable_baselines3"
+    )
+    venv.reset()
+    arr = venv.render()
+    venv.reset()
+    assert len(arr.shape) == 3 and arr.shape[2] == 3
+    venv.reset()
+    try:
+        venv.close()
+    except RuntimeError:
+        pass
