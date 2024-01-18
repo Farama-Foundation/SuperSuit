@@ -135,6 +135,30 @@ def test_agent_indicator():
     env.step(2)
 
 
+def test_agent_indicator_unbounded_box_space():
+    """
+    Test that if the observation space is unbounded e.g. space.high is inf,
+    then the agent indicator wrapper will not return inf as agent indicator.
+    """
+    let = ["a", "a", "b"]
+    base_obs = {f"{let[idx]}_{idx}": np.zeros([2, 3]) for idx in range(3)}
+    base_obs_space = {
+        f"{let[idx]}_{idx}": Box(low=0, high=np.inf, shape=[2, 3]) for idx in range(3)
+    }
+    base_act_spaces = {f"{let[idx]}_{idx}": Discrete(5) for idx in range(3)}
+
+    base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
+    env = supersuit.agent_indicator_v0(base_env, type_only=True)
+    env.reset()
+    obs, _, _, _, _ = env.last()
+    assert obs.shape == (2, 3, 3)
+    assert env.observation_space("a_0").shape == (2, 3, 3)
+    # check agent indication is not inf
+    assert not np.isinf(obs).any()
+    # check agent indicator is 1.0
+    assert np.all(obs[:, :, 1] == 1.0)
+
+
 def test_reshape():
     base_env = DummyEnv(base_obs, base_obs_space, base_act_spaces)
     env = reshape_v0(base_env, (64, 3))
