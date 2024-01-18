@@ -25,7 +25,7 @@ dynamic = ["version"]
 
 [project.optional-dependencies]
 # Update dependencies in `all` if any are added or removed
-testing = ["pettingzoo[butterfly,classic]>=1.23.1", "pytest"]
+testing = ["pettingzoo[butterfly,classic]>=1.23.1", "pytest", "stable-baselines3>=2.0.0", "moviepy >=1.0.0"]
 
 [project.urls]
 Homepage = "https://farama.org"
