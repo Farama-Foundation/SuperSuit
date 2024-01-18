@@ -1,6 +1,7 @@
 from pettingzoo.butterfly import pistonball_v6
-import supersuit as ss
 from stable_baselines3.common.vec_env import VecVideoRecorder
+
+import supersuit as ss
 
 
 def schedule(episode_idx):
@@ -13,7 +14,7 @@ def make_sb3_record_env():
     print(env.render_mode)
     env = ss.pettingzoo_env_to_vec_env_v1(env)
     envs = ss.concat_vec_envs_v1(env, 1, num_cpus=0, base_class="stable_baselines3")
-    envs = VecVideoRecorder(envs, f"/tmp", schedule)
+    envs = VecVideoRecorder(envs, "/tmp", schedule)
     return envs
 
 
