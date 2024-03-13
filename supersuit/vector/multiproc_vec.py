@@ -237,7 +237,7 @@ class ProcConcatVec(gymnasium.vector.VectorEnv):
         try:
             for pipe, proc in zip(self.pipes, self.procs):
                 if proc.is_alive():
-                    pipe.send("close")
+                    pipe.send(("close", None))
         except OSError:
             pass
         else:
