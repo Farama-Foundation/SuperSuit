@@ -40,7 +40,7 @@ class BaseWrapper(PZBaseWrapper):
 
     def step(self, action):
         agent = self.env.agent_selection
-        if not self.terminations[agent] or self.truncations[agent]:
+        if not (self.terminations[agent] or self.truncations[agent]):
             action = self._modify_action(agent, action)
 
         super().step(action)
