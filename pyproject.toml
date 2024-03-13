@@ -25,7 +25,7 @@ dynamic = ["version"]
 
 [project.optional-dependencies]
 # Update dependencies in `all` if any are added or removed
-testing = ["pettingzoo[butterfly,classic]>=1.23.1", "pytest", "stable-baselines3>=2.0.0", "moviepy >=1.0.0"]
+testing = ["pettingzoo[butterfly,classic]>=1.23.1", "pytest", "pytest-xdist", "stable-baselines3>=2.0.0", "moviepy >=1.0.0"]
 
 [project.urls]
 Homepage = "https://farama.org"
@@ -84,3 +84,4 @@ reportUnboundVariable = "warning"
 
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::DeprecationWarning:gymnasium.*:"]
+addopts = [ "-n=auto" ]
