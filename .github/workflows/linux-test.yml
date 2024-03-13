@@ -32,6 +32,7 @@ jobs:
     - name: Install python dependencies
       run: |
         pip install -e .[testing]
+        AutoROM -v
     - name: Test with pytest
       run: |
         xvfb-run -s "-screen 0 1400x900x24" pytest ./test
