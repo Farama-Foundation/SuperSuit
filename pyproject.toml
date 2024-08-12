@@ -8,11 +8,12 @@ build-backend = "setuptools.build_meta"
 name="SuperSuit"
 description="Wrappers for Gymnasium and PettingZoo"
 readme="README.md"
-requires-python = ">= 3.8, < 3.12"
+requires-python = ">= 3.8"
 authors = [{ name = "Farama Foundation", email = "contact@farama.org" }]
 license = { text = "MIT License" }
 keywords=["Reinforcement Learning", "game", "RL", "AI", "gymnasium"]
 classifiers=[
+    "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.9",
