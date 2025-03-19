@@ -12,7 +12,7 @@ def vec_env_args(env, num_envs):
         env_copy = cloudpickle.loads(cloudpickle.dumps(env))
         return env_copy
 
-    return [env_fn] * num_envs, env.observation_space, env.action_space
+    return ([env_fn] * num_envs,)
 
 
 def warn_not_gym_env(env, fn_name):

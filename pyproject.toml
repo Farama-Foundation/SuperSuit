@@ -21,7 +21,7 @@ classifiers=[
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-dependencies = ["numpy>=1.19.0", "gymnasium>=0.28.1", "tinyscaler>=1.2.6"]
+dependencies = ["numpy>=1.19.0", "gymnasium>=1.0.0", "tinyscaler>=1.2.6"]
 dynamic = ["version"]
 
 [project.optional-dependencies]
