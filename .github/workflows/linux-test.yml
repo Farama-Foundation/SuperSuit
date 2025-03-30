@@ -15,10 +15,10 @@ permissions:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
-        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+        python-version: ['3.9', '3.10', '3.11', '3.12']
 
     steps:
     - uses: actions/checkout@v2
@@ -32,6 +32,9 @@ jobs:
     - name: Install python dependencies
       run: |
         pip install -e .[testing]
+        # Install pettingzoo directly from master until it mints a new version to resolve
+        # pygame version restriction.
+        pip install "pettingzoo[all,atari] @ git+https://github.com/Farama-Foundation/PettingZoo.git@master"
         AutoROM -v
     - name: Test with pytest
       run: |
