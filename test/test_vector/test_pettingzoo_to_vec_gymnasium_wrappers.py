@@ -1,6 +1,7 @@
+import gymnasium as gym
 import numpy as np
 import pytest
-from gymnasium.wrappers import normalize
+from gymnasium.wrappers import NormalizeObservation
 from pettingzoo.butterfly import pistonball_v6
 
 import supersuit as ss
@@ -13,7 +14,14 @@ def test_vec_env_normalize_obs(env_fn):
     env = ss.concat_vec_envs_v1(env, 10, base_class="gymnasium")
     obs, info = env.reset()
 
-    env = normalize.NormalizeObservation(env)
+    # Create a "dummy" class that adds gym.Env as a base class of the env
+    # to satisfy the assertion.
+    class PatchedEnv(env.__class__, gym.Env):
+        pass
+
+    env.__class__ = PatchedEnv
+
+    env = NormalizeObservation(env)
     normalized_obs, normalized_info = env.reset()
 
     obs_range = np.amax(obs) - np.amin(obs)
