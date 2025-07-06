@@ -12,7 +12,7 @@ def vec_env_args(env, num_envs):
         env_copy = cloudpickle.loads(cloudpickle.dumps(env))
         return env_copy
 
-    return ([env_fn] * num_envs,)
+    return [env_fn] * num_envs, env.observation_space, env.action_space
 
 
 def warn_not_gym_env(env, fn_name):
@@ -24,7 +24,7 @@ def warn_not_gym_env(env, fn_name):
 
 def gym_vec_env_v0(env, num_envs, multiprocessing=False):
     warn_not_gym_env(env, "gym_vec_env")
-    args = vec_env_args(env, num_envs)
+    args = vec_env_args(env, num_envs)[:1]
     constructor = (
         gymnasium.vector.AsyncVectorEnv
         if multiprocessing
