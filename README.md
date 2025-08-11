@@ -2,6 +2,7 @@
     <img src="https://raw.githubusercontent.com/Farama-Foundation/SuperSuit/master/supersuit-text.png" width="500px"/>
 </p>
 
+**Aug 11, 2025: This project is semi-depricated, and is unmaintained except for being kept operational with new versions of PettingZoo until the relevant functionality can be merged into pettingzoo.wrappers.**
 
 SuperSuit introduces a collection of small functions which can wrap reinforcement learning environments to do preprocessing ('microwrappers').
 We support Gymnasium for single agent environments and PettingZoo for multi-agent environments (both AECEnv and ParallelEnv environments).
