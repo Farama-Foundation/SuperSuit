@@ -79,11 +79,11 @@ def concat_vec_envs_v1(vec_env, num_vec_envs, num_cpus=0, base_class="gymnasium"
         )
 
 
-def pettingzoo_env_to_vec_env_v1(parallel_env):
+def pettingzoo_env_to_vec_env_v1(parallel_env, black_death=False):
     assert isinstance(
         parallel_env, ParallelEnv
     ), "pettingzoo_env_to_vec_env takes in a pettingzoo ParallelEnv. Can create a parallel_env with pistonball.parallel_env() or convert it from an AEC env with `from pettingzoo.utils.conversions import aec_to_parallel; aec_to_parallel(env)``"
     assert hasattr(
         parallel_env, "possible_agents"
     ), "environment passed to pettingzoo_env_to_vec_env must have possible_agents attribute."
-    return MarkovVectorEnv(parallel_env)
+    return MarkovVectorEnv(parallel_env, black_death)
