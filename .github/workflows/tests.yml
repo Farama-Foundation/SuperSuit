@@ -27,17 +27,28 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
+
     - name: Install ubuntu dependencies
+      if: runner.os == 'Linux'
       run: |
         sudo apt-get install python3-opengl xvfb
+
     - name: Install python dependencies
       run: |
         pip install -e .[testing]
         pip install "pettingzoo[all,atari]
         AutoROM -v
+
     - name: Test with pytest
+      if: runner.os == 'Linux'
       run: |
         xvfb-run -s "-screen 0 1400x900x24" pytest ./test
+
+    - name: Test with pytest
+      if: runner.os == 'macOS'
+      run: |
+        pytest ./test
+
     - name: Test installation
       run: |
         python -m pip install --upgrade build
