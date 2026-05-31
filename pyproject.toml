@@ -29,7 +29,15 @@ dynamic = ["version"]
 # Remove "pettingzoo[all,atari]" from dependencies for now
 # as there's a pygame version mismatch issue for pettingzoo version
 # 1.24.3. Once pettingzoo gets an updated version, add it back.
-testing = ["AutoROM", "pytest", "pytest-xdist", "stable-baselines3>=2.0.0", "moviepy >=1.0.0"]
+testing = [
+    "pytest", 
+    "pytest-xdist", 
+    "stable-baselines3>=2.0.0", 
+    "moviepy >=1.0.0",
+    "mpe2 >= 1.0.0", 
+    "pettingzoo >= 1.26.0",
+    "AutoROM"
+]
 
 [project.urls]
 Homepage = "https://farama.org"

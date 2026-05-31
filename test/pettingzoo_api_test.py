@@ -1,19 +1,19 @@
 import numpy as np
 import pytest
 from pettingzoo.butterfly import (
-    cooperative_pong_v5,
+    cooperative_pong_v6,
     knights_archers_zombies_v10,
     pistonball_v6,
 )
 from pettingzoo.classic import connect_four_v3
-from pettingzoo.mpe import simple_push_v3, simple_spread_v3, simple_world_comm_v3
+from mpe2 import simple_push_v3, simple_spread_v3, simple_world_comm_v3
+from mpe2.all_modules import mpe_environments
 from pettingzoo.sisl import pursuit_v4
 from pettingzoo.test import api_test, parallel_api_test, seed_test
 from pettingzoo.utils.all_modules import (
     atari_environments,
     butterfly_environments,
     classic_environments,
-    mpe_environments,
     sisl_environments,
 )
 
@@ -100,7 +100,7 @@ def test_pad_action_space_parallel(env_fn):
 
 
 @pytest.mark.parametrize(
-    "env_fn", atari + [pistonball_v6, cooperative_pong_v5, pursuit_v4]
+    "env_fn", atari + [pistonball_v6, cooperative_pong_v6, pursuit_v4]
 )
 def test_color_reduction(env_fn):
     env = supersuit.color_reduction_v0(env_fn.env(), "R")
@@ -108,7 +108,7 @@ def test_color_reduction(env_fn):
 
 
 @pytest.mark.parametrize(
-    "env_fn", atari + [pistonball_v6, cooperative_pong_v5, pursuit_v4]
+    "env_fn", atari + [pistonball_v6, cooperative_pong_v6, pursuit_v4]
 )
 def test_color_reduction_parallel(env_fn):
     env = supersuit.color_reduction_v0(env_fn.parallel_env(), "R")

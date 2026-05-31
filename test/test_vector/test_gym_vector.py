@@ -3,7 +3,7 @@ import copy
 import gymnasium
 import numpy as np
 import pytest
-from pettingzoo.mpe import simple_spread_v3
+from mpe2 import simple_spread_v3
 
 from supersuit import concat_vec_envs_v1, gym_vec_env_v0, pettingzoo_env_to_vec_env_v1
 
