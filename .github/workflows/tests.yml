@@ -12,6 +12,10 @@ on:
 permissions:
   contents: read
 
+env:
+  HOMEBREW_NO_AUTO_UPDATE: 1
+  HOMEBREW_NO_INSTALL_CLEANUP: 1
+
 jobs:
   build:
 
@@ -28,12 +32,18 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Install ubuntu dependencies
+    - name: Install Ubuntu dependencies
       if: runner.os == 'Linux'
       run: |
         sudo apt-get install python3-opengl xvfb
 
-    - name: Install python dependencies
+    - name: Install macOS dependencies
+      if: runner.os == 'macOS'
+      run: |
+        brew config
+        brew install swig
+
+    - name: Install Python dependencies
       run: |
         pip install -e .[testing]
         pip install pettingzoo[all,atari]
