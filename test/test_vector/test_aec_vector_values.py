@@ -1,9 +1,9 @@
 import random
 
 import numpy as np
+from mpe2 import simple_world_comm_v3
 from pettingzoo.butterfly import knights_archers_zombies_v10
 from pettingzoo.classic import rps_v2
-from mpe2 import simple_world_comm_v3
 
 from supersuit import vectorize_aec_env_v0
 
