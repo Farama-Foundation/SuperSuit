@@ -2,8 +2,8 @@ import copy
 
 import numpy as np
 import pytest
+from mpe2 import simple_spread_v3, simple_world_comm_v3
 from pettingzoo.butterfly import knights_archers_zombies_v10
-from pettingzoo.mpe import simple_spread_v3, simple_world_comm_v3
 
 from supersuit import black_death_v3, concat_vec_envs_v1, pettingzoo_env_to_vec_env_v1
 

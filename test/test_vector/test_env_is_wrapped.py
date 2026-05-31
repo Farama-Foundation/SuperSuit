@@ -1,6 +1,6 @@
 import gymnasium
 import pytest
-from pettingzoo.mpe import simple_spread_v3
+from mpe2 import simple_spread_v3
 
 from supersuit import concat_vec_envs_v1, pettingzoo_env_to_vec_env_v1
 from supersuit.generic_wrappers.frame_skip import frame_skip_gym

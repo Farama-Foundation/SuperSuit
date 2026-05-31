@@ -1,4 +1,4 @@
-from pettingzoo.mpe import simple_spread_v3
+from mpe2 import simple_spread_v3
 from pettingzoo.test import parallel_api_test
 
 from supersuit.multiagent_wrappers import pad_action_space_v0
