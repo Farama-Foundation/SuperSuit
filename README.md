@@ -1,3 +1,4 @@
+[![Python](https://img.shields.io/pypi/pyversions/supersuit.svg)](https://badge.fury.io/py/supersuit)
 [![PyPI version](https://badge.fury.io/py/supersuit.svg)](https://badge.fury.io/py/supersuit)
 [![Tests](https://github.com/Farama-Foundation/SuperSuit/actions/workflows/tests.yml/badge.svg)](https://github.com/Farama-Foundation/SuperSuit/actions/workflows/tests.yml)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://pre-commit.com/)
