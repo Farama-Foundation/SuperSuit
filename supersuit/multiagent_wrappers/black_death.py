@@ -40,7 +40,7 @@ class black_death_par(BaseParallelWrapper):
         black_infos = {agent: {} for agent in self.agents if agent not in obss}
         terminations = np.fromiter(terms.values(), dtype=bool)
         truncations = np.fromiter(truncs.values(), dtype=bool)
-        env_is_done = (terminations & truncations).all()
+        env_is_done = (terminations | truncations).all()
         total_obs = {**black_obs, **obss}
         total_rews = {**black_rews, **rews}
         total_infos = {**black_infos, **infos}

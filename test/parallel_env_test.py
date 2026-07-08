@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 from gymnasium.spaces import Box, Discrete
 from pettingzoo.utils import ParallelEnv
 
@@ -66,3 +67,26 @@ def test_basic():
     for i in range(10):
         action = {agent: env.action_space(agent).sample() for agent in env.agents}
         env.step(action)
+
+
+@pytest.mark.parametrize(
+    "terms_val,truncs_val,expected_done",
+    [
+        (True, False, True),  # all terminated -> episode done
+        (False, True, True),  # all truncated  -> episode done  (main bug case)
+        (True, True, True),  # both           -> episode done
+        (False, False, False),  # neither         -> not done
+    ],
+)
+def test_black_death_done_semantics(terms_val, truncs_val, expected_done):
+    env = DummyParEnv(base_obs, base_obs_space, base_act_spaces)
+    env.terminations = {a: terms_val for a in env.agents}
+    env.truncations = {a: truncs_val for a in env.agents}
+    env = supersuit.black_death_v3(env)
+    env.reset()
+    actions = {agent: env.action_space(agent).sample() for agent in env.agents}
+    _, _, terms, truncs, _ = env.step(actions)
+    # black_death returns the same done-dict for both term and trunc slots
+    assert all(terms.values()) == expected_done
+    assert all(truncs.values()) == expected_done
+    assert (len(env.agents) == 0) == expected_done
