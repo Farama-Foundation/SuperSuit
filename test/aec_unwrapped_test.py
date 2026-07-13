@@ -5,7 +5,7 @@ from gymnasium import spaces
 
 from supersuit import (
     agent_indicator_v0,
-    black_death_v3,
+    black_death_v4,
     clip_actions_v0,
     clip_reward_v0,
     color_reduction_v0,
@@ -107,7 +107,7 @@ def unwrapped_check(env):
         env = pad_observations_v0(env)
         env = frame_stack_v1(env, 2)
         env = agent_indicator_v0(env)
-        env = black_death_v3(env)
+        env = black_death_v4(env)
 
     if (
         not_dict_observation(env, agents)

@@ -18,7 +18,7 @@ from .aec_vector import vectorize_aec_env_v0
 from .generic_wrappers import *  # NOQA
 from .lambda_wrappers import observation_lambda_v0  # NOQA
 from .lambda_wrappers import action_lambda_v1, reward_lambda_v0
-from .multiagent_wrappers import black_death_v3  # NOQA
+from .multiagent_wrappers import black_death_v4  # NOQA
 from .multiagent_wrappers import (
     agent_indicator_v0,
     pad_action_space_v0,

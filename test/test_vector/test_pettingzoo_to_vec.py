@@ -5,7 +5,7 @@ import pytest
 from mpe2 import simple_spread_v3, simple_world_comm_v3
 from pettingzoo.butterfly import knights_archers_zombies_v10
 
-from supersuit import black_death_v3, concat_vec_envs_v1, pettingzoo_env_to_vec_env_v1
+from supersuit import black_death_v4, concat_vec_envs_v1, pettingzoo_env_to_vec_env_v1
 
 
 def test_good_env():
@@ -84,7 +84,7 @@ def test_env_black_death_assertion():
 
 def test_env_black_death_wrapper():
     env = knights_archers_zombies_v10.parallel_env(spawn_rate=50, max_cycles=300)
-    env = black_death_v3(env)
+    env = black_death_v4(env)
     env = pettingzoo_env_to_vec_env_v1(env)
     env.reset()
     for i in range(300):
@@ -98,7 +98,7 @@ def test_terminal_obs_are_returned():
     """
     max_cycles = 300
     env = knights_archers_zombies_v10.parallel_env(spawn_rate=50, max_cycles=300)
-    env = black_death_v3(env)
+    env = black_death_v4(env)
     env = pettingzoo_env_to_vec_env_v1(env)
     env.reset(seed=42)
 
