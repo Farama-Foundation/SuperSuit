@@ -2,7 +2,9 @@ import copy
 
 import numpy as np
 import pytest
+from gymnasium.spaces import Box, Discrete
 from mpe2 import simple_spread_v3, simple_world_comm_v3
+from pettingzoo import ParallelEnv
 from pettingzoo.butterfly import knights_archers_zombies_v10
 
 from supersuit import black_death_v3, concat_vec_envs_v1, pettingzoo_env_to_vec_env_v1
@@ -90,6 +92,93 @@ def test_env_black_death_wrapper():
     for i in range(300):
         actions = [env.action_space.sample() for i in range(env.num_envs)]
         obss, rews, terms, truncs, infos = env.step(actions)
+
+
+class GlobalInfoParallelEnv(ParallelEnv):
+    """Minimal parallel env whose ``infos`` carries a non-agent-keyed global key."""
+
+    metadata = {"render_modes": [], "name": "global_info_v0", "is_parallelizable": True}
+
+    def __init__(self):
+        self.possible_agents = ["player_0", "player_1"]
+        self.agents = self.possible_agents[:]
+        self.render_mode = None
+        self._obs_space = Box(low=0.0, high=1.0, shape=(3,), dtype=np.float32)
+        self._act_space = Discrete(2)
+
+    def observation_space(self, agent):
+        return self._obs_space
+
+    def action_space(self, agent):
+        return self._act_space
+
+    def _obs(self):
+        return {a: np.zeros(3, dtype=np.float32) for a in self.agents}
+
+    def _infos(self, tag):
+        infos = {a: {"agent_local": a} for a in self.agents}
+        infos["common_log"] = [tag]  # global, non-agent-keyed entry
+        return infos
+
+    def reset(self, seed=None, options=None):
+        self.agents = self.possible_agents[:]
+        return self._obs(), self._infos("reset_event")
+
+    def step(self, actions):
+        rewards = {a: 0.0 for a in self.agents}
+        terminations = {a: False for a in self.agents}
+        truncations = {a: False for a in self.agents}
+        return (
+            self._obs(),
+            rewards,
+            terminations,
+            truncations,
+            self._infos("step_event"),
+        )
+
+    def render(self):
+        pass
+
+    def close(self):
+        pass
+
+
+def test_global_info_keys_are_preserved():
+    """Non-agent-keyed (global) info entries must survive reset() and step().
+
+    Regression test for https://github.com/Farama-Foundation/SuperSuit/issues/261
+    """
+    env = pettingzoo_env_to_vec_env_v1(GlobalInfoParallelEnv())
+
+    _, reset_infos = env.reset()
+    assert len(reset_infos) == env.num_envs
+    # global key propagated to every sub-env, per-agent info still present
+    for info in reset_infos:
+        assert info["common_log"] == ["reset_event"]
+        assert "agent_local" in info
+
+    actions = [env.action_space.sample() for _ in range(env.num_envs)]
+    _, _, _, _, step_infos = env.step(actions)
+    assert len(step_infos) == env.num_envs
+    for info in step_infos:
+        assert info["common_log"] == ["step_event"]
+        assert "agent_local" in info
+
+
+def test_global_info_keys_are_preserved_vecenv():
+    """Global info entries also survive when stacked via concat_vec_envs_v1."""
+    num_envs = 2
+    env = pettingzoo_env_to_vec_env_v1(GlobalInfoParallelEnv())
+    env = concat_vec_envs_v1(env, num_envs)
+
+    _, reset_infos = env.reset()
+    assert len(reset_infos) == env.num_envs
+    assert all(info.get("common_log") == ["reset_event"] for info in reset_infos)
+
+    actions = [env.action_space.sample() for _ in range(env.num_envs)]
+    _, _, _, _, step_infos = env.step(actions)
+    assert len(step_infos) == env.num_envs
+    assert all(info.get("common_log") == ["step_event"] for info in step_infos)
 
 
 def test_terminal_obs_are_returned():
