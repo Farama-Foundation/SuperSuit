@@ -143,6 +143,38 @@ class GlobalInfoParallelEnv(ParallelEnv):
         pass
 
 
+class TerminatingGlobalInfoParallelEnv(GlobalInfoParallelEnv):
+    """Global-info env that terminates all agents on a chosen step.
+
+    Keeps every agent present (as a black-death-padded env would) so
+    MarkovVectorEnv's possible_agents assertion holds at the boundary, while
+    still driving the ``env_done`` branch of ``MarkovVectorEnv.step()``.
+    """
+
+    def __init__(self, terminate_on=3):
+        super().__init__()
+        self._terminate_on = terminate_on
+        self._steps = 0
+
+    def reset(self, seed=None, options=None):
+        self._steps = 0
+        return super().reset(seed=seed, options=options)
+
+    def step(self, actions):
+        self._steps += 1
+        done = self._steps >= self._terminate_on
+        rewards = {a: 0.0 for a in self.agents}
+        terminations = {a: done for a in self.agents}
+        truncations = {a: False for a in self.agents}
+        return (
+            self._obs(),
+            rewards,
+            terminations,
+            truncations,
+            self._infos("step_event"),
+        )
+
+
 def test_global_info_keys_are_preserved():
     """Non-agent-keyed (global) info entries must survive reset() and step().
 
@@ -179,6 +211,38 @@ def test_global_info_keys_are_preserved_vecenv():
     _, _, _, _, step_infos = env.step(actions)
     assert len(step_infos) == env.num_envs
     assert all(info.get("common_log") == ["step_event"] for info in step_infos)
+
+
+def test_global_info_keys_survive_terminal_step():
+    """Global info keys must survive the ``env_done`` auto-reset boundary.
+
+    On a terminal step ``MarkovVectorEnv.step()`` internally calls ``reset()``
+    and merges ``{**terminal_info, **reset_info}``, so a same-named global key
+    from the fresh reset wins -- mirroring how ``terminal_observation`` and
+    per-agent keys already behave. The key must not be dropped at the boundary.
+    Regression test for https://github.com/Farama-Foundation/SuperSuit/issues/261
+    """
+    terminate_on = 3
+    env = pettingzoo_env_to_vec_env_v1(
+        TerminatingGlobalInfoParallelEnv(terminate_on=terminate_on)
+    )
+    env.reset()
+
+    terms = infos = None
+    for _ in range(terminate_on):
+        actions = [env.action_space.sample() for _ in range(env.num_envs)]
+        _, _, terms, _, infos = env.step(actions)
+
+    # the chosen step terminated the episode -> env_done branch was exercised
+    assert all(terms)
+    assert len(infos) == env.num_envs
+    for info in infos:
+        # global key preserved across the auto-reset boundary ...
+        assert "common_log" in info
+        # ... and the fresh reset's value wins the {**inf, **reset_inf} merge
+        assert info["common_log"] == ["reset_event"]
+        # terminal observation is still surfaced, unaffected by the fix
+        assert "terminal_observation" in info
 
 
 def test_terminal_obs_are_returned():
