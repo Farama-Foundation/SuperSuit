@@ -5,6 +5,8 @@ import numpy as np
 from stable_baselines3.common.vec_env import VecEnvWrapper
 from stable_baselines3.common.vec_env.base_vec_env import VecEnvIndices
 
+from .markov_vector_wrapper import dict_infos_to_list
+
 
 class SB3VecEnvWrapper(VecEnvWrapper):
     def __init__(self, venv):
@@ -15,11 +17,20 @@ class SB3VecEnvWrapper(VecEnvWrapper):
         self.render_mode = venv.render_mode
         self.reset_infos = []
 
+    def _to_sb3_infos(self, infos):
+        """SB3 expects a list of per-env info dicts, not Gymnasium vector dicts."""
+        if isinstance(infos, list):
+            return infos
+        if isinstance(infos, dict):
+            return dict_infos_to_list(infos, self.num_envs)
+        return infos
+
     def reset(self, seed=None, options=None):
         if seed is not None:
             self.seed(seed=seed)
         # Note: SB3's vector envs return only observations on reset, and store infos in `self.reset_infos`
-        observations, self.reset_infos = self.venv.reset()
+        observations, reset_infos = self.venv.reset()
+        self.reset_infos = self._to_sb3_infos(reset_infos)
         return observations
 
     def step_wait(self):
@@ -28,7 +39,7 @@ class SB3VecEnvWrapper(VecEnvWrapper):
         dones = np.array(
             [terminations[i] or truncations[i] for i in range(len(terminations))]
         )
-        return observations, rewards, dones, infos
+        return observations, rewards, dones, self._to_sb3_infos(infos)
 
     def env_is_wrapped(self, wrapper_class, indices=None):
         # ignores indices

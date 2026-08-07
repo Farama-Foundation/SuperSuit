@@ -2,8 +2,10 @@ import gymnasium.vector
 import numpy as np
 from gymnasium.spaces import Discrete
 from gymnasium.vector.utils import concatenate, create_empty_array, iterate
+from gymnasium.vector.vector_env import AutoresetMode
 
 from .single_vec_env import SingleVecEnv
+from .utils.info_dict import merge_vector_infos
 
 
 def transpose(ll):
@@ -24,10 +26,20 @@ class ConcatVecEnv(gymnasium.vector.VectorEnv):
         for i in range(len(vec_envs)):
             if not hasattr(vec_envs[i], "num_envs"):
                 vec_envs[i] = SingleVecEnv([lambda: vec_envs[i]])
-        self.metadata = self.vec_envs[0].metadata
+        self.metadata = dict(self.vec_envs[0].metadata or {})
+        self.metadata.setdefault(
+            "autoreset_mode",
+            self.metadata.get("autoreset_mode", AutoresetMode.SAME_STEP),
+        )
         self.render_mode = self.vec_envs[0].render_mode
         self.observation_space = vec_envs[0].observation_space
         self.action_space = vec_envs[0].action_space
+        self.single_observation_space = getattr(
+            vec_envs[0], "single_observation_space", self.observation_space
+        )
+        self.single_action_space = getattr(
+            vec_envs[0], "single_action_space", self.action_space
+        )
         tot_num_envs = sum(env.num_envs for env in vec_envs)
         self.num_envs = tot_num_envs
 
@@ -46,10 +58,7 @@ class ConcatVecEnv(gymnasium.vector.VectorEnv):
                 _res_obs.append(_obs)
                 _res_infos.append(_info)
 
-        # flatten infos (also done in step function)
-        flattened_infos = [info for sublist in _res_infos for info in sublist]
-
-        return self.concat_obs(_res_obs), flattened_infos
+        return self.concat_obs(_res_obs), merge_vector_infos(_res_infos, self.num_envs)
 
     def concat_obs(self, observations):
         return concatenate(
@@ -93,9 +102,7 @@ class ConcatVecEnv(gymnasium.vector.VectorEnv):
         rewards = np.concatenate(rewards, axis=0)
         terminations = np.concatenate(terminations, axis=0)
         truncations = np.concatenate(truncations, axis=0)
-        infos = [
-            info for sublist in infos for info in sublist
-        ]  # flatten infos from nested lists
+        infos = merge_vector_infos(infos, self.num_envs)
         return observations, rewards, terminations, truncations, infos
 
     def render(self):
