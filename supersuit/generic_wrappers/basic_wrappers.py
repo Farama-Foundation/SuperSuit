@@ -49,9 +49,11 @@ def normalize_obs_v0(env, env_min=0.0, env_max=1.0):
 def clip_actions_v0(env):
     return action_lambda_v1(
         env,
-        lambda action, act_space: np.clip(action, act_space.low, act_space.high)
-        if action is not None
-        else None,
+        lambda action, act_space: (
+            np.clip(action, act_space.low, act_space.high)
+            if action is not None
+            else None
+        ),
         lambda act_space: act_space,
     )
 
@@ -61,13 +63,22 @@ def scale_actions_v0(env, scale):
         assert isinstance(
             act_space, Box
         ), "scale_actions_v0 only works with a Box action space"
-        return Box(low=act_space.low * scale, high=act_space.high * scale)
+        # A negative scale maps [low, high] onto [high * scale, low * scale], so the
+        # two bounds swap places. Multiplying them in place left a Box whose low
+        # exceeded its high, and Gymnasium rejected it from inside its own
+        # constructor without naming this wrapper or its `scale` argument.
+        scaled_low = act_space.low * scale
+        scaled_high = act_space.high * scale
+        return Box(
+            low=np.minimum(scaled_low, scaled_high),
+            high=np.maximum(scaled_low, scaled_high),
+        )
 
     return action_lambda_v1(
         env,
-        lambda action, act_space: np.asarray(action) * scale
-        if action is not None
-        else None,
+        lambda action, act_space: (
+            np.asarray(action) * scale if action is not None else None
+        ),
         lambda act_space: change_act_space(act_space),
     )
 
