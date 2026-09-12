@@ -50,4 +50,4 @@ class black_death_par(BaseParallelWrapper):
         return total_obs, total_rews, total_dones, total_dones, total_infos
 
 
-black_death_v3 = WrapperChooser(parallel_wrapper=black_death_par)
+black_death_v4 = WrapperChooser(parallel_wrapper=black_death_par)

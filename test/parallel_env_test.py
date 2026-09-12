@@ -82,7 +82,7 @@ def test_black_death_done_semantics(terms_val, truncs_val, expected_done):
     env = DummyParEnv(base_obs, base_obs_space, base_act_spaces)
     env.terminations = {a: terms_val for a in env.agents}
     env.truncations = {a: truncs_val for a in env.agents}
-    env = supersuit.black_death_v3(env)
+    env = supersuit.black_death_v4(env)
     env.reset()
     actions = {agent: env.action_space(agent).sample() for agent in env.agents}
     _, _, terms, truncs, _ = env.step(actions)

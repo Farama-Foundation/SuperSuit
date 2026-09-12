@@ -215,13 +215,13 @@ def test_pad_observations_parallel(env_fn):
 )
 @pytest.mark.parametrize("env_fn", atari + butterfly + classic + mpe + sisl)
 def test_black_death(env_fn):
-    env = supersuit.black_death_v3(env_fn.env())
+    env = supersuit.black_death_v4(env_fn.env())
     api_test(env)
 
 
 @pytest.mark.parametrize("env_fn", atari + butterfly + mpe + sisl)
 def test_black_death_parallel(env_fn):
-    env = supersuit.black_death_v3(env_fn.parallel_env())
+    env = supersuit.black_death_v4(env_fn.parallel_env())
     parallel_api_test(env)
 
 
