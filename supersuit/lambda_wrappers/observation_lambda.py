@@ -62,6 +62,12 @@ class aec_observation_lambda(BaseWrapper):
             except TypeError:
                 return self.change_obs_space_fn(old_obs_space)
 
+    def reset(self, seed=None, options=None):
+        # Observation spaces may change across resets for procedurally
+        # generated agents; drop the per-agent cache so spaces stay in sync.
+        self.observation_space.cache_clear()
+        super().reset(seed=seed, options=options)
+
     def _modify_observation(self, agent, observation):
         old_obs_space = self.env.observation_space(agent)
         try:

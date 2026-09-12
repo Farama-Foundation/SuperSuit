@@ -36,6 +36,12 @@ class aec_action_lambda(BaseWrapper):
         except TypeError:
             return self.change_space_fn(old_act_space)
 
+    def reset(self, seed=None, options=None):
+        # Action spaces may change across resets for procedurally generated
+        # agents; drop the per-agent cache so spaces stay in sync.
+        self.action_space.cache_clear()
+        super().reset(seed=seed, options=options)
+
     def _modify_action(self, agent, action):
         old_act_space = self.env.action_space(agent)
         try:

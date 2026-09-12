@@ -27,6 +27,17 @@ class shared_wrapper_aec(BaseWrapper):
     def action_space(self, agent):
         return self.modifiers[agent].modify_action_space(self.env.action_space(agent))
 
+    def _clear_agent_caches(self):
+        """Drop per-agent modifiers and space caches.
+
+        Environments with procedurally generated agents (and agent types) may
+        change observation/action space shapes across resets. Cached spaces and
+        modifiers from a previous episode would then be wrong.
+        """
+        self.modifiers = {}
+        self.observation_space.cache_clear()
+        self.action_space.cache_clear()
+
     def add_modifiers(self, agents_list):
         for agent in agents_list:
             if agent not in self.modifiers:
@@ -46,8 +57,8 @@ class shared_wrapper_aec(BaseWrapper):
         self._cur_seed = seed
         self._cur_options = options
 
-        for mod in self.modifiers.values():
-            mod.reset(seed=seed, options=options)
+        # Spaces/modifiers must be rebuilt after reset for dynamic-agent envs.
+        self._clear_agent_caches()
         super().reset(seed=seed, options=options)
 
         self.add_modifiers(self.agents)
@@ -93,6 +104,15 @@ class shared_wrapper_parr(BaseParallelWrapper):
     def action_space(self, agent):
         return self.modifiers[agent].modify_action_space(self.env.action_space(agent))
 
+    def _clear_agent_caches(self):
+        """Drop per-agent modifiers and space caches after reset.
+
+        See shared_wrapper_aec._clear_agent_caches.
+        """
+        self.modifiers = {}
+        self.observation_space.cache_clear()
+        self.action_space.cache_clear()
+
     def add_modifiers(self, agents_list):
         for agent in agents_list:
             if agent not in self.modifiers:
@@ -113,9 +133,9 @@ class shared_wrapper_parr(BaseParallelWrapper):
         self._cur_options = options
 
         observations, infos = super().reset(seed=seed, options=options)
+        # Rebuild modifiers/spaces for the new episode's agent set and spaces.
+        self._clear_agent_caches()
         self.add_modifiers(self.agents)
-        for agent, mod in self.modifiers.items():
-            mod.reset(seed=seed, options=options)
         observations = {
             agent: self.modifiers[agent].modify_obs(obs)
             for agent, obs in observations.items()
