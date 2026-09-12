@@ -18,16 +18,20 @@ from .utils.shared_array import SharedArray
 
 
 def compress_info(infos):
-    non_empty_infs = [(i, info) for i, info in enumerate(infos) if info]
-    return non_empty_infs
+    """Pass through Gymnasium-style vector infos (dict of arrays).
+
+    Previously this expected a list of per-env dicts and dropped empty ones.
+    Vector infos are already a compact dict, so return them unchanged.
+    """
+    return infos
 
 
 def decompress_info(num_envs, idx_starts, comp_infos):
-    all_info = [{}] * num_envs
-    for idx_start, comp_infos in zip(idx_starts, comp_infos):
-        for i, info in comp_infos:
-            all_info[idx_start + i] = info
-    return all_info
+    """Merge per-worker Gymnasium-style vector infos into one dict."""
+    from .utils.info_dict import merge_vector_infos
+
+    # comp_infos is a list (one per worker) of vector info dicts
+    return merge_vector_infos(list(comp_infos), num_envs)
 
 
 def write_observations(vec_env, env_start_idx, shared_obs, obs):
