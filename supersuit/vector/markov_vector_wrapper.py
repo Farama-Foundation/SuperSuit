@@ -46,6 +46,21 @@ class MarkovVectorEnv(gymnasium.vector.VectorEnv):
             create_empty_array(self.observation_space, self.num_envs),
         )
 
+    def _vectorize_infos(self, infos):
+        # PettingZoo environments may include top-level, non-agent-keyed entries
+        # in ``infos`` to convey global / episode-level information (e.g. a shared
+        # event log). Split those out and propagate them to every sub-env's info
+        # dict so they are not dropped during vectorization. Per-agent keys take
+        # precedence on the rare chance of a name collision.
+        agent_names = set(self.par_env.possible_agents)
+        global_infos = {
+            key: value for key, value in infos.items() if key not in agent_names
+        }
+        return [
+            {**global_infos, **infos.get(agent, {})}
+            for agent in self.par_env.possible_agents
+        ]
+
     def step_async(self, actions):
         self._saved_actions = actions
 
@@ -56,7 +71,7 @@ class MarkovVectorEnv(gymnasium.vector.VectorEnv):
         # TODO: should this be changed to infos?
         _observations, infos = self.par_env.reset(seed=seed, options=options)
         observations = self.concat_obs(_observations)
-        infs = [infos.get(agent, {}) for agent in self.par_env.possible_agents]
+        infs = self._vectorize_infos(infos)
         return observations, infs
 
     def step(self, actions):
@@ -89,7 +104,7 @@ class MarkovVectorEnv(gymnasium.vector.VectorEnv):
             [truncs.get(agent, False) for agent in self.par_env.possible_agents],
             dtype=np.uint8,
         )
-        infs = [infos.get(agent, {}) for agent in self.par_env.possible_agents]
+        infs = self._vectorize_infos(infos)
 
         if env_done:
             observations, reset_infs = self.reset()
