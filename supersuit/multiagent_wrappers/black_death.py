@@ -5,16 +5,35 @@ from pettingzoo.utils.wrappers import BaseParallelWrapper
 from supersuit.utils.wrapper_chooser import WrapperChooser
 
 
+def _assert_black_deathable(space):
+    """Black death needs a well-defined zero observation.
+
+    Box has one. Dict has one exactly when all of its subspaces do, so it is
+    checked recursively.
+    """
+    if isinstance(space, gymnasium.spaces.Dict):
+        for subspace in space.spaces.values():
+            _assert_black_deathable(subspace)
+    else:
+        assert isinstance(
+            space, gymnasium.spaces.Box
+        ), f"observation spaces for black death must be Box or Dict spaces, is {space}"
+
+
+def _zero_obs(space):
+    """Zero observation matching the structure of space."""
+    if isinstance(space, gymnasium.spaces.Dict):
+        return {name: _zero_obs(subspace) for name, subspace in space.spaces.items()}
+    return np.zeros_like(space.low)
+
+
 class black_death_par(BaseParallelWrapper):
     def __init__(self, env):
         super().__init__(env)
 
     def _check_valid_for_black_death(self):
         for agent in self.agents:
-            space = self.observation_space(agent)
-            assert isinstance(
-                space, gymnasium.spaces.Box
-            ), f"observation sapces for black death must be Box spaces, is {space}"
+            _assert_black_deathable(self.observation_space(agent))
 
     def reset(self, seed=None, options=None):
         obss, infos = self.env.reset(seed=seed, options=options)
@@ -22,7 +41,7 @@ class black_death_par(BaseParallelWrapper):
         self.agents = self.env.agents[:]
         self._check_valid_for_black_death()
         black_obs = {
-            agent: np.zeros_like(self.observation_space(agent).low)
+            agent: _zero_obs(self.observation_space(agent))
             for agent in self.agents
             if agent not in obss
         }
@@ -32,7 +51,7 @@ class black_death_par(BaseParallelWrapper):
         active_actions = {agent: actions[agent] for agent in self.env.agents}
         obss, rews, terms, truncs, infos = self.env.step(active_actions)
         black_obs = {
-            agent: np.zeros_like(self.observation_space(agent).low)
+            agent: _zero_obs(self.observation_space(agent))
             for agent in self.agents
             if agent not in obss
         }
