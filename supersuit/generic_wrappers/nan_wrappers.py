@@ -22,7 +22,7 @@ def nan_random_v0(env):
         def modify_action(self, action):
             if action is not None and np.isnan(action).any():
                 obs = self.cur_obs
-                if isinstance(obs, dict) and "action mask" in obs:
+                if isinstance(obs, dict) and "action_mask" in obs:
                     warnings.warn(
                         "[WARNING]: Step received an NaN action {}. Environment is {}. Taking a random action from 'action mask'.".format(
                             action, self
