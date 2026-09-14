@@ -444,3 +444,33 @@ def test_scale_action_wrapper():
         base_act_spaces = {f"a{idx}": Discrete(5) for idx in range(2)}
         base_env = DummyScaleEnv(base_obs, base_obs_space, base_act_spaces)
         wrapped_env = scale_actions_v0(base_env, 2)
+
+
+def test_scale_action_wrapper_negative_scale():
+    """A negative scale mirrors the interval, so the bounds have to swap.
+
+    `Box(low=low * scale, high=high * scale)` left low above high for a negative
+    scale, and Gymnasium rejected the space from inside its own constructor
+    without naming this wrapper or its `scale` argument.
+    """
+    base_obs = {f"a{idx}": np.zeros([3], dtype=np.float32) for idx in range(2)}
+    base_obs_space = {
+        f"a{idx}": Box(low=np.float32(0.0), high=np.float32(10.0), shape=[3])
+        for idx in range(2)
+    }
+    base_act_spaces = {
+        f"a{idx}": Box(low=np.float32(1.0), high=np.float32(5.0), shape=[3])
+        for idx in range(2)
+    }
+
+    base_env = DummyScaleEnv(base_obs, base_obs_space, base_act_spaces)
+    wrapped_env = scale_actions_v0(base_env, -2.0)
+
+    space = wrapped_env.action_space(wrapped_env.possible_agents[0])
+    assert np.allclose(space.low, -10.0)
+    assert np.allclose(space.high, -2.0)
+
+    wrapped_env.reset()
+    wrapped_env.step(np.array([2, 1, 3], dtype=np.float32))
+    scaled_action = wrapped_env.observe(wrapped_env.agents[0])
+    assert (scaled_action == np.array([-4, -2, -6], dtype=np.float32)).all()
