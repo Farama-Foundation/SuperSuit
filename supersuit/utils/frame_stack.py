@@ -1,5 +1,5 @@
 import numpy as np
-from gymnasium.spaces import Box, Discrete
+from gymnasium.spaces import Box, Dict, Discrete
 
 
 def get_tile_shape(shape, stack_size, stack_dim=-1):
@@ -56,10 +56,17 @@ def stack_obs_space(obs_space, stack_size, stack_dim=-1):
         return new_obs_space
     elif isinstance(obs_space, Discrete):
         return Discrete(obs_space.n**stack_size)
+    elif isinstance(obs_space, Dict):
+        return Dict(
+            {
+                name: stack_obs_space(subspace, stack_size, stack_dim)
+                for name, subspace in obs_space.spaces.items()
+            }
+        )
     else:
         assert (
             False
-        ), "Stacking is currently only allowed for Box and Discrete observation spaces. The given observation space is {}".format(
+        ), "Stacking is currently only allowed for Box, Discrete and Dict observation spaces. The given observation space is {}".format(
             obs_space
         )
 
@@ -70,6 +77,11 @@ def stack_init(obs_space, stack_size, stack_dim=-1):
             obs_space.low.shape, stack_size, stack_dim
         )
         return np.tile(np.zeros(new_shape, dtype=obs_space.dtype), tile_shape)
+    elif isinstance(obs_space, Dict):
+        return {
+            name: stack_init(subspace, stack_size, stack_dim)
+            for name, subspace in obs_space.spaces.items()
+        }
     else:
         return 0
 
@@ -115,3 +127,11 @@ def stack_obs(frame_stack, obs, obs_space, stack_size, stack_dim=-1):
 
     elif isinstance(obs_space, Discrete):
         return (frame_stack * obs_space.n + obs) % (obs_space.n**stack_size)
+
+    elif isinstance(obs_space, Dict):
+        return {
+            name: stack_obs(
+                frame_stack[name], obs[name], subspace, stack_size, stack_dim
+            )
+            for name, subspace in obs_space.spaces.items()
+        }

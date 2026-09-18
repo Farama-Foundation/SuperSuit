@@ -1,5 +1,6 @@
 import numpy as np
-from gymnasium.spaces import Box, Discrete
+import pytest
+from gymnasium.spaces import Box, Dict, Discrete
 
 from supersuit.utils.frame_stack import stack_init, stack_obs, stack_obs_space
 
@@ -9,6 +10,13 @@ stack_obs_space_2d = Box(low=np.float32(0.0), high=np.float32(1.0), shape=(4, 3)
 stack_obs_space_1d = Box(low=np.float32(0.0), high=np.float32(1.0), shape=(3,))
 
 stack_discrete = Discrete(3)
+
+stack_obs_space_dict = Dict(
+    {
+        "camera": stack_obs_space_3d,
+        "position": stack_obs_space_1d,
+    }
+)
 
 STACK_SIZE = 11
 
@@ -81,3 +89,50 @@ def test_change_observation():
         axis=2,
     )
     assert np.all(np.equal(stacked, raw))
+
+
+def test_dict_obs_space():
+    stacked_space = stack_obs_space(stack_obs_space_dict, STACK_SIZE)
+    assert isinstance(stacked_space, Dict)
+    assert set(stacked_space.spaces) == {"camera", "position"}
+    assert stacked_space["camera"].shape == (4, 4, 3 * STACK_SIZE)
+    assert stacked_space["position"].shape == (3 * STACK_SIZE,)
+    assert stacked_space["camera"].dtype == stack_obs_space_3d.dtype
+
+
+def test_dict_nested_obs_space():
+    nested = Dict({"sensors": stack_obs_space_dict, "flat": stack_obs_space_1d})
+    stacked_space = stack_obs_space(nested, STACK_SIZE)
+    assert stacked_space["sensors"]["camera"].shape == (4, 4, 3 * STACK_SIZE)
+    assert stacked_space["flat"].shape == (3 * STACK_SIZE,)
+
+
+def test_dict_init():
+    stack = stack_init(stack_obs_space_dict, STACK_SIZE)
+    assert set(stack) == {"camera", "position"}
+    assert stack["camera"].shape == (4, 4, 3 * STACK_SIZE)
+    assert stack["position"].shape == (3 * STACK_SIZE,)
+    assert np.all(stack["camera"] == 0)
+
+
+def test_dict_change_observation():
+    """A Dict stack must match stacking each subspace independently."""
+    obs_lo = {"camera": stack_obs_space_3d.low, "position": stack_obs_space_1d.low}
+    obs_hi = {"camera": stack_obs_space_3d.high, "position": stack_obs_space_1d.high}
+
+    stacked = stack_obs_helper([obs_lo, obs_hi], stack_obs_space_dict, 3)
+
+    for key, subspace in stack_obs_space_dict.spaces.items():
+        expected = stack_obs_helper([obs_lo[key], obs_hi[key]], subspace, 3)
+        assert np.all(np.equal(stacked[key], expected))
+
+    assert stacked["camera"].shape == (4, 4, 3 * 3)
+    assert stacked["position"].shape == (3 * 3,)
+
+
+def test_dict_rejects_unstackable_subspace():
+    from gymnasium.spaces import MultiBinary
+
+    bad = Dict({"ok": stack_obs_space_1d, "bad": MultiBinary(4)})
+    with pytest.raises(AssertionError):
+        stack_obs_space(bad, STACK_SIZE)
