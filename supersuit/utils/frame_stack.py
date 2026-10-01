@@ -99,7 +99,7 @@ def stack_obs(frame_stack, obs, obs_space, stack_size, stack_dim=-1):
                 agent_fs[:, :, -1] = obs
             elif stack_dim == 0:
                 agent_fs[:-1] = agent_fs[1:]
-                agent_fs[:-1] = obs
+                agent_fs[-1:] = obs
 
         elif len(obs_shape) == 3:
             if stack_dim == -1:

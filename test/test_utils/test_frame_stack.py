@@ -24,12 +24,12 @@ def test_obs_space():
     assert stack_obs_space(stack_discrete, STACK_SIZE).n == 3**STACK_SIZE
 
 
-def stack_obs_helper(frame_stack_list, obs_space, stack_size):
+def stack_obs_helper(frame_stack_list, obs_space, stack_size, stack_dim=-1):
     stack = stack_init(
-        obs_space, stack_size
+        obs_space, stack_size, stack_dim
     )  # stack_reset_obs(frame_stack_list[0], stack_size)
     for obs in frame_stack_list:
-        stack = stack_obs(stack, obs, obs_space, stack_size)
+        stack = stack_obs(stack, obs, obs_space, stack_size, stack_dim)
     return stack
 
 
@@ -79,5 +79,47 @@ def test_change_observation():
             stack_obs_space_3d.high,
         ],
         axis=2,
+    )
+    assert np.all(np.equal(stacked, raw))
+
+
+def test_obs_space_stack_dim_0():
+    assert stack_obs_space(stack_obs_space_1d, STACK_SIZE, 0).shape == (3 * STACK_SIZE,)
+    assert stack_obs_space(stack_obs_space_2d, STACK_SIZE, 0).shape == (
+        STACK_SIZE,
+        4,
+        3,
+    )
+    assert stack_obs_space(stack_obs_space_3d, STACK_SIZE, 0).shape == (
+        4 * STACK_SIZE,
+        4,
+        3,
+    )
+
+
+def test_change_observation_stack_dim_0():
+    stacked = stack_obs_helper(
+        [stack_obs_space_2d.low, stack_obs_space_2d.high], stack_obs_space_2d, 3, 0
+    )
+    raw = np.stack(
+        [
+            np.zeros_like(stack_obs_space_2d.high),
+            stack_obs_space_2d.low,
+            stack_obs_space_2d.high,
+        ],
+        axis=0,
+    )
+    assert np.all(np.equal(stacked, raw))
+
+    stacked = stack_obs_helper(
+        [stack_obs_space_3d.low, stack_obs_space_3d.high], stack_obs_space_3d, 3, 0
+    )
+    raw = np.concatenate(
+        [
+            np.zeros_like(stack_obs_space_3d.high),
+            stack_obs_space_3d.low,
+            stack_obs_space_3d.high,
+        ],
+        axis=0,
     )
     assert np.all(np.equal(stacked, raw))
