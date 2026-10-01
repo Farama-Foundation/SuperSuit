@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 from gymnasium.spaces import Box, Discrete
 
 from supersuit.utils.frame_stack import stack_init, stack_obs, stack_obs_space
@@ -81,3 +82,11 @@ def test_change_observation():
         axis=2,
     )
     assert np.all(np.equal(stacked, raw))
+
+
+def test_unsupported_stack_dim():
+    with pytest.raises(AssertionError, match="stack_dim should be 0 or -1, not 1"):
+        stack_obs_space(stack_obs_space_2d, STACK_SIZE, 1)
+
+    with pytest.raises(AssertionError, match="stack_dim should be 0 or -1, not 1"):
+        stack_init(stack_obs_space_2d, STACK_SIZE, 1)

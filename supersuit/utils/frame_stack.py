@@ -5,6 +5,8 @@ from gymnasium.spaces import Box, Discrete
 def get_tile_shape(shape, stack_size, stack_dim=-1):
     obs_dim = len(shape)
 
+    assert stack_dim in (0, -1), f"stack_dim should be 0 or -1, not {stack_dim}"
+
     if stack_dim == -1:
         if obs_dim == 1:
             tile_shape = (stack_size,)
