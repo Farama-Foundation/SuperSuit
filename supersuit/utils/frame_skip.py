@@ -7,7 +7,7 @@ def check_transform_frameskip(frame_skip):
         and 1 <= frame_skip[0] <= frame_skip[1]
     ):
         return frame_skip
-    elif isinstance(frame_skip, int):
+    elif isinstance(frame_skip, int) and frame_skip >= 1:
         return (frame_skip, frame_skip)
     else:
         assert (
