@@ -8,6 +8,8 @@ from .utils.shared_wrapper_util import shared_wrapper
 
 def frame_stack_v1(env, stack_size=4, stack_dim=-1):
     assert isinstance(stack_size, int), "stack size of frame_stack must be an int"
+    assert stack_size >= 1, f"stack_size must be at least 1, not {stack_size}"
+    assert stack_dim in (0, -1), f"stack_dim should be 0 or -1, not {stack_dim}"
 
     class FrameStackModifier(BaseModifier):
         def modify_obs_space(self, obs_space):
@@ -46,7 +48,8 @@ def frame_stack_v1(env, stack_size=4, stack_dim=-1):
 
 def frame_stack_v2(env, stack_size=4, stack_dim=-1):
     assert isinstance(stack_size, int), "stack size of frame_stack must be an int"
-    assert f"stack_dim should be 0 or -1, not {stack_dim}"
+    assert stack_size >= 1, f"stack_size must be at least 1, not {stack_size}"
+    assert stack_dim in (0, -1), f"stack_dim should be 0 or -1, not {stack_dim}"
 
     class FrameStackModifier(BaseModifier):
         def modify_obs_space(self, obs_space):
